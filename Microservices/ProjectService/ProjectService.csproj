@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>a26093b4-31e0-4cf6-a60a-c262e0413701</UserSecretsId>
+    <UserSecretsId>6353148b-bc31-4223-97a9-000a238c7509</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharedLibrary\SharedLibrary.csproj" />
+    <ProjectReference Include="..\..\Shared\SharedLibrary\SharedLibrary.csproj" />
   </ItemGroup>
 
 </Project>
