@@ -1,59 +1,96 @@
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Yarp.ReverseProxy.Configuration;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddCors(options =>
+internal class Program
 {
-    options.AddPolicy("AllowAll", policy =>
+    private static void Main(string[] args)
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+
+        builder.Services.AddControllers();
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "API Gateway", Version = "v1" });
+
+            // Добавляем микросервисы
+            options.AddServer(new OpenApiServer { Url = "https://localhost:7000", Description = "API Gateway" });
+            options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
+            options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
+            options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
+
+        });
 
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "API Gateway", Version = "v1" });
+        builder.Services.AddReverseProxy()
+            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+            .ConfigureHttpClient((context, handler) =>
+            {
+                if (handler is SocketsHttpHandler socketsHandler)
+                {
+                    socketsHandler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                }
+            });
 
-    // ��������� ������������
-    options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
-    options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
-    options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
+        var app = builder.Build();
 
-});
+        app.UseCors("AllowAll");
 
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("https://localhost:7000/swagger/v1/swagger.json", "API Gateway");
+                c.SwaggerEndpoint("https://localhost:7001/swagger/v1/swagger.json", "Project Service");
+                c.SwaggerEndpoint("https://localhost:7002/swagger/v1/swagger.json", "User Service");
+                c.SwaggerEndpoint("https://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
+            });
+        }
 
-var app = builder.Build();
+        app.MapReverseProxy();
 
-app.UseCors("AllowAll");
+        app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("https://localhost:7001/swagger/v1/swagger.json", "Project Service");
-        c.SwaggerEndpoint("https://localhost:7002/swagger/v1/swagger.json", "User Service");
-        c.SwaggerEndpoint("https://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
-    });
+        app.UseAuthorization();
+        app.MapControllers();
+
+        var configuration = builder.Configuration.GetSection("ReverseProxy");
+        var routes = configuration.GetSection("Routes").Get<Dictionary<string, RouteConfig>>();
+
+        var proxyConfig = builder.Configuration.GetSection("ReverseProxy").Get<Yarp.ReverseProxy.Configuration.ClusterConfig>();
+        if (proxyConfig != null)
+        {
+            Console.WriteLine("Настроенные маршруты:");
+            foreach (var route in builder.Configuration.GetSection("ReverseProxy:Routes").GetChildren())
+            {
+                Console.WriteLine($"Маршрут: {route.Key} → {route.GetValue<string>("Match:Path")}");
+            }
+
+            Console.WriteLine("Настроенные сервисы:");
+            foreach (var cluster in builder.Configuration.GetSection("ReverseProxy:Clusters").GetChildren())
+            {
+                var address = cluster.GetSection("Destinations").GetChildren().FirstOrDefault()?.GetValue<string>("Address");
+                Console.WriteLine($"Кластер: {cluster.Key} → {address}");
+            }
+        }
+
+        app.Run();
+    }
 }
-
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
