@@ -1,43 +1,42 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+﻿using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Constants;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.Controllers
 {
     [ApiController]
-    [Route("project")]
-    public class ProjectController : ControllerBase
+    [Route("task")]
+    public class TaskController : ControllerBase
     {
-
-        public ProjectController()
+        public TaskController()
         {
+            
         }
 
-        [ProducesResponseType<IEnumerable<ProjectModel>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<TaskModel>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("get")]
         public async Task<IActionResult> GetAll()
         {
-            List<ProjectModel> projects = new List<ProjectModel>();
-            return Ok(projects);
+            List<TaskModel> tasks = new List<TaskModel>();
+            return Ok(tasks);
         }
 
-        [ProducesResponseType<ProjectModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TaskModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            ProjectModel project = new ProjectModel();
-            return Ok(project);
+            TaskModel task = new TaskModel();
+            return Ok(task);
         }
 
         [ProducesResponseType<int>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] ProjectModel model)
+        public async Task<IActionResult> Create([FromBody] TaskModel model)
         {
             return Ok(model.Id);
         }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SharedLibrary.ProjectModels;
 
 namespace AnalyticsService.Controllers
 {
@@ -12,10 +13,35 @@ namespace AnalyticsService.Controllers
 
         }
 
-        [HttpGet("get")]
-        public IActionResult Get()
+        [ProducesResponseType<TimeSpan>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("get/time")]
+        public async Task<IActionResult> GetAvgTime()
         {
-            return Ok();
+            TimeSpan time = new TimeSpan(1000);
+            return Ok(time);
+        }
+
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("get/speed")]
+        public async Task<IActionResult> GetTeamSpeed()
+        {
+            int tasksCount = 40;
+            int daysCount = 7;
+            string speed = $"{tasksCount} tasks per {daysCount} days";
+            return Ok(speed);
+        }
+
+        [ProducesResponseType<int>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("get/ratio")]
+        public async Task<IActionResult> GetSprintRatio()
+        {
+            int completedSprints = 10;
+            int allSprints = 15;
+            int ratio = completedSprints / allSprints;
+            return Ok(ratio);
         }
     }
 }
