@@ -15,7 +15,7 @@ namespace AnalyticsService.Controllers
 
         [ProducesResponseType<TimeSpan>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("get/time")]
+        [HttpGet("time")]
         public async Task<IActionResult> GetAvgTime()
         {
             TimeSpan time = new TimeSpan(1000);
@@ -24,7 +24,7 @@ namespace AnalyticsService.Controllers
 
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("get/speed")]
+        [HttpGet("speed")]
         public async Task<IActionResult> GetTeamSpeed()
         {
             int tasksCount = 40;
@@ -35,7 +35,7 @@ namespace AnalyticsService.Controllers
 
         [ProducesResponseType<int>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("get/ratio")]
+        [HttpGet("ratio")]
         public async Task<IActionResult> GetSprintRatio()
         {
             int completedSprints = 10;
