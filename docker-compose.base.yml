@@ -1,5 +1,9 @@
 volumes:
-  postgres-data:
+  analytics-data:
+    external: false
+  project-data:
+    external: false
+  user-data:
     external: false
 
 networks:
