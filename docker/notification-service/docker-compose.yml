@@ -41,22 +41,6 @@ services:
     networks:
       - swaga-network
 
-  notification-db:
-    container_name: swaga-notification-db
-    image: postgres:15-alpine
-    env_file:
-      - ./.env
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - swaga-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 7s
-      timeout: 3s
-      retries: 5
-
 
 networks:
   swaga-network:
-    external: true

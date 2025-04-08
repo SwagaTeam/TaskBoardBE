@@ -453,3 +453,5 @@ nunit-*.xml
 
 # JetBrains Rider
 *.sln.iml
+
+*.env

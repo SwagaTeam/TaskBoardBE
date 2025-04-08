@@ -23,7 +23,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - project-data:/var/lib/postgresql/data
     networks:
       - swaga-network
     healthcheck:
@@ -34,4 +34,3 @@ services:
 
 networks:
   swaga-network:
-    external: true
