@@ -1,0 +1,37 @@
+services:
+  user-service:
+    container_name: taskboard-user-serv
+    build:
+      context: .
+      dockerfile: docker/user-service/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8081
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    volumes:
+      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets
+    restart: always
+    depends_on:
+      user-db:
+        condition: service_healthy
+    networks:
+      - swaga-network
+
+  user-db:
+    container_name: swaga-user-db
+    image: postgres:15-alpine
+    env_file:
+      - ./.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - swaga-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 7s
+      timeout: 3s
+      retries: 5
+
+networks:
+  swaga-network:
+    external: true

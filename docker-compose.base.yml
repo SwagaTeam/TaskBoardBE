@@ -1,0 +1,6 @@
+volumes:
+  postgres-data:
+    external: false
+
+networks:
+  swaga-network:

@@ -1,0 +1,38 @@
+services:
+  notification-service:
+    container_name: taskboard-notification-serv
+    build:
+      context: .
+      dockerfile: docker/notification-service/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8084
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    volumes:
+      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets
+    restart: always
+    depends_on:
+      notification-db:
+        condition: service_healthy
+    networks:
+      - swaga-network
+
+  notification-db:
+    container_name: swaga-notification-db
+    image: postgres:15-alpine
+    env_file:
+      - ./.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - swaga-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 7s
+      timeout: 3s
+      retries: 5
+
+
+networks:
+  swaga-network:
+    external: true
