@@ -25,7 +25,7 @@ namespace ProjectService.Controllers
             {
                 if (uploadedFile != null)
                 {
-                    // логика
+                    //TODO: вынести логику
                     string path = "/Files/" + uploadedFile.FileName;
                     using (var fileStream = new FileStream(appEnvironment.WebRootPath + path, FileMode.Create))
                     {

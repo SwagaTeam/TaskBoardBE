@@ -1,3 +1,7 @@
+using SharedLibrary.ProjectModels;
+using Messaging.Kafka;
+using Messaging.Kafka.Services.Implementations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,6 +18,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddProducer<TaskModel>(builder.Configuration.GetSection("Kafka:NotificationTask"));
+builder.Services.AddConsumer<TaskModel, TaskCreatedMessageHandler>(builder.Configuration.GetSection("Kafka:NotificationTask"));
+
 
 var app = builder.Build();
 

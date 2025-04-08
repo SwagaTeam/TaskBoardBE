@@ -4,18 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>6353148b-bc31-4223-97a9-000a238c7509</UserSecretsId>
+    <UserSecretsId>f5c4b6d9-ac41-46d0-b0e2-03da5fe897e6</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Messaging.Kafka\Messaging.Kafka.csproj" />
-    <ProjectReference Include="..\..\Shared\SharedLibrary\SharedLibrary.csproj" />
+    <ProjectReference Include="..\Shared\SharedLibrary\SharedLibrary.csproj" />
   </ItemGroup>
 
 </Project>

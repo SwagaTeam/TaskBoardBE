@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Messaging.Kafka.Services.Abstractions;
+using Messaging.Kafka.Services.Implementations;
+using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Constants;
 using SharedLibrary.ProjectModels;
 
@@ -8,9 +10,10 @@ namespace ProjectService.Controllers
     [Route("task")]
     public class TaskController : ControllerBase
     {
-        public TaskController()
+        private readonly IKafkaProducer<TaskModel> kafkaProducer;
+        public TaskController(IKafkaProducer<TaskModel> kafkaProducer)
         {
-            
+            this.kafkaProducer = kafkaProducer;
         }
 
         [ProducesResponseType<IEnumerable<TaskModel>>(StatusCodes.Status200OK)]
@@ -36,8 +39,9 @@ namespace ProjectService.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] TaskModel model)
+        public async Task<IActionResult> Create([FromBody] TaskModel model, CancellationToken cancellationToken)
         {
+            await kafkaProducer.ProduceAsync(model, cancellationToken);
             return Ok(model.Id);
         }
 

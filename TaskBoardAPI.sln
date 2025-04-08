@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{6C2CFFD2-301B-4296-821A-48EF57C9C1EB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{D86B9FD5-794E-4EA2-AAC4-E59AFFC295EA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyticsService", "Microservices\AnalyticsService\AnalyticsService.csproj", "{5D568F90-E4BE-441D-A7BE-6FD767C54E13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "Microservices\UserService\UserService.csproj", "{5E36D333-9BF9-40EE-9C4E-16D50B29EBD0}"
@@ -20,6 +18,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibrary", "Shared\SharedLibrary\SharedLibrary.csproj", "{9CB410E9-7E1D-475E-8709-74C1B64F3FD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService", "NotificationService\NotificationService\NotificationService.csproj", "{E330ACDF-A463-41B9-9DDD-9FDD192E7297}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Kafka", "Messaging.Kafka\Messaging.Kafka.csproj", "{530D1EC2-BC7C-48EC-A2B4-7B75C88A4D68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +51,10 @@ Global
 		{E330ACDF-A463-41B9-9DDD-9FDD192E7297}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E330ACDF-A463-41B9-9DDD-9FDD192E7297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E330ACDF-A463-41B9-9DDD-9FDD192E7297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{530D1EC2-BC7C-48EC-A2B4-7B75C88A4D68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{530D1EC2-BC7C-48EC-A2B4-7B75C88A4D68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{530D1EC2-BC7C-48EC-A2B4-7B75C88A4D68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{530D1EC2-BC7C-48EC-A2B4-7B75C88A4D68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,7 +64,7 @@ Global
 		{5E36D333-9BF9-40EE-9C4E-16D50B29EBD0} = {C20AD5FA-02EF-4D1D-9041-2324A1324FB3}
 		{ED6102F1-15DA-4B36-B7BA-CFBD8B6C91DE} = {C20AD5FA-02EF-4D1D-9041-2324A1324FB3}
 		{9CB410E9-7E1D-475E-8709-74C1B64F3FD8} = {6C2CFFD2-301B-4296-821A-48EF57C9C1EB}
-		{E330ACDF-A463-41B9-9DDD-9FDD192E7297} = {D86B9FD5-794E-4EA2-AAC4-E59AFFC295EA}
+		{E330ACDF-A463-41B9-9DDD-9FDD192E7297} = {C20AD5FA-02EF-4D1D-9041-2324A1324FB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD3B0CF4-BE22-47A3-BCE6-3DDA93C9CD32}
