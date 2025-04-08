@@ -1,4 +1,28 @@
 services:
+  notification-zookeeper:
+    container_name: notification-zookeeper
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "32181:2181"
+    networks:
+      - swaga-network
+
+  notification-kafka:
+    container_name: notification-kafka
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=notification-zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "39092:9092"
+    depends_on:
+      - notification-zookeeper
+    networks:
+      - swaga-network
+
   notification-service:
     container_name: taskboard-notification-serv
     build:

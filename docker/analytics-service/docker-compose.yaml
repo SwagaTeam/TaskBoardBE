@@ -1,4 +1,28 @@
 services:
+  analytics-zookeeper:
+    container_name: analytics-zookeeper
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "22181:2181"
+    networks:
+      - swaga-network
+
+  analytics-kafka:
+    container_name: analytics-kafka
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=analytics-zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "29092:9092"
+    depends_on:
+      - analytics-zookeeper
+    networks:
+      - swaga-network
+      
   analytics-service:
     container_name: taskboard-analytics-serv
     build:
