@@ -1,4 +1,4 @@
-﻿namespace Messaging.Kafka.Services.Abstractions
+﻿namespace Kafka.Messaging.Services.Abstractions
 {
     public interface IKafkaProducer<in TMessage> : IDisposable
     {

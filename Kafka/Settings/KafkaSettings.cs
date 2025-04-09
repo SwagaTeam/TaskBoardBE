@@ -1,4 +1,4 @@
-﻿namespace Messaging.Kafka.Settings
+﻿namespace Kafka.Messaging.Settings
 {
     public class KafkaSettings
     {

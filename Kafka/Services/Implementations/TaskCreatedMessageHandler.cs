@@ -1,7 +1,8 @@
-﻿using Messaging.Kafka.Services.Abstractions;
+﻿using Kafka.Messaging.Services.Abstractions;
+using Microsoft.Extensions.Logging;
 using SharedLibrary.ProjectModels;
 
-namespace Messaging.Kafka.Services.Implementations
+namespace Kafka.Messaging.Services.Implementations
 {
     public class TaskCreatedMessageHandler(ILogger<TaskCreatedMessageHandler> logger) : IMessageHandler<TaskModel>
     {

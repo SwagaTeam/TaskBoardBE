@@ -1,8 +1,10 @@
-﻿using Messaging.Kafka.Services.Abstractions;
-using Messaging.Kafka.Services.Implementations;
-using Messaging.Kafka.Settings;
+﻿using Kafka.Messaging.Services.Abstractions;
+using Kafka.Messaging.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Kafka.Messaging.Services.Implementations;
 
-namespace Messaging.Kafka
+namespace Kafka.Messaging
 {
     public static class Extensions
     {

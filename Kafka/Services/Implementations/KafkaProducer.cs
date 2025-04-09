@@ -1,9 +1,9 @@
 ﻿using Confluent.Kafka;
-using Messaging.Kafka.Services.Abstractions;
-using Messaging.Kafka.Settings;
+using Kafka.Messaging.Services.Abstractions;
+using Kafka.Messaging.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Messaging.Kafka.Services.Implementations
+namespace Kafka.Messaging.Services.Implementations
 {
     public class KafkaProducer<TMessage> : IKafkaProducer<TMessage>
     {

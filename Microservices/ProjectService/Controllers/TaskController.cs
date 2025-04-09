@@ -1,5 +1,4 @@
-﻿using Messaging.Kafka.Services.Abstractions;
-using Messaging.Kafka.Services.Implementations;
+﻿using Kafka.Messaging.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Constants;
 using SharedLibrary.ProjectModels;

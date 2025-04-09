@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using System.Text.Json;
 
-namespace Messaging.Kafka.Settings
+namespace Kafka.Messaging.Settings
 {
     public class KafkaValueDeserealizer<TMessage> : IDeserializer<TMessage>
     {
