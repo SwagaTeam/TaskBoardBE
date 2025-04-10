@@ -1,6 +1,6 @@
 ﻿using Kafka.Messaging.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using SharedLibrary.Constants;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.Controllers
@@ -57,8 +57,10 @@ namespace ProjectService.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("status/change/{id}")]
-        public async Task<IActionResult> ChangeStatus([FromBody] Status status, int id)
+        public async Task<IActionResult> ChangeStatus([FromBody] StatusEntity status, int id)
         {
+            //TODO: поменять Entity на dto
+
             return Ok(id);
         }
     }

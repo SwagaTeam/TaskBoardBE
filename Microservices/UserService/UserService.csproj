@@ -9,12 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\SharedLibrary\SharedLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataLayer\Repositories\Abstractions\" />
+    <Folder Include="DataLayer\Repositories\Implementations\" />
   </ItemGroup>
 
 </Project>
