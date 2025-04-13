@@ -1,3 +1,6 @@
+using UserService.DataLayer;
+using UserService.Initializers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,7 +18,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var configuration = builder.Configuration;
+
+DbContextInitializer.Initialize(builder.Services, configuration["ConnectionStrings:DefaultConnection"]);
+
 var app = builder.Build();
+
+using var scope = app.Services.CreateScope();
+using var appDbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+
+DbContextInitializer.Migrate(appDbContext);
 
 app.UseCors("AllowApiGateway");
 

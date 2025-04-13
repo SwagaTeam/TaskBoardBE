@@ -40,6 +40,6 @@ namespace Kafka.Messaging.Services.Implementations
             producer?.Dispose();
         }
 
-        
+
     }
 }

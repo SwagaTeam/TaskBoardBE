@@ -38,14 +38,7 @@ internal class Program
 
 
         builder.Services.AddReverseProxy()
-            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
-            .ConfigureHttpClient((context, handler) =>
-            {
-                if (handler is SocketsHttpHandler socketsHandler)
-                {
-                    socketsHandler.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-                }
-            });
+            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
         var app = builder.Build();
 
@@ -72,7 +65,6 @@ internal class Program
         app.MapControllers();
 
         var configuration = builder.Configuration.GetSection("ReverseProxy");
-        var routes = configuration.GetSection("Routes").Get<Dictionary<string, RouteConfig>>();
 
         var proxyConfig = builder.Configuration.GetSection("ReverseProxy").Get<Yarp.ReverseProxy.Configuration.ClusterConfig>();
         if (proxyConfig != null)

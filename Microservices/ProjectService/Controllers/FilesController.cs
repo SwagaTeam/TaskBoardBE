@@ -7,9 +7,9 @@ namespace ProjectService.Controllers
 {
     [ApiController]
     [Route("file")]
-    public class FilesController :  ControllerBase
+    public class FilesController : ControllerBase
     {
-       private readonly IWebHostEnvironment appEnvironment;
+        private readonly IWebHostEnvironment appEnvironment;
 
         public FilesController(IWebHostEnvironment appEnvironment)
         {
@@ -44,7 +44,7 @@ namespace ProjectService.Controllers
             {
                 return StatusCode(500, ex);
             }
-           
+
         }
 
         [ProducesResponseType<FileModel>(StatusCodes.Status200OK)]

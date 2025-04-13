@@ -1,5 +1,4 @@
-﻿using SharedLibrary.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +16,7 @@ namespace SharedLibrary.ProjectModels
         public DateTime UpdatedAt { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }
-        public int Priority { get; set; } = (int)Priorities.LOW_PRIORITY;
-        public int Status { get; set; } = (int)Constants.Status.NEW;
+        public int Priority { get; set; } = 0;
+        public int Status { get; set; } = 0;
     }
 }

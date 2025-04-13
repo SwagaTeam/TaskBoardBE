@@ -6,7 +6,7 @@ namespace SharedLibrary.Dapper
 {
     public class DapperOperations
     {
-        public static string connString = "";
+        private static readonly string connString = "";
         public static async Task ExecuteAsync(string sql, object model)
         {
             using (var connection = new SqlConnection(connString))
@@ -16,7 +16,7 @@ namespace SharedLibrary.Dapper
             }
         }
 
-        public static async Task<T> QueryScalarAsync<T>(string sql, object model)
+        public static async Task<T?> QueryScalarAsync<T>(string sql, object model)
         {
             using (var connection = new SqlConnection(connString))
             {

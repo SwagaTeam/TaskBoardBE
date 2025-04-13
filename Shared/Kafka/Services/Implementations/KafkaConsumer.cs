@@ -4,6 +4,7 @@ using Kafka.Messaging.Services.Abstractions;
 using Kafka.Messaging.Settings;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace Kafka.Messaging.Services.Implementations
 {
@@ -45,13 +46,13 @@ namespace Kafka.Messaging.Services.Implementations
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                   var result = consumer.Consume(stoppingToken);
-                   await messageHandler.HandleAsync(result.Message.Value, stoppingToken);
+                    var result = consumer.Consume(stoppingToken);
+                    await messageHandler.HandleAsync(result.Message.Value, stoppingToken);
                 }
             }
             catch (Exception ex)
             {
-                //обработка
+                Trace.WriteLine(ex.Message);
             }
         }
 

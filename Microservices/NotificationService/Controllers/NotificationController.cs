@@ -7,7 +7,7 @@ namespace NotificationService.Controllers
     public class NotificationController : ControllerBase
     {
         [HttpPost("new")]
-        public async Task<string> NewNotification([FromBody]string text)
+        public async Task<string> NewNotification([FromBody] string text)
         {
             return text;
         }

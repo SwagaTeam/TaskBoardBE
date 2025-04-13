@@ -455,3 +455,6 @@ nunit-*.xml
 *.sln.iml
 
 *.env
+
+.sonarqube
+.idea
