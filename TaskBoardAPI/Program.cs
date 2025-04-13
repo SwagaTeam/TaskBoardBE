@@ -5,9 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SharedLibrary.Middleware;
 using System.Collections;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Transforms;
 
 internal class Program
 {
@@ -15,7 +17,10 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        var configuration = builder.Configuration;
+
         ConfigureServices(builder.Services, builder.Configuration);
+
 
         var app = builder.Build();
 
@@ -65,10 +70,21 @@ internal class Program
         services.AddSingleton<IBlackListService, BlackListService>();
 
         AddAuthentication(services, configuration);
+
         AddSwagger(services);
 
         services.AddReverseProxy()
-            .LoadFromConfig(configuration.GetSection("ReverseProxy"));
+                 .LoadFromConfig(configuration.GetSection("ReverseProxy"))
+                 .AddTransforms(builderContext =>
+                 {
+                     builderContext.AddRequestTransform(async transformContext =>
+                     {
+                         if (transformContext.HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
+                         {
+                             transformContext.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(authHeader);
+                         }
+                     });
+                 });
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)

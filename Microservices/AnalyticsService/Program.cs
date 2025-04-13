@@ -1,35 +1,104 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SharedLibrary.Middleware;
+using System.Security.Claims;
+using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddCors(options =>
+internal class Program
 {
-    options.AddPolicy("AllowApiGateway", policy =>
+    private static void Main(string[] args)
     {
-        policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        ConfigureServices(builder.Services, builder.Configuration);
 
-var app = builder.Build();
+        var app = builder.Build();
 
-app.UseCors("AllowApiGateway");
+        app.UseCors("AllowApiGateway");
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
+
+    private static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowApiGateway", policy =>
+            {
+                policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+
+        AddAuthentication(services, configuration);
+
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(options =>
+        {
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Введите 'Bearer' [пробел] для авторизации",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+        });
+
+
+    }
+
+    private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)
+    {
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    RoleClaimType = ClaimTypes.Role
+                };
+            });
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

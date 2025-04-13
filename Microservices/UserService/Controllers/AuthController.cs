@@ -66,7 +66,7 @@ namespace UserService.Controllers
             }
         }
 
-        [ProducesResponseType<int>(StatusCodes.Status200OK)]
+        [ProducesResponseType<JsonProperty>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("login")]
         public async Task<IActionResult> Login(string email, string password)
