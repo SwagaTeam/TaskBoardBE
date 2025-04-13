@@ -1,6 +1,6 @@
 ﻿namespace Kafka.Messaging.Services.Abstractions
 {
-    public interface IMessageHandler<TMessage>
+    public interface IMessageHandler<in TMessage>
     {
         Task HandleAsync(TMessage message, CancellationToken cancellationToken);
     }

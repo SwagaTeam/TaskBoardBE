@@ -12,17 +12,9 @@ namespace UserService.Initializers
             options.UseNpgsql(conn));
         }
 
-        public static async void Migrate(UserDbContext context)
+        public static async Task Migrate(UserDbContext context)
         {
             await context.Database.MigrateAsync();
-
-            context.Users.Add(new UserEntity()
-            {
-                Id = 1,
-                Email = "user@email.ru",
-                Password = "password",
-                Username = "username"
-            });
 
             await context.SaveChangesAsync();
         }

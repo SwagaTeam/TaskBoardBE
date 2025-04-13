@@ -52,7 +52,7 @@ namespace Kafka.Messaging.Services.Implementations
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.TraceError(ex.Message);
             }
         }
 

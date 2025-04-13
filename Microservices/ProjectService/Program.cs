@@ -1,6 +1,7 @@
 using SharedLibrary.ProjectModels;
 using Kafka.Messaging;
 using Kafka.Messaging.Services.Implementations;
+using SharedLibrary.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
