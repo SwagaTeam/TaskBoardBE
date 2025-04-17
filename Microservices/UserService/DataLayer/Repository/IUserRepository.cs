@@ -9,7 +9,7 @@ namespace UserService.DataLayer.Repositories.Abstractions
         Task<int> Update(UserModel user);
         Task<int> Delete(int id);
         Task<UserModel?> GetById(int id);
-        Task<UserModel?> GetByEmail(string name);
+        Task<UserModel?> GetByEmail(string email);
         Task<IEnumerable<UserModel>> GetAll();
     }
 }

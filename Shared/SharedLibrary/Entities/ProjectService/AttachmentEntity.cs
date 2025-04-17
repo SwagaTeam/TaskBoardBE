@@ -14,7 +14,6 @@ namespace SharedLibrary.Entities.ProjectService
         public int CommentId { get; set; }
         public string FilePath { get; set; }
         public DateTime UploadedAt { get; set; }
-        public UserEntity User { get; set; }
         public CommentEntity Comment { get; set; }
     }
 }

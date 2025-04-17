@@ -1,6 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using ProjectService.BusinessLayer.Abstractions;
+using ProjectService.Services.MailService;
+using SharedLibrary.Auth;
+using SharedLibrary.Dapper;
+using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
+using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ProjectService.Controllers
 {
@@ -8,9 +15,77 @@ namespace ProjectService.Controllers
     [Route("project")]
     public class ProjectController : ControllerBase
     {
-
-        public ProjectController()
+        private readonly IProjectManager _projectManager;
+        private readonly IProjectLinkManager _projectLinkManager;
+        private readonly IEmailSender _emailSender;
+        private readonly IAuth _auth;
+        public ProjectController(IProjectManager projectManager, IProjectLinkManager projectLinkManager, IEmailSender emailSender, IAuth auth)
         {
+            _projectLinkManager = projectLinkManager;
+            _projectManager = projectManager;
+            _emailSender = emailSender;
+            _auth = auth;
+        }
+
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpPost("send-invite")]
+        public async Task<IActionResult> SendInvite([FromBody] InviteRequest request)
+        {
+            var link = await _projectLinkManager.Create(request.ProjectId);
+
+            link = $"{Request.Scheme}://{Request.Host}/join/{link}";
+
+            var project = await _projectManager.GetById(request.ProjectId);
+
+            var user = await UserRepository.GetUser(request.UserId);
+
+            if (user is null || project is null)
+                return BadRequest("Пользователя или проекта не существует");
+
+            await _emailSender.SendEmailAsync(
+                user.Email, 
+                "Приглашение в проект", 
+                $"Здравствуйте, {user.Username}, вас приглашают в проект {project.Name}.\n" +
+                $"Ссылка-приглашение: {link}");
+
+            return Ok(link);
+        }
+
+        [HttpGet("{url}")]
+        public async Task<IActionResult> GetProjectInfo(string link)
+        {
+            var projectLink = await _projectLinkManager.GetByLink(link);
+
+            if (projectLink == null)
+                return NotFound();
+
+            return Ok(new { projectLink.ProjectId, projectLink.Project!.Name });
+        }
+
+        [HttpPost("{url}/join")]
+        //TODO Аттрибут AUTHORIZED
+        public async Task<IActionResult> JoinProject([FromBody] string url)
+        {
+            var userId = _auth.GetCurrentUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
+            var projectLink = await _projectLinkManager.GetByLink(url);
+
+            if (projectLink == null)
+                return NotFound();
+
+            var alreadyIn = await _projectManager.IsUserInProject((int)userId, projectLink.ProjectId);
+
+            if (alreadyIn)
+                return BadRequest("Пользователь уже состоит в проекте");
+
+            await _projectManager.AddUserInProject((int)userId, projectLink.ProjectId);
+
+            return Ok("Пользователь добавлен в проект");
         }
 
         [ProducesResponseType<IEnumerable<ProjectModel>>(StatusCodes.Status200OK)]
@@ -38,7 +113,9 @@ namespace ProjectService.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] ProjectModel model)
         {
-            return Ok(model.Id);
+            var projectId = await _projectManager.Create(model);
+
+            return Ok(projectId);
         }
 
         [ProducesResponseType<int>(StatusCodes.Status200OK)]

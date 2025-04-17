@@ -10,6 +10,7 @@ namespace SharedLibrary.Entities.ProjectService
     public class ProjectEntity
     {
         public int Id { get; set; }
+        public string Key {  get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int IsPrivate { get; set; }
@@ -19,9 +20,11 @@ namespace SharedLibrary.Entities.ProjectService
         public DateTime ExpectedEndDate { get; set; }
         public int Priority { get; set; }
 
-        public List<BoardEntity> Boards { get; set; }
-        public List<DocumentEntity> Documents { get; set; }
-        public VisibilityLinkEntity VisibilityLink { get; set; }
+        public ICollection<BoardEntity> Boards { get; set; }
+        public ICollection<ItemEntity> Items { get; set; }
+        public ICollection<UserProjectEntity> UserProjects { get; set; }
+        public ICollection<DocumentEntity> Documents { get; set; }
+        public ICollection<VisibilityLinkEntity> VisibilityLinks { get; set; }
     }
 
 }

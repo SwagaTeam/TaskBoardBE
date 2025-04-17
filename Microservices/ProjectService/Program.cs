@@ -7,16 +7,28 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using ProjectService.Initializers;
+using ProjectService.DataLayer;
+using ProjectService.Services.MailService;
+using ProjectService.BusinessLayer.Abstractions;
+using ProjectService.BusinessLayer.Implementations;
+using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.DataLayer.Repositories.Implementations;
+using SharedLibrary.Auth;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
+
+        using var scope = app.Services.CreateScope();
+        using var appDbContext = scope.ServiceProvider.GetRequiredService<ProjectDbContext>();
+        await DbContextInitializer.Migrate(appDbContext);
 
         app.UseCors("AllowApiGateway");
 
@@ -27,8 +39,11 @@ internal class Program
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<JwtBlacklistMiddleware>();
+
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
@@ -39,6 +54,22 @@ internal class Program
 
     private static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)
     {
+        services.Configure<MailSettings>(
+           configuration.GetSection(nameof(MailSettings))
+        );
+
+        services.AddTransient<IMailService, MailService>();
+        services.AddScoped<IEmailSender, EmailSender>();
+
+        services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
+        services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
+        services.AddScoped<IProjectManager, ProjectManager>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IAuth, Auth>();
+
+        services.AddSingleton<IBlackListService, BlackListService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
         services.AddCors(options =>
         {
             options.AddPolicy("AllowApiGateway", policy =>
@@ -82,6 +113,7 @@ internal class Program
 
         services.AddProducer<TaskModel>(configuration.GetSection("Kafka:NotificationTask"));
         services.AddConsumer<TaskModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
+        DbContextInitializer.Initialize(services, configuration["ConnectionStrings:DefaultConnection"]!);
 
     }
 

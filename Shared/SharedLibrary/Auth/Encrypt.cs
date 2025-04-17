@@ -15,7 +15,7 @@ namespace SharedLibrary.Auth
                 password,
                 System.Text.Encoding.ASCII.GetBytes(salt),
                 KeyDerivationPrf.HMACSHA512,
-                500,
+                100_000,
                 64));
         }
     }

@@ -14,7 +14,7 @@ namespace SharedLibrary.Entities.ProjectService
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public List<ItemEntity> Items { get; set; }
+        public ICollection<ItemEntity> Items { get; set; }
         public BoardEntity Board { get; set; }
     }
 }

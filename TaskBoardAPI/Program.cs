@@ -17,10 +17,7 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var configuration = builder.Configuration;
-
         ConfigureServices(builder.Services, builder.Configuration);
-
 
         var app = builder.Build();
 

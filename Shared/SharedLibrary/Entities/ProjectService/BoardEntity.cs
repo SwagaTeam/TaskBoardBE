@@ -15,10 +15,11 @@ namespace SharedLibrary.Entities.ProjectService
         public DateTime CreatedAt { get; set; }
         public int StatusId { get; set; }
 
-        public List<ItemEntity> Items { get; set; }
-        public List<SprintEntity> Sprints { get; set; }
+        public ProjectEntity Project { get; set; }
 
-        public ProjectEntity Project { get; set; } = null!;
-        public StatusEntity Status { get; set; } = null!;
+        public StatusEntity Status { get; set; }
+
+        public ICollection<SprintEntity> Sprints { get; set; }
+
     }
 }

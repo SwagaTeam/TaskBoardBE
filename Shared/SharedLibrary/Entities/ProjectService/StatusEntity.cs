@@ -10,8 +10,11 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int Priority { get; set; }
+        public int Order { get; set; }
         public bool IsDone { get; set; }
         public bool IsRejected { get; set; }
+        public ICollection<ItemEntity> Items { get; set; }
+
+        public ICollection<BoardEntity> Boards { get; set; }
     }
 }

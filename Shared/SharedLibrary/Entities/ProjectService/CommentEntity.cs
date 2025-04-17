@@ -16,8 +16,9 @@ namespace SharedLibrary.Entities.ProjectService
         public string Text { get; set; } = "";
         public DateTime CreatedAt { get; set; }
 
-        public List<AttachmentEntity> Attachments { get; set; } = new List<AttachmentEntity>();
-        public UserEntity User { get; set; } = new UserEntity();
-        public ItemEntity Item { get; set; } = new ItemEntity();
+        public ItemEntity Item { get; set; }
+
+        public ICollection<AttachmentEntity> Attachments { get; set; }
+
     }
 }

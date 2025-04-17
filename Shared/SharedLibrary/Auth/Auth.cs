@@ -43,10 +43,12 @@ namespace SharedLibrary.Auth
             userRoles.Add("USER");
 
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, (user as UserModel)?.Id.ToString() ?? string.Empty),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, (user as UserModel)?.Id.ToString() ?? string.Empty),
+                    new Claim(ClaimTypes.NameIdentifier, (user as UserModel)?.Id.ToString() ?? string.Empty),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
 
             claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 

@@ -94,7 +94,6 @@ namespace UserService.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            var id = auth.GetCurrentUserId();
             var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (string.IsNullOrEmpty(token))

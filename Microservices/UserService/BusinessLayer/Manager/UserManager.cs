@@ -6,48 +6,48 @@ namespace UserService.BusinessLayer.Manager
 {
     public class UserManager : IUserManager
     {
-        private readonly IUserRepository userRepository;
-        private readonly IEncrypt encrypt;
+        private readonly IUserRepository _userRepository;
+        private readonly IEncrypt _encrypt;
 
         public UserManager(IUserRepository userRepository, IEncrypt encrypt)
         {
-            this.userRepository = userRepository;
-            this.encrypt = encrypt;
+            _userRepository = userRepository;
+            _encrypt = encrypt;
         }
 
         public async Task<int> Create(UserModel user)
         {
-            var existingUser = await userRepository.GetByEmail(user.Username);
+            var existingUser = await _userRepository.GetByEmail(user.Email);
 
             if (existingUser != null)
-                throw new InvalidOperationException("User with such Username already exist");
+                throw new InvalidOperationException("User with such Email already exist");
 
             user.Salt = Guid.NewGuid().ToString();
-            user.Password = encrypt.HashPassword(user.Password, user.Salt);
+            user.Password = _encrypt.HashPassword(user.Password, user.Salt);
 
-            var id = await userRepository.Create(user);
+            var id = await _userRepository.Create(user);
 
             return id;
         }
 
         public Task<int> Delete(int id)
         {
-            throw new NotImplementedException();
+            return _userRepository.Delete(id);
         }
 
         public Task<IEnumerable<UserModel>> GetAll()
         {
-            throw new NotImplementedException();
+            return _userRepository.GetAll();
         }
 
         public Task<UserModel?> GetById(int id)
         {
-            throw new NotImplementedException();
+            return _userRepository.GetById(id);
         }
 
-        public Task<UserModel?> GetByName(string name)
+        public Task<UserModel?> GetByEmail(string email)
         {
-            throw new NotImplementedException();
+            return _userRepository.GetByEmail(email);
         }
 
         public Task<int> Update(UserModel user)
@@ -57,7 +57,7 @@ namespace UserService.BusinessLayer.Manager
 
         public async Task<UserModel?> ValidateCredentials(string email, string password)
         {
-            var user = await userRepository.GetByEmail(email);
+            var user = await _userRepository.GetByEmail(email);
 
             if (user == null)
             {
@@ -65,7 +65,7 @@ namespace UserService.BusinessLayer.Manager
 
             }
 
-            var hashedPassword = encrypt.HashPassword(password, user.Salt);
+            var hashedPassword = _encrypt.HashPassword(password, user.Salt);
 
             if (user.Password != hashedPassword)
             {

@@ -10,5 +10,7 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int ProjectId { get; set; }
         public string Url { get; set; } = string.Empty;
+
+        public ProjectEntity Project { get; set; }
     }
 }

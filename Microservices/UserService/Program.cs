@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SharedLibrary.Auth;
+using SharedLibrary.Dapper;
 using SharedLibrary.Middleware;
 using System.Security.Claims;
 using System.Text;
@@ -27,6 +28,8 @@ internal class Program
 
         await DbContextInitializer.Migrate(appDbContext);
 
+        DapperOperations.connString = app.Configuration["ConnectionStrings:DefaultConnection"] ?? "";
+
         app.UseCors("AllowApiGateway");
 
         if (app.Environment.IsDevelopment())
@@ -35,6 +38,7 @@ internal class Program
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<JwtBlacklistMiddleware>();
 
         app.UseHttpsRedirection();
 
@@ -42,7 +46,7 @@ internal class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 
     public static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)

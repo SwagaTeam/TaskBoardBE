@@ -1,15 +1,14 @@
 ﻿using Dapper;
-using System.Data.SqlClient;
-
+using Npgsql;
 
 namespace SharedLibrary.Dapper
 {
-    public class DapperOperations
+    public static class DapperOperations
     {
-        private static readonly string connString = "";
+        public static string connString = "Host=localhost;Port=5433;Database=users_db;Username=postgres;Password=postgres";
         public static async Task ExecuteAsync(string sql, object model)
         {
-            using (var connection = new SqlConnection(connString))
+            using (var connection = new NpgsqlConnection(connString))
             {
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(sql, model);
@@ -18,7 +17,7 @@ namespace SharedLibrary.Dapper
 
         public static async Task<T?> QueryScalarAsync<T>(string sql, object model)
         {
-            using (var connection = new SqlConnection(connString))
+            using (var connection = new NpgsqlConnection(connString))
             {
                 await connection.OpenAsync();
 
@@ -28,7 +27,7 @@ namespace SharedLibrary.Dapper
 
         public static async Task<IEnumerable<T>> QueryAsync<T>(string sql, object model)
         {
-            using (var connection = new SqlConnection(connString))
+            using (var connection = new NpgsqlConnection(connString))
             {
                 await connection.OpenAsync();
 

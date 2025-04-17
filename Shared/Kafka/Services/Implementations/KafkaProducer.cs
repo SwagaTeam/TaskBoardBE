@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Kafka.Messaging.Services.Implementations
 {
-    public class KafkaProducer<TMessage> : IKafkaProducer<TMessage>
+    public class KafkaProducer<TMessage> : IKafkaProducer<TMessage>, IDisposable
     {
         private readonly IProducer<string, TMessage> producer;
         private readonly string topic;

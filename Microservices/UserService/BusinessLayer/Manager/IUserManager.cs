@@ -8,7 +8,7 @@ namespace UserService.BusinessLayer.Manager
         Task<int> Update(UserModel user);
         Task<int> Delete(int id);
         Task<UserModel?> GetById(int id);
-        Task<UserModel?> GetByName(string name);
+        Task<UserModel?> GetByEmail(string email);
         Task<IEnumerable<UserModel>> GetAll();
         Task<UserModel?> ValidateCredentials(string email, string password);
     }
