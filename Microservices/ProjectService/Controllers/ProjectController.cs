@@ -70,7 +70,7 @@ namespace ProjectService.Controllers
         {
             var userId = _auth.GetCurrentUserId();
 
-            if (userId == null)
+            if (userId == -1 || userId is null)
                 return Unauthorized();
 
             var projectLink = await _projectLinkManager.GetByLink(url);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
+using SharedLibrary.Constants;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
@@ -19,7 +20,8 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             var result = await _projectDbContext.UserProjects.AddAsync(new UserProjectEntity()
             {
                 ProjectId = projectId,
-                UserId = userId
+                UserId = userId,
+                Role = Roles.MEMBER
             });
 
             await _projectDbContext.SaveChangesAsync();
@@ -36,7 +38,8 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             await _projectDbContext.UserProjects.AddAsync(new UserProjectEntity()
             {
                 ProjectId = result.Entity.Id,
-                UserId = userId
+                UserId = userId,
+                Role = Roles.ADMIN
             });
 
             await _projectDbContext.SaveChangesAsync();
