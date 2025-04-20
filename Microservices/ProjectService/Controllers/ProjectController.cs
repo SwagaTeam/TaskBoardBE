@@ -35,11 +35,11 @@ namespace ProjectService.Controllers
         {
             var link = await _projectLinkManager.Create(request.ProjectId);
 
-            link = $"{Request.Scheme}://{Request.Host}/join/{link}";
+            link = $"{Request.Scheme}://{Request.Host}/project/invite/{link}";
 
             var project = await _projectManager.GetById(request.ProjectId);
 
-            var user = await UserRepository.GetUser(request.UserId);
+            var user = await UserRepository.GetUserByEmail (request.Email);
 
             if (user is null || project is null)
                 return BadRequest("Пользователя или проекта не существует");
@@ -53,7 +53,7 @@ namespace ProjectService.Controllers
             return Ok(link);
         }
 
-        [HttpGet("{url}")]
+        [HttpGet("invite/{link}")]
         public async Task<IActionResult> GetProjectInfo(string link)
         {
             var projectLink = await _projectLinkManager.GetByLink(link);
@@ -64,9 +64,9 @@ namespace ProjectService.Controllers
             return Ok(new { projectLink.ProjectId, projectLink.Project!.Name });
         }
 
-        [HttpPost("{url}/join")]
+        [HttpPost("invite/{url}/join")]
         //TODO Аттрибут AUTHORIZED
-        public async Task<IActionResult> JoinProject([FromBody] string url)
+        public async Task<IActionResult> JoinProject(string url)
         {
             var userId = _auth.GetCurrentUserId();
 

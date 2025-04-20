@@ -8,7 +8,7 @@ namespace SharedLibrary.ProjectModels
 {
     public class InviteRequest
     {
-        public int UserId { get; set; }
+        public string Email { get; set; }
         public int ProjectId { get; set; }
     }
 }

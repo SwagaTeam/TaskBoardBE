@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.Mapper;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
@@ -38,10 +39,15 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         public async Task<ProjectLinkModel?> GetByLink(string link)
         {
             var projectLink = await _context.VisibilityLinks.FirstOrDefaultAsync(x=>x.Url == link);
+
             if (projectLink == null)
                 return null;
 
-            return new ProjectLinkModel() { ProjectId = projectLink.ProjectId, URL = projectLink.Url };
+            var project = await _context.Projects.FindAsync(projectLink.ProjectId);
+            
+
+
+            return new ProjectLinkModel() { ProjectId = projectLink.ProjectId, URL = projectLink.Url , Project = ProjectMapper.ProjectEntityToProjectModel(project)};
         }
     }
 }
