@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SharedLibrary.Entities.ProjectService
@@ -20,11 +21,12 @@ namespace SharedLibrary.Entities.ProjectService
         public DateTime ExpectedEndDate { get; set; }
         public int Priority { get; set; }
 
-        public ICollection<BoardEntity> Boards { get; set; }
-        public ICollection<ItemEntity> Items { get; set; }
-        public ICollection<UserProjectEntity> UserProjects { get; set; }
-        public ICollection<DocumentEntity> Documents { get; set; }
-        public ICollection<VisibilityLinkEntity> VisibilityLinks { get; set; }
+        public virtual ICollection<BoardEntity> Boards { get; set; }
+        public virtual ICollection<ItemEntity> Items { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<UserProjectEntity> UserProjects { get; set; }
+        public virtual ICollection<DocumentEntity> Documents { get; set; }
+        public virtual ICollection<VisibilityLinkEntity> VisibilityLinks { get; set; }
     }
 
 }

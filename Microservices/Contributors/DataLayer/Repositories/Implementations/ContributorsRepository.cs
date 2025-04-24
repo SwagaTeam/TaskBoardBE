@@ -9,6 +9,8 @@ public class ContributorsRepository(ContributorsDbContext contributorsDbContext)
     public async Task<ICollection<UserProjectEntity>> GetByProjectId(int projectId)
     {
         return await contributorsDbContext.UserProjects
+            .Include(x=>x.Project)
+            .Include(x=>x.Role)
             .Where(x=>x.ProjectId == projectId)
             .ToListAsync();
     }

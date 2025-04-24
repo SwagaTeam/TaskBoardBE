@@ -39,8 +39,9 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 ProjectId = result.Entity.Id,
                 UserId = userId,
+                Role = new RoleEntity() {Role = "Создатель"},
                 Privilege = Privilege.ADMIN
-            });
+            }); 
 
             await _projectDbContext.SaveChangesAsync();
 

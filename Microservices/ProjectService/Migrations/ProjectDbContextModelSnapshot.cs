@@ -288,6 +288,23 @@ namespace ProjectService.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.RoleEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.SprintEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -344,31 +361,51 @@ namespace ProjectService.Migrations
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.UserProjectEntity", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Privilege")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId", "ProjectId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("UserProjects");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.VisibilityLinkEntity", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("ProjectId", "Url");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("VisibilityLinks");
                 });
@@ -539,7 +576,15 @@ namespace ProjectService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SharedLibrary.Entities.ProjectService.RoleEntity", "Role")
+                        .WithMany("UserProjects")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Project");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.VisibilityLinkEntity", b =>
@@ -601,6 +646,11 @@ namespace ProjectService.Migrations
                     b.Navigation("UserProjects");
 
                     b.Navigation("VisibilityLinks");
+                });
+
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.RoleEntity", b =>
+                {
+                    b.Navigation("UserProjects");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.StatusEntity", b =>

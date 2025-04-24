@@ -12,11 +12,11 @@ namespace ProjectService.DataLayer
         public DbSet<BoardEntity> Boards => Set<BoardEntity>();
         public DbSet<CommentEntity> Comments => Set<CommentEntity>();
 
-        // Разные типы задач - Items
         public DbSet<ItemEntity> Items => Set<ItemEntity>();
         public DbSet<ItemTypeEntity> ItemTypes => Set<ItemTypeEntity>();
         public DbSet<SprintEntity> Sprints => Set<SprintEntity>();
         public DbSet<StatusEntity> Statuses => Set<StatusEntity>();
+        public DbSet<RoleEntity> Roles => Set<RoleEntity>();
 
         public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
         public DbSet<UserProjectEntity> UserProjects => Set<UserProjectEntity>();
@@ -28,12 +28,25 @@ namespace ProjectService.DataLayer
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<UserProjectEntity>()
-                        .HasKey(up => new { up.UserId, up.ProjectId });
+                .HasKey(up => new { up.Id});
 
-            modelBuilder.Entity<VisibilityLinkEntity>()
-                        .HasKey(v => new { v.ProjectId, v.Url });
+            // Устанавливаем первичный ключ для UserProjectEntity
+            modelBuilder.Entity<UserProjectEntity>()
+                .HasKey(up => new { up.Id });
 
-            // projects -> links (project_id)
+            // Связь между UserProjectEntity и ProjectEntity
+            modelBuilder.Entity<UserProjectEntity>()
+                .HasOne(up => up.Project) // Проект для UserProject
+                .WithMany(p => p.UserProjects) // Проект может иметь много UserProject
+                .HasForeignKey(up => up.ProjectId) // Внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); // Устанавливаем поведение при удалении, можно настроить по желанию
+
+            modelBuilder.Entity<UserProjectEntity>()
+                .HasOne(up => up.Role)
+                .WithMany(r => r.UserProjects)
+                .HasForeignKey(up => up.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<VisibilityLinkEntity>()
                 .HasOne(v => v.Project)
                 .WithMany(p => p.VisibilityLinks)
@@ -50,12 +63,6 @@ namespace ProjectService.DataLayer
                 .HasOne<StatusEntity>()
                 .WithMany(s => s.Boards)
                 .HasForeignKey(b => b.StatusId);
-
-            // users_projects -> projects (project_id)
-            modelBuilder.Entity<UserProjectEntity>()
-                .HasOne(up => up.Project)
-                .WithMany(p => p.UserProjects)
-                .HasForeignKey(up => up.ProjectId);
 
             // items -> items (parent_id)
             modelBuilder.Entity<ItemEntity>()

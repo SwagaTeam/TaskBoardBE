@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedLibrary.Entities.ProjectService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,6 @@ namespace SharedLibrary.Entities.UserService
         public string Password { get; set; } = string.Empty;
         public string Salt { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        //public ICollection<UserProjectEntity> UserProjects { get; set; } = new List<UserProjectEntity>();
     }
 }

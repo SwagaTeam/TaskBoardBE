@@ -142,7 +142,7 @@ internal class Program
             options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
             options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
             options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
-            options.AddServer(new OpenApiServer{ Url = "https://localhost:7004", Description = "Contributors Service" });
+            options.AddServer(new OpenApiServer { Url = "https://localhost:7004", Description = "Contributors Service" });
         });
     }
 }

@@ -3,6 +3,7 @@ using System.Text;
 using Contributors.BusinessLayer.Abstractions;
 using Contributors.BusinessLayer.Implementations;
 using Contributors.DataLayer.Repositories.Abstractions;
+using Contributors.DataLayer.Repositories.Implementations;
 using Contributors.Initilizers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -45,7 +46,7 @@ class Program
     {
         services.AddScoped<IAuth, Auth>();
         services.AddScoped<IContributorsManager, ContributorsManager>();
-        services.AddScoped<IContributorsRepository, IContributorsRepository>();
+        services.AddScoped<IContributorsRepository, ContributorsRepository>();
 
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
