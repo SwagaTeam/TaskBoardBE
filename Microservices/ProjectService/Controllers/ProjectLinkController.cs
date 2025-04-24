@@ -8,14 +8,10 @@ namespace ProjectService.Controllers
 {
     [ApiController]
     [Route("project-link")]
-    public class ProjectLinkController : ControllerBase
+    public class ProjectLinkController(IProjectLinkManager projectLinkManager, IProjectManager projectManager)
+        : ControllerBase
     {
-        private readonly IProjectLinkManager _projectLinkManager;
-        private readonly IProjectManager _projectManager;
-        public ProjectLinkController(IProjectLinkManager projectLinkManager, IProjectManager projectManager)
-        {
-            _projectLinkManager = projectLinkManager;
-            _projectManager = projectManager;
-        }
+        private readonly IProjectLinkManager _projectLinkManager = projectLinkManager;
+        private readonly IProjectManager _projectManager = projectManager;
     }
 }

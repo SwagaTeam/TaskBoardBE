@@ -11,13 +11,15 @@ namespace SharedLibrary.Dapper.DapperRepositories
     {
         public static async Task<UserModel> GetUser(int id)
         {
-            var result = await DapperOperations.QueryAsync<UserModel>($"select * from \"Users\" u where \"Id\" = {id}", new { Id = id });
+            var result = await DapperOperations
+                .QueryAsync<UserModel>($"select * from \"Users\" u where \"Id\" = {id}", new { Id = id });
             return result.FirstOrDefault() ?? new UserModel();
         }
 
         public static async Task<UserModel> GetUserByEmail(string email)
         {
-            var result = await DapperOperations.QueryAsync<UserModel>($"select * from \"Users\" u where \"Email\" = \'{email}\'", new { Email = email });
+            var result = await DapperOperations
+                .QueryAsync<UserModel>($"select * from \"Users\" u where \"Email\" = \'{email}\'", new { Email = email });
             return result.FirstOrDefault() ?? new UserModel();
         }
     }

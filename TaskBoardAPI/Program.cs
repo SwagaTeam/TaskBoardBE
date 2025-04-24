@@ -33,6 +33,7 @@ internal class Program
                 c.SwaggerEndpoint("https://localhost:7001/swagger/v1/swagger.json", "Project Service");
                 c.SwaggerEndpoint("https://localhost:7002/swagger/v1/swagger.json", "User Service");
                 c.SwaggerEndpoint("https://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
+                c.SwaggerEndpoint("https://localhost:7004/swagger/v1/swagger.json", "Contributors Service");
             });
         }
 
@@ -141,6 +142,7 @@ internal class Program
             options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
             options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
             options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
+            options.AddServer(new OpenApiServer{ Url = "https://localhost:7004", Description = "Contributors Service" });
         });
     }
 }

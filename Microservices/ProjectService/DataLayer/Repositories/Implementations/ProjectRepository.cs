@@ -21,7 +21,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 ProjectId = projectId,
                 UserId = userId,
-                Role = Roles.MEMBER
+                Privilege = Privilege.MEMBER
             });
 
             await _projectDbContext.SaveChangesAsync();
@@ -39,7 +39,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 ProjectId = result.Entity.Id,
                 UserId = userId,
-                Role = Roles.ADMIN
+                Privilege = Privilege.ADMIN
             });
 
             await _projectDbContext.SaveChangesAsync();

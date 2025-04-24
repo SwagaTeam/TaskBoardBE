@@ -10,8 +10,10 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int UserId { get; set; }
         public int ProjectId { get; set; }
-        public int Role { get; set; }
+        public int Privilege { get; set; }
+        public int RoleId { get; set; }
 
         public ProjectEntity Project { get; set; } = null!;
+        public RoleEntity Role { get; set; }
     }
 }
