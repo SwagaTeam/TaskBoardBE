@@ -111,8 +111,8 @@ internal class Program
             });
         });
 
-        services.AddProducer<TaskModel>(configuration.GetSection("Kafka:NotificationTask"));
-        services.AddConsumer<TaskModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
+        services.AddProducer<ItemModel>(configuration.GetSection("Kafka:NotificationTask"));
+        services.AddConsumer<ItemModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
         DbContextInitializer.Initialize(services, configuration["ConnectionStrings:DefaultConnection"]!);
 
     }

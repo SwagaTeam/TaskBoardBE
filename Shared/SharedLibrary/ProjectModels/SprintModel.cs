@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace SharedLibrary.ProjectModels
 {
-    public class ProjectModel
+    public class SprintModel
     {
         public int Id { get; set; }
-        public string Key { get; set; }
+        public int BoardId { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsPrivate { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime ExpectedEndDate { get; set; }
-        public int Priority { get; set; }
+        public DateTime EndDate { get; set; }
+
         [JsonIgnore]
-        public virtual ICollection<UserProjectModel> UserProjects { get; set; }
+        public ICollection<ItemModel> Items { get; set; }
+
+        [JsonIgnore]
+        public BoardEntity Board { get; set; }
     }
 }

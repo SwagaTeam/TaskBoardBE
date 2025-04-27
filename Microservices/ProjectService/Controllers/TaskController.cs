@@ -9,28 +9,28 @@ namespace ProjectService.Controllers
     [Route("task")]
     public class TaskController : ControllerBase
     {
-        private readonly IKafkaProducer<TaskModel> kafkaProducer;
-        public TaskController(IKafkaProducer<TaskModel> kafkaProducer)
+        private readonly IKafkaProducer<ItemModel> kafkaProducer;
+        public TaskController(IKafkaProducer<ItemModel> kafkaProducer)
         {
             this.kafkaProducer = kafkaProducer;
         }
 
-        [ProducesResponseType<IEnumerable<TaskModel>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<ItemModel>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("get")]
         public async Task<IActionResult> GetAll()
         {
-            List<TaskModel> tasks = new List<TaskModel>();
+            List<ItemModel> tasks = new List<ItemModel>();
             return Ok(tasks);
         }
 
-        [ProducesResponseType<TaskModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            TaskModel task = new TaskModel();
+            ItemModel task = new ItemModel();
             return Ok(task);
         }
 
@@ -38,7 +38,7 @@ namespace ProjectService.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] TaskModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] ItemModel model, CancellationToken cancellationToken)
         {
             await kafkaProducer.ProduceAsync(model, cancellationToken);
             return Ok(model.Id);

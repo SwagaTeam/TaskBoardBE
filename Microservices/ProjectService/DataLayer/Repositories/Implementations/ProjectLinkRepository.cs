@@ -47,7 +47,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             
 
 
-            return new ProjectLinkModel() { ProjectId = projectLink.ProjectId, URL = projectLink.Url , Project = ProjectMapper.ProjectEntityToProjectModel(project)};
+            return new ProjectLinkModel() { ProjectId = projectLink.ProjectId, URL = projectLink.Url , Project = ProjectMapper.ToModel(project)};
         }
     }
 }

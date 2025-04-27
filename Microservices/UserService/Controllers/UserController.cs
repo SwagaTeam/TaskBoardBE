@@ -18,7 +18,7 @@ namespace UserService.Controllers
             return Ok(users);
         }
 
-        [ProducesResponseType<TaskModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("{id}")]

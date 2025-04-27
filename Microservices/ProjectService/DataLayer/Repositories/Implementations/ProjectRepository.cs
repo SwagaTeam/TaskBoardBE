@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
 using SharedLibrary.Constants;
@@ -31,7 +32,11 @@ namespace ProjectService.DataLayer.Repositories.Implementations
 
         public async Task<int> Create(ProjectModel project, int userId)
         {
-            var result = await _projectDbContext.Projects.AddAsync(ProjectMapper.ProjectModelToProjectEntity(project));
+            var projectEntity = ProjectMapper.ToEntity(project);
+
+            projectEntity.CreatedAt = DateTime.UtcNow;
+
+            var result = await _projectDbContext.Projects.AddAsync(projectEntity);
 
             await _projectDbContext.SaveChangesAsync();
 
@@ -48,19 +53,64 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return project.Id;
         }
 
-        public Task<int> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ProjectModel?> GetById(int id)
+        public async Task<int> Delete(int id)
         {
             var project = await _projectDbContext.Projects.FindAsync(id);
+
+            if (project != null)
+            {
+                _projectDbContext.Projects.Remove(project);
+                await _projectDbContext.SaveChangesAsync();
+                return id;
+            }
+
+            return -1;
+        }
+
+        public async Task<ProjectModel?> GetByBoardId(int id)
+        {
+            var project = await _projectDbContext.Projects
+                .Include(x => x.Boards)
+                .FirstOrDefaultAsync(x => x.Boards.Any(x=>x.Id == id));
 
             if (project is null)
                 return null;
 
-            return ProjectMapper.ProjectEntityToProjectModel(project);
+            return ProjectMapper.ToModel(project);
+        }
+
+        public async Task<ProjectModel?> GetById(int id)
+        {
+            var project = await _projectDbContext.Projects
+                .Include(x=>x.UserProjects)
+                .FirstOrDefaultAsync(x=>x.Id == id);
+
+            if (project is null)
+                return null;
+
+            return ProjectMapper.ToModel(project);
+        }
+
+        public async Task<bool> IsUserAdmin(int userId, int projectId)
+        {
+            var userProject = await _projectDbContext.UserProjects
+                .FirstOrDefaultAsync(x => x.ProjectId == projectId 
+                                       && x.UserId == userId 
+                                       && x.Privilege == Privilege.ADMIN);
+
+            return userProject is not null;
+        }
+
+        public async Task<bool> IsUserCanView(int userId, int projectId)
+        {
+            var userProject = await _projectDbContext.UserProjects
+                .Include(x=>x.Project)
+                .FirstOrDefaultAsync(x => x.ProjectId == projectId
+                                       && x.UserId == userId
+                                       && (Enumerable.Range(0, 3).Contains(x.Privilege)
+                                       || x.Project.IsPrivate == false));
+
+            return userProject is not null;
         }
 
         public async Task<bool> IsUserInProject(int userId, int projectId)

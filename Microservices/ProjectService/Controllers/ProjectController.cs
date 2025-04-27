@@ -6,6 +6,7 @@ using SharedLibrary.Dapper;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
+using SharedLibrary.ProjectModels.ViewModels;
 using System;
 using System.Reflection.Metadata.Ecma335;
 
