@@ -14,6 +14,7 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.BusinessLayer.Implementations;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.DataLayer.Repositories.Implementations;
+using ProjectService.Models;
 using ProjectService.Validator;
 using SharedLibrary.Auth;
 
@@ -68,7 +69,7 @@ internal class Program
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemManager, ItemManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
-        services.AddScoped<ICreateItemValidator, CreateItemValidator>();
+        services.AddScoped<ICreateItemManager, CreateItemManager>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();

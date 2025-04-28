@@ -6,11 +6,19 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.Validator;
 
-public class CreateItemValidator(IBoardManager boardManager, IProjectManager projectManager, IAuth authManager)
-    : AbstractValidator<CreateItemModel>, ICreateItemValidator
+public class CreateItemValidator
+    : AbstractValidator<CreateItemModel>
 {
-    public async Task CheckValidAsync(CreateItemModel createItemModel, CancellationToken token)
+    private readonly IProjectManager projectManager;
+    private readonly IBoardManager boardManager;
+    private readonly IAuth authManager;
+    
+    public CreateItemValidator(IBoardManager boardManager, IProjectManager projectManager, IAuth authManager)
     {
+        this.boardManager = boardManager;
+        this.projectManager = projectManager;
+        this.authManager = authManager;
+        
         RuleFor(x => x)
             .MustAsync(IsUserMember)
             .WithMessage("Пользователь не имеет прав на создание задач");
@@ -25,7 +33,8 @@ public class CreateItemValidator(IBoardManager boardManager, IProjectManager pro
         var currentId = authManager.GetCurrentUserId();
         if (currentId is null) return false;
 
-        return await projectManager.IsUserViewer((int)currentId, (int)item.Item.ProjectId);
+        var a = await projectManager.IsUserViewer((int)currentId, (int)item.Item.ProjectId);
+        return a;
     }
 
     private async Task<bool> BeValidBoard(CreateItemModel item, CancellationToken cancellation)

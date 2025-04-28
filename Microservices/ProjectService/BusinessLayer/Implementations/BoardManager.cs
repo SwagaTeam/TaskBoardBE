@@ -86,13 +86,12 @@ namespace ProjectService.BusinessLayer.Implementations
         public async Task<BoardModel?> GetById(int id)
         {
             var userId = _auth.GetCurrentUserId();
-
+            var board = await _boardRepository.GetById(id);
+            if (board is null) throw new Exception($"Доски с id {id} не существует");
             var userProject = await _projectRepository.GetByBoardId(id);
-
-            if (await _projectRepository.IsUserCanView((int)userId, userProject.Id))
+            if (userProject is not null && await _projectRepository.IsUserCanView((int)userId, userProject.Id))
             {
-                var board = await _boardRepository.GetById(id);
-                return board is null ? null : BoardMapper.ToModel(board);
+                return BoardMapper.ToModel(board);
             }
 
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет доступа к проекту");

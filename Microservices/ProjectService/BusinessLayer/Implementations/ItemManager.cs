@@ -8,12 +8,12 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ItemManager(IItemRepository itemRepository, ICreateItemValidator createItemValidator,
+public class ItemManager(IItemRepository itemRepository, ICreateItemManager createItemManager,
     IKafkaProducer<ItemModel> kafkaProducer) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
-        await createItemValidator.CheckValidAsync(createItemModel, token);
+        await createItemManager.Validate(createItemModel);
         var item = createItemModel.Item;
         var entity = ItemMapper.ItemToEntity(item);
         await itemRepository.CreateAsync(entity);

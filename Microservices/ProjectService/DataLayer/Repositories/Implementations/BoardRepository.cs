@@ -39,10 +39,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             var board = await _projectDbContext.Boards
                                 .Include(x=>x.Status)
                                 .FirstOrDefaultAsync(x=>x.Id == id);
-
-            if (board == null)
-                return null;
-
+            
             return board;
         }
 
