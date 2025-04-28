@@ -1,0 +1,50 @@
+﻿using SharedLibrary.Entities.ProjectService;
+
+namespace ProjectService.Mapper;
+
+public class ItemMapper
+{
+    public static ItemEntity ItemToEntity(ItemModel item)
+    {
+        return new ItemEntity
+        {
+            Id = item.Id,
+            BusinessId = item.BusinessId,
+            ParentId = item.ParentId,
+            ProjectId = item.ProjectId,
+            ProjectItemNumber = item.ProjectItemNumber,
+            Title = item.Title,
+            Description = item.Description,
+            CreatedAt = item.CreatedAt,
+            UpdatedAt = item.UpdatedAt,
+            StartDate = item.StartDate,
+            ExpectedEndDate = item.ExpectedEndDate,
+            Priority = item.Priority,
+            ItemTypeId = item.ItemTypeId,
+            StatusId = item.StatusId,
+            IsArchived = item.IsArchived,
+        };
+    }
+
+    public static ItemModel ItemToModel(ItemEntity item)
+    {
+        return new ItemModel
+        {
+            Id = item.Id,
+            BusinessId = item.BusinessId,
+            ParentId = item.ParentId,
+            ProjectId = item.ProjectId,
+            ProjectItemNumber = item.ProjectItemNumber,
+            Title = item.Title,
+            Description = item.Description,
+            CreatedAt = item.CreatedAt,
+            UpdatedAt = item.UpdatedAt,
+            StartDate = item.StartDate,
+            ExpectedEndDate = item.ExpectedEndDate,
+            Priority = item.Priority,
+            ItemTypeId = item.ItemTypeId,
+            StatusId = item.StatusId,
+            IsArchived = item.IsArchived,
+        };
+    }
+}

@@ -263,8 +263,8 @@ namespace ProjectService.Migrations
                     b.Property<DateTime>("ExpectedEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("IsPrivate")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Key")
                         .IsRequired()

@@ -12,8 +12,8 @@ using ProjectService.DataLayer;
 namespace ProjectService.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250424162404_initial_create")]
-    partial class initial_create
+    [Migration("20250428111720_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,8 +266,8 @@ namespace ProjectService.Migrations
                     b.Property<DateTime>("ExpectedEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("IsPrivate")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Key")
                         .IsRequired()
