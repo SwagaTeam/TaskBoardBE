@@ -149,9 +149,7 @@ namespace ProjectService.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StatusId = table.Column<int>(type: "integer", nullable: false),
-                    ProjectId1 = table.Column<int>(type: "integer", nullable: false),
-                    StatusId1 = table.Column<int>(type: "integer", nullable: false)
+                    StatusId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,20 +161,8 @@ namespace ProjectService.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Boards_Projects_ProjectId1",
-                        column: x => x.ProjectId1,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Boards_Statuses_StatusId",
                         column: x => x.StatusId,
-                        principalTable: "Statuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Boards_Statuses_StatusId1",
-                        column: x => x.StatusId1,
                         principalTable: "Statuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -362,19 +348,9 @@ namespace ProjectService.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Boards_ProjectId1",
-                table: "Boards",
-                column: "ProjectId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Boards_StatusId",
                 table: "Boards",
                 column: "StatusId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Boards_StatusId1",
-                table: "Boards",
-                column: "StatusId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ItemId",
