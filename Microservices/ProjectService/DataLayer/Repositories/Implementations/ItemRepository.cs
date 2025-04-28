@@ -8,7 +8,9 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 {
     public async Task<ItemEntity> GetByIdAsync(int id)
     {
-        var item = await context.Items.FindAsync(id);
+        var item = await context.Items
+            .Include(x=>x.ItemType)
+            .FirstOrDefaultAsync(x=>x.Id==id);
         return item;
     }
 
