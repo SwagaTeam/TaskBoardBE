@@ -7,29 +7,29 @@ namespace ProjectService.Mapper
     {
         public static BoardEntity ToEntity(BoardModel model)
         {
-            return new BoardEntity()
+            return new BoardEntity
             {
                 Name = model.Name,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,
                 StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
-                Status = StatusMapper.ToEntity(model.Status),
+                Status = model.Status is null ? null : StatusMapper.ToEntity(model.Status),
             };
         }
 
         public static BoardModel ToModel(BoardEntity model)
         {
-            return new BoardModel()
+            return new BoardModel
             {
                 Name = model.Name,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,
                 StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
-                Project = ProjectMapper.ToModel(model.Project),
+                Project = model.Project is null ? null : ProjectMapper.ToModel(model.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
-                Status = StatusMapper.ToModel(model.Status)
+                Status = model.Status is null ? null : StatusMapper.ToModel(model.Status)
             };
         }
     }

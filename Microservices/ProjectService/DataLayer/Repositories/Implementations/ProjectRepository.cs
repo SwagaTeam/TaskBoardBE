@@ -40,12 +40,13 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 ProjectId = result.Entity.Id,
                 UserId = userId,
-                Role = new RoleEntity() {Role = "Создатель"},
+                RoleId = DefaultRoles.CREATOR,
                 Privilege = Privilege.ADMIN
             }); 
 
             await _projectDbContext.SaveChangesAsync();
         }
+
 
         public async Task Delete(int id)
         {

@@ -72,24 +72,14 @@ namespace ProjectService.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProjectId1")
-                        .HasColumnType("integer");
-
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StatusId1")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjectId1");
-
                     b.HasIndex("StatusId");
-
-                    b.HasIndex("StatusId1");
 
                     b.ToTable("Boards");
                 });
@@ -467,27 +457,15 @@ namespace ProjectService.Migrations
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.BoardEntity", b =>
                 {
-                    b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", null)
+                    b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", "Project")
                         .WithMany("Boards")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", null)
+                    b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", "Status")
                         .WithMany("Boards")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

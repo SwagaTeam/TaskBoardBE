@@ -54,13 +54,13 @@ namespace ProjectService.DataLayer
 
             // projects -> boards (project_id)
             modelBuilder.Entity<BoardEntity>()
-                .HasOne<ProjectEntity>()
+                .HasOne(b=>b.Project)
                 .WithMany(p => p.Boards)
                 .HasForeignKey(b => b.ProjectId);
 
             // status -> boards (status_id)
             modelBuilder.Entity<BoardEntity>()
-                .HasOne<StatusEntity>()
+                .HasOne(b=>b.Status)
                 .WithMany(s => s.Boards)
                 .HasForeignKey(b => b.StatusId);
 

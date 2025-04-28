@@ -17,7 +17,6 @@ public class ItemManager(IItemRepository itemRepository, ICreateItemValidator cr
         var item = createItemModel.Item;
         var entity = ItemMapper.ItemToEntity(item);
         await itemRepository.CreateAsync(entity);
-        await kafkaProducer.ProduceAsync(item, token);
         return entity.Id;
     }
 

@@ -12,8 +12,8 @@ using ProjectService.DataLayer;
 namespace ProjectService.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250428110602_is_private_bool")]
-    partial class is_private_bool
+    [Migration("20250428134023_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
