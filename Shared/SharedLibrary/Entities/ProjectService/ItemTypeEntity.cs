@@ -10,6 +10,6 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int Id { get; set; }
         public string Level { get; set; }
-        public ICollection<ItemEntity> Items { get; set; }
+        public ICollection<ItemEntity> Items { get; set; } = new List<ItemEntity>();
     }
 }

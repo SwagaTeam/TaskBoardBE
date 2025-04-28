@@ -1,6 +1,7 @@
-﻿namespace SharedLibrary.Constants;
-
-public class DefaultRoles
+﻿namespace SharedLibrary.Constants
 {
-    
+    public static class DefaultRoles
+    {
+        public static int CREATOR = 1;
+    }
 }

@@ -11,11 +11,11 @@ public class BoardModel
     public int StatusId { get; set; }
 
     [JsonIgnore]
-    public ProjectModel? Project { get; set; } = null;
+    public ProjectModel? Project { get; set; }
 
     [JsonIgnore]
-    public StatusModel? Status { get; set; } = null;
+    public StatusModel? Status { get; set; }
 
     [JsonIgnore]
-    public ICollection<SprintModel>? Sprints { get; set; } = null;
+    public ICollection<SprintModel>? Sprints { get; set; } = new List<SprintModel>();
 }
