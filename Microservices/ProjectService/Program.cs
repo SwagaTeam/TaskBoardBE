@@ -71,6 +71,9 @@ internal class Program
         services.AddScoped<IBoardRepository, BoardRepository>();
         services.AddScoped<ICreateItemManager, CreateItemManager>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IBoardManager, BoardManager>();
+        services.AddScoped<IBoardRepository, BoardRepository>();
+
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

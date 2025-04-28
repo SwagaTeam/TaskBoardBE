@@ -6,7 +6,7 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Initializers
 {
-    public class DbContextInitializer
+    public static class DbContextInitializer
     {
         public static void Initialize(IServiceCollection services, string conn)
         {

@@ -46,7 +46,7 @@ namespace ProjectService.BusinessLayer.Implementations
                 Name = board.Name,
                 IsDone = false,
                 IsRejected = false,
-                Order = lastOrder++
+                Order = lastOrder + 1
             };
 
             board.CreatedAt = DateTime.UtcNow;
@@ -113,11 +113,11 @@ namespace ProjectService.BusinessLayer.Implementations
         public async Task ChangeBoardOrder(int boardId, int newOrder)
         {
             var userId = _auth.GetCurrentUserId();
-            var boardToMove = await GetById(boardId);
+            var boardToMove = await _boardRepository.GetById(boardId);
 
             if (await _projectRepository.IsUserAdmin((int)userId!, boardToMove.ProjectId))
             {
-                var boards = await GetByProjectId(boardToMove.ProjectId);
+                var boards = await _boardRepository.GetByProjectId(boardToMove.ProjectId); ;
 
                 int oldOrder = boardToMove.Status.Order;
 
@@ -144,8 +144,10 @@ namespace ProjectService.BusinessLayer.Implementations
                 // Ставим новый порядок для нашей доски
                 boardToMove.Status.Order = newOrder;
 
-                await _boardRepository.UpdateRange(boards.Select(BoardMapper.ToEntity).ToList());
-                await _boardRepository.Update(BoardMapper.ToEntity(boardToMove));
+                await _boardRepository.UpdateRange(boards.ToList());
+                await _boardRepository.Update(boardToMove);
+
+                return;
             }
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
         }

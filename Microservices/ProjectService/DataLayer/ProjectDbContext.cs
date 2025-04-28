@@ -60,7 +60,7 @@ namespace ProjectService.DataLayer
 
             // status -> boards (status_id)
             modelBuilder.Entity<BoardEntity>()
-                .HasOne(b=>b.Status)
+                .HasOne(b => b.Status)
                 .WithMany(s => s.Boards)
                 .HasForeignKey(b => b.StatusId);
 
