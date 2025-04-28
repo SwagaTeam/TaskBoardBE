@@ -1,8 +1,11 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
+using ProjectService.Mapper;
 using SharedLibrary.Auth;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ProjectService.BusinessLayer.Implementations
 {
@@ -23,8 +26,46 @@ namespace ProjectService.BusinessLayer.Implementations
         {
             var userId = _auth.GetCurrentUserId();
 
-            if (await _projectRepository.IsUserAdmin((int)userId!, board.ProjectId))
-                await _boardRepository.Create(board);
+            if (!await _projectRepository.IsUserAdmin((int)userId!, board.ProjectId))
+            {
+                throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+            }
+
+            var boards = await GetByProjectId(board.ProjectId);
+
+            int lastOrder;
+
+            if (boards.Count > 0)
+                lastOrder = boards.Max(x => x.Status.Order);
+            else lastOrder = 0;
+
+            var boardEntity = BoardMapper.ToEntity(board);
+
+            boardEntity.Status = new StatusEntity
+            {
+                Name = board.Name,
+                IsDone = false,
+                IsRejected = false,
+                Order = lastOrder++
+            };
+
+            board.CreatedAt = DateTime.UtcNow;
+            
+            await _boardRepository.Create(boardEntity);
+
+            return boardEntity.Id;
+        }
+
+        public async Task<ICollection<BoardModel>> GetByProjectId(int projectId)
+        {
+            var userId = _auth.GetCurrentUserId();
+
+            if (await _projectRepository.IsUserCanView((int)userId!, projectId))
+            {
+                var boardsEntities = await _boardRepository.GetByProjectId(projectId);
+
+                return boardsEntities.Select(BoardMapper.ToModel).ToList();
+            }
 
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
         }
@@ -34,7 +75,10 @@ namespace ProjectService.BusinessLayer.Implementations
             var userId = _auth.GetCurrentUserId();
 
             if (await _projectRepository.IsUserAdmin((int)userId!, id))
+            {
                 await _boardRepository.Delete(id);
+                return id;
+            }
 
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
         }
@@ -46,7 +90,10 @@ namespace ProjectService.BusinessLayer.Implementations
             var userProject = await _projectRepository.GetByBoardId(id);
 
             if (await _projectRepository.IsUserCanView((int)userId, userProject.Id))
-                await _boardRepository.GetById(id);
+            {
+                var board = await _boardRepository.GetById(id);
+                return board is null ? null : BoardMapper.ToModel(board);
+            }
 
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет доступа к проекту");
         }
@@ -54,6 +101,40 @@ namespace ProjectService.BusinessLayer.Implementations
         public Task<int> Update(BoardModel board)
         {
             throw new NotImplementedException();
+        }
+
+        public async void ChangeBoardOrder(int boardId, int newOrder)
+        {
+            var boardToMove = await GetById(boardId);
+
+            var boards = await GetByProjectId(boardToMove.ProjectId);
+
+            int oldOrder = boardToMove.Status.Order;
+
+            if (newOrder == oldOrder)
+                return;
+
+            if (newOrder > oldOrder)
+            {
+                // Сдвигаем вверх доски между старым и новым порядком
+                foreach (var board in boards.Where(b => b.Status.Order > oldOrder && b.Status.Order <= newOrder))
+                {
+                    board.Status.Order--;
+                }
+            }
+            else
+            {
+                // Сдвигаем вниз доски между новым и старым порядком
+                foreach (var board in boards.Where(b => b.Status.Order >= newOrder && b.Status.Order < oldOrder))
+                {
+                    board.Status.Order++;
+                }
+            }
+
+            // Ставим новый порядок для нашей доски
+            boardToMove.Status.Order = newOrder;
+
+            //await _boardRepository.Update()
         }
     }
 }

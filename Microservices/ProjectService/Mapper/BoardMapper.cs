@@ -26,7 +26,7 @@ namespace ProjectService.Mapper
                 CreatedAt = model.CreatedAt,
                 StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
-                Project = ProjectMapper.ToModel(model.Project)
+                Project = ProjectMapper.ToModel(model.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
                 //Status = StatusMapper.ToModel(model.Status)
             };

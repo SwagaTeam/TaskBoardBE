@@ -1,9 +1,11 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
+using ProjectService.Mapper;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper;
 using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Implementations
@@ -21,17 +23,28 @@ namespace ProjectService.BusinessLayer.Implementations
 
         public async Task<int> Create(ProjectModel project)
         {
+            var projectEntity = ProjectMapper.ToEntity(project);
+
+            projectEntity.CreatedAt = DateTime.UtcNow;
+
             var currentUserId = _auth.GetCurrentUserId();
 
             if (currentUserId == -1)
                 throw new NotAuthorizedException();
 
-            return await _projectRepository.Create(project, (int)currentUserId);
+            await _projectRepository.Create(projectEntity, (int)currentUserId);
+
+            return projectEntity.Id;
         }
 
-        public Task<int> Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            var currentUserId = _auth.GetCurrentUserId();
+
+            if(await IsUserAdmin((int)currentUserId!, id))
+                await _projectRepository.Delete(id);
+            else
+                throw new NotAuthorizedException("У пользователя нет доступа к проекту");
         }
 
         public async Task<ProjectModel?> GetById(int id)
@@ -39,8 +52,13 @@ namespace ProjectService.BusinessLayer.Implementations
             var currentUserId = _auth.GetCurrentUserId();
 
             if (await _projectRepository.IsUserCanView((int)currentUserId!, id))
-                return await _projectRepository.GetById(id);
-
+            {
+                var project = await _projectRepository.GetById(id);
+                if (project == null)
+                    throw new ProjectNotFoundException();
+                return ProjectMapper.ToModel(project);
+            }
+                
             throw new NotAuthorizedException("У пользователя нет доступа к проекту");
         }
 
@@ -50,7 +68,7 @@ namespace ProjectService.BusinessLayer.Implementations
             var project = await GetById(projectId);
 
             if (user is null || project is null)
-                throw new ProjectNotFoundException("User or project not found");
+                throw new ProjectNotFoundException("Пользователь или проект не найден");
 
             return await _projectRepository.IsUserInProject(userId, projectId);
         }
@@ -61,7 +79,7 @@ namespace ProjectService.BusinessLayer.Implementations
             var project = await GetById(projectId);
 
             if (user is null || project is null)
-                throw new ProjectNotFoundException("User or project not found");
+                throw new ProjectNotFoundException("Пользователь или проект не найден");
 
             return await _projectRepository.IsUserAdmin(userId, projectId);
         }
@@ -85,14 +103,16 @@ namespace ProjectService.BusinessLayer.Implementations
             return await _projectRepository.AddUserInProject(userId, projectId);
         }
 
-        public Task<int> Update(ProjectModel project)
+        public Task Update(ProjectModel project)
         {
             throw new NotImplementedException();
         }
 
         public async Task<ProjectModel?> GetByBoardId(int id)
         {
-            return await _projectRepository.GetByBoardId(id);
+            var board = await _projectRepository.GetByBoardId(id);
+
+            return ProjectMapper.ToModel(board);
         }
     }
 }
