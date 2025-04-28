@@ -14,6 +14,7 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.BusinessLayer.Implementations;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.DataLayer.Repositories.Implementations;
+using ProjectService.Validator;
 using SharedLibrary.Auth;
 
 internal class Program
@@ -60,16 +61,19 @@ internal class Program
 
         services.AddTransient<IMailService, MailService>();
         services.AddScoped<IEmailSender, EmailSender>();
-
+        services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
         services.AddScoped<IProjectManager, ProjectManager>();
+        services.AddScoped<IItemRepository, ItemRepository>();
+        services.AddScoped<IItemManager, ItemManager>();
+        services.AddScoped<IBoardRepository, BoardRepository>();
+        services.AddScoped<ICreateItemValidator, CreateItemValidator>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
 
         services.AddScoped<IAuth, Auth>();
-
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -77,7 +81,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
+                policy.WithOrigins("https://localhost:7000")  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -92,7 +96,7 @@ internal class Program
 
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Введите 'Bearer' [пробел] для авторизации",
+                Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer' [пїЅпїЅпїЅпїЅпїЅпїЅ] пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey

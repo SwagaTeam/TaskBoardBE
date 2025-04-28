@@ -72,6 +72,15 @@ namespace ProjectService.BusinessLayer.Implementations
 
             return await _projectRepository.IsUserInProject(userId, projectId);
         }
+        
+        public async Task<bool> IsUserViewer(int userId, int projectId)
+        {
+            var user = await UserRepository.GetUser(userId);
+            var project = await GetById(projectId);
+            if (user is null || project is null)
+                throw new ProjectNotFoundException("Пользователь или проект не найден");
+            return await _projectRepository.IsUserViewer(userId, projectId);
+        }
 
         public async Task<bool> IsUserAdmin(int userId, int projectId)
         {

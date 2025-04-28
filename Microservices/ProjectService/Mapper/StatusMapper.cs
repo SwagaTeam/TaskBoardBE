@@ -5,7 +5,7 @@ namespace ProjectService.Mapper
 {
     public static class StatusMapper
     {
-        public static StatusModel ToModel(StatusEntity statusEntity)
+        public static StatusModel ToModel(StatusEntity? statusEntity)
         {
             return new StatusModel
             {

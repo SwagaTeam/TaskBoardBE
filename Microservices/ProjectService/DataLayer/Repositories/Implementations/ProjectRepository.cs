@@ -47,6 +47,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             await _projectDbContext.SaveChangesAsync();
         }
 
+
         public async Task Delete(int id)
         {
             var project = await _projectDbContext.Projects.FindAsync(id);
@@ -100,9 +101,20 @@ namespace ProjectService.DataLayer.Repositories.Implementations
 
         public async Task<bool> IsUserInProject(int userId, int projectId)
         {
-            var userProject = await _projectDbContext.UserProjects.FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == userId);
+            var userProject = await _projectDbContext.UserProjects
+                .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == userId);
 
             return userProject is not null;
+        }
+
+        public async Task<bool> IsUserViewer(int userId, int projectId)
+        {
+            var userInProject = await IsUserInProject(userId, projectId);
+            if (!userInProject) return true;
+            var userIsViewer = await _projectDbContext.UserProjects
+                .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == userId 
+                                                                   && x.Privilege == Privilege.VIEWER);
+            return userIsViewer is not null;
         }
 
         public Task  Update(ProjectEntity project)

@@ -50,9 +50,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         {
             var board = await _projectDbContext.Boards
                                 .FirstOrDefaultAsync(x => x.Name == name);
-
-            if (board == null)
-                return null;
+            
 
             return board;
         }
