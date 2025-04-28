@@ -64,9 +64,6 @@ namespace ProjectService.DataLayer.Repositories.Implementations
                 .Include(x => x.Boards)
                 .FirstOrDefaultAsync(x => x.Boards.Any(x=>x.Id == id));
 
-            if (project is null)
-                return null;
-
             return project;
         }
 
@@ -75,9 +72,6 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             var project = await _projectDbContext.Projects
                 .Include(x=>x.UserProjects)
                 .FirstOrDefaultAsync(x=>x.Id == id);
-
-            if (project is null)
-                return null;
 
             return project;
         }

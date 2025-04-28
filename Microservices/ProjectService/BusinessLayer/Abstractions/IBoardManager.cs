@@ -6,6 +6,7 @@ namespace ProjectService.BusinessLayer.Abstractions
     {
         Task<BoardModel?> GetById(int id);
         Task<ICollection<BoardModel>> GetByProjectId(int projectId);
+        Task ChangeBoardOrder(int boardId, int newOrder);
         Task<int> Create(BoardModel board);
         Task<int> Update(BoardModel board);
         Task<int> Delete(int id);

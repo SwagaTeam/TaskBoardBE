@@ -98,43 +98,57 @@ namespace ProjectService.BusinessLayer.Implementations
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет доступа к проекту");
         }
 
-        public Task<int> Update(BoardModel board)
+        public async Task<int> Update(BoardModel board)
         {
-            throw new NotImplementedException();
+            var userId = _auth.GetCurrentUserId();
+
+            if (await _projectRepository.IsUserAdmin((int)userId!, board.ProjectId))
+            {
+                await _boardRepository.Update(BoardMapper.ToEntity(board));
+                return board.Id;
+            }
+
+            throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
         }
 
-        public async void ChangeBoardOrder(int boardId, int newOrder)
+        public async Task ChangeBoardOrder(int boardId, int newOrder)
         {
+            var userId = _auth.GetCurrentUserId();
             var boardToMove = await GetById(boardId);
 
-            var boards = await GetByProjectId(boardToMove.ProjectId);
-
-            int oldOrder = boardToMove.Status.Order;
-
-            if (newOrder == oldOrder)
-                return;
-
-            if (newOrder > oldOrder)
+            if (await _projectRepository.IsUserAdmin((int)userId!, boardToMove.ProjectId))
             {
-                // Сдвигаем вверх доски между старым и новым порядком
-                foreach (var board in boards.Where(b => b.Status.Order > oldOrder && b.Status.Order <= newOrder))
-                {
-                    board.Status.Order--;
-                }
-            }
-            else
-            {
-                // Сдвигаем вниз доски между новым и старым порядком
-                foreach (var board in boards.Where(b => b.Status.Order >= newOrder && b.Status.Order < oldOrder))
-                {
-                    board.Status.Order++;
-                }
-            }
+                var boards = await GetByProjectId(boardToMove.ProjectId);
 
-            // Ставим новый порядок для нашей доски
-            boardToMove.Status.Order = newOrder;
+                int oldOrder = boardToMove.Status.Order;
 
-            //await _boardRepository.Update()
+                if (newOrder == oldOrder)
+                    return;
+
+                if (newOrder > oldOrder)
+                {
+                    // Сдвигаем вверх доски между старым и новым порядком
+                    foreach (var board in boards.Where(b => b.Status.Order > oldOrder && b.Status.Order <= newOrder))
+                    {
+                        board.Status.Order--;
+                    }
+                }
+                else
+                {
+                    // Сдвигаем вниз доски между новым и старым порядком
+                    foreach (var board in boards.Where(b => b.Status.Order >= newOrder && b.Status.Order < oldOrder))
+                    {
+                        board.Status.Order++;
+                    }
+                }
+
+                // Ставим новый порядок для нашей доски
+                boardToMove.Status.Order = newOrder;
+
+                await _boardRepository.UpdateRange(boards.Select(BoardMapper.ToEntity).ToList());
+                await _boardRepository.Update(BoardMapper.ToEntity(boardToMove));
+            }
+            throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
         }
     }
 }
