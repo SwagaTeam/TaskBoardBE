@@ -30,12 +30,8 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return projectId;
         }
 
-        public async Task<int> Create(ProjectModel project, int userId)
+        public async Task Create(ProjectEntity projectEntity, int userId)
         {
-            var projectEntity = ProjectMapper.ToEntity(project);
-
-            projectEntity.CreatedAt = DateTime.UtcNow;
-
             var result = await _projectDbContext.Projects.AddAsync(projectEntity);
 
             await _projectDbContext.SaveChangesAsync();
@@ -49,11 +45,9 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             }); 
 
             await _projectDbContext.SaveChangesAsync();
-
-            return project.Id;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task Delete(int id)
         {
             var project = await _projectDbContext.Projects.FindAsync(id);
 
@@ -61,13 +55,10 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 _projectDbContext.Projects.Remove(project);
                 await _projectDbContext.SaveChangesAsync();
-                return id;
             }
-
-            return -1;
         }
 
-        public async Task<ProjectModel?> GetByBoardId(int id)
+        public async Task<ProjectEntity?> GetByBoardId(int id)
         {
             var project = await _projectDbContext.Projects
                 .Include(x => x.Boards)
@@ -76,10 +67,10 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             if (project is null)
                 return null;
 
-            return ProjectMapper.ToModel(project);
+            return project;
         }
 
-        public async Task<ProjectModel?> GetById(int id)
+        public async Task<ProjectEntity?> GetById(int id)
         {
             var project = await _projectDbContext.Projects
                 .Include(x=>x.UserProjects)
@@ -88,7 +79,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             if (project is null)
                 return null;
 
-            return ProjectMapper.ToModel(project);
+            return project;
         }
 
         public async Task<bool> IsUserAdmin(int userId, int projectId)
@@ -120,7 +111,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return userProject is not null;
         }
 
-        public Task<int> Update(ProjectModel project)
+        public Task  Update(ProjectEntity project)
         {
             throw new NotImplementedException();
         }

@@ -1,17 +1,18 @@
-﻿using SharedLibrary.ProjectModels;
+﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.ProjectModels;
 
 namespace ProjectService.DataLayer.Repositories.Abstractions
 {
     public interface IProjectRepository
     {
-        Task<ProjectModel?> GetById(int id);
-        Task<ProjectModel?> GetByBoardId(int id);
+        Task<ProjectEntity?> GetById(int id);
+        Task<ProjectEntity?> GetByBoardId(int id);
         Task<bool> IsUserInProject(int userId, int projectId);
         Task<int> AddUserInProject(int userId, int projectId);
         Task<bool> IsUserAdmin(int userId, int projectId);
         Task<bool> IsUserCanView(int userId, int projectId);
-        Task<int> Create(ProjectModel project, int userId);
-        Task<int> Update(ProjectModel project);
-        Task<int> Delete(int id);
+        Task Create(ProjectEntity project, int userId);
+        Task Update(ProjectEntity project);
+        Task Delete(int id);
     }
 }

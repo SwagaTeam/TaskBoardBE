@@ -1,4 +1,5 @@
-﻿using SharedLibrary.ProjectModels;
+﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Abstractions
 {
@@ -11,7 +12,7 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<int> AddUserInProject(int userId, int projectId);
         Task<bool> IsUserAdmin(int userId, int projectId);
         Task<int> Create(ProjectModel project);
-        Task<int> Update(ProjectModel project);
-        Task<int> Delete(int id);
+        Task Update(ProjectModel project);
+        Task Delete(int id);
     }
 }
