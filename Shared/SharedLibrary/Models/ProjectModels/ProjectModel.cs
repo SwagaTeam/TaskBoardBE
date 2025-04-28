@@ -20,10 +20,6 @@ namespace SharedLibrary.ProjectModels
         public DateTime ExpectedEndDate { get; set; }
         public int Priority { get; set; }
         [JsonIgnore]
-<<<<<<< HEAD
-=======
-        [NotNull]
->>>>>>> 257031f6733f521b8f63516f467c3a9723f5edd7
         public virtual ICollection<UserProjectModel> UserProjects { get; set; } = new List<UserProjectModel>();
     }
 }
