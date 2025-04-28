@@ -3,17 +3,18 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
 using ProjectService.Models;
+using ProjectService.Validator;
+using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ItemManager(IItemRepository itemRepository, IBoardRepository boardRepository,
+public class ItemManager(IItemRepository itemRepository, ICreateItemValidator createItemValidator,
     IKafkaProducer<ItemModel> kafkaProducer) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
+        await createItemValidator.CheckValidAsync(createItemModel, token);
         var item = createItemModel.Item;
-        var board = await boardRepository.GetById(createItemModel.BoardId);
-        if (board is null || board.ProjectId != item.ProjectId) return -1;
         var entity = ItemMapper.ItemToEntity(item);
         await itemRepository.CreateAsync(entity);
         await kafkaProducer.ProduceAsync(item, token);

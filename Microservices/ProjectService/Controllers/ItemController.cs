@@ -14,9 +14,15 @@ public class ItemController(IItemManager manager) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateItemModel item, CancellationToken cancellationToken)
     {
-        var id = await manager.CreateAsync(item, cancellationToken);
-        if (id < 0) return BadRequest("Неверный boardId");
-        return Ok(id);
+        try
+        {
+            var id = await manager.CreateAsync(item, cancellationToken);
+            return Ok(id);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("get")]

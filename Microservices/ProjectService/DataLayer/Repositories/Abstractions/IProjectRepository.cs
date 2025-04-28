@@ -14,5 +14,6 @@ namespace ProjectService.DataLayer.Repositories.Abstractions
         Task Create(ProjectEntity project, int userId);
         Task Update(ProjectEntity project);
         Task Delete(int id);
+        public Task<bool> IsUserViewer(int userId, int projectId);
     }
 }

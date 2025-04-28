@@ -11,6 +11,7 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<bool> IsUserCanView(int userId, int projectId);
         Task<int> AddUserInProject(int userId, int projectId);
         Task<bool> IsUserAdmin(int userId, int projectId);
+        Task<bool> IsUserViewer(int userId, int projectId);
         Task<int> Create(ProjectModel project);
         Task Update(ProjectModel project);
         Task Delete(int id);
