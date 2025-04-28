@@ -65,6 +65,9 @@ internal class Program
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
         services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IBoardManager, BoardManager>();
+        services.AddScoped<IBoardRepository, BoardRepository>();
+
         services.AddScoped<IAuth, Auth>();
 
         services.AddSingleton<IBlackListService, BlackListService>();

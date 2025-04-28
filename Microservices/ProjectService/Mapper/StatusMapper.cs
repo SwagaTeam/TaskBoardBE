@@ -10,7 +10,7 @@ namespace ProjectService.Mapper
             return new StatusModel
             {
                 Order = statusEntity.Order,
-                Boards = statusEntity.Boards.Select(BoardMapper.ToModel).ToList(),
+                //Boards = statusEntity.Boards is null ? null : statusEntity.Boards.Select(BoardMapper.ToModel).ToList(),
                 IsDone = statusEntity.IsDone,
                 IsRejected = statusEntity.IsRejected,
                 Name = statusEntity.Name,
@@ -18,12 +18,13 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static StatusEntity ToEntity(StatusModel statusEntity)
+        public static StatusEntity? ToEntity(StatusModel statusEntity)
         {
+            if (statusEntity is null) return null;
             return new StatusEntity
             {
                 Order = statusEntity.Order,
-                Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),
+                //Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),
                 IsDone = statusEntity.IsDone,
                 IsRejected = statusEntity.IsRejected,
                 Name = statusEntity.Name,
