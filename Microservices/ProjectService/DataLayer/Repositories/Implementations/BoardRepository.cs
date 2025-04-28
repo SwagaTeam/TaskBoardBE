@@ -66,9 +66,19 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return boards;
         }
 
-        public Task Update(BoardEntity board)
+        public async Task Update(BoardEntity board)
         {
-            throw new NotImplementedException();
+            _projectDbContext.Update(board);
+            await _projectDbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateRange(ICollection<BoardEntity> boards)
+        {
+            foreach (var board in boards)
+            {
+                _projectDbContext.Update(board);
+            }
+            await _projectDbContext.SaveChangesAsync();
         }
     }
 }

@@ -11,5 +11,6 @@ namespace ProjectService.DataLayer.Repositories.Abstractions
         Task Update(BoardEntity board);
         Task Delete(int id);
         Task<IQueryable<BoardEntity>> GetByProjectId(int projectId);
+        Task UpdateRange(ICollection<BoardEntity> boards);
     }
 }
