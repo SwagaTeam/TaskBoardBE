@@ -1,6 +1,7 @@
 ﻿using SharedLibrary.Auth;
 using SharedLibrary.UserModels;
 using UserService.DataLayer.Repositories.Abstractions;
+using UserService.ViewModels;
 
 namespace UserService.BusinessLayer.Manager
 {
@@ -15,17 +16,20 @@ namespace UserService.BusinessLayer.Manager
             _encrypt = encrypt;
         }
 
-        public async Task<int> Create(UserModel user)
+        public async Task<int> Create(RegisterModel user)
         {
             var existingUser = await _userRepository.GetByEmail(user.Email);
 
             if (existingUser != null)
                 throw new InvalidOperationException("User with such Email already exist");
 
-            user.Salt = Guid.NewGuid().ToString();
-            user.Password = _encrypt.HashPassword(user.Password, user.Salt);
+            var userModel = new UserModel();
+            userModel.Username = user.Username;
+            userModel.Email = user.Email;
+            userModel.Salt = Guid.NewGuid().ToString();
+            userModel.Password = _encrypt.HashPassword(user.Password, userModel.Salt);
 
-            var id = await _userRepository.Create(user);
+            var id = await _userRepository.Create(userModel);
 
             return id;
         }

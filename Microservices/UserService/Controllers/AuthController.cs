@@ -6,6 +6,7 @@ using SharedLibrary.ProjectModels;
 using SharedLibrary.UserModels;
 using System.Text.Json;
 using UserService.BusinessLayer.Manager;
+using UserService.ViewModels;
 
 namespace UserService.Controllers
 {
@@ -49,7 +50,7 @@ namespace UserService.Controllers
         [ProducesResponseType<int>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             try
             {
