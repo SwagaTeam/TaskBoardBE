@@ -12,8 +12,8 @@ using ProjectService.DataLayer;
 namespace ProjectService.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250428154717_init")]
-    partial class init
+    [Migration("20250429175821_new_relationships")]
+    partial class new_relationships
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,24 @@ namespace ProjectService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ItemBoardEntity", b =>
+                {
+                    b.Property<int>("ItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BoardId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ItemId", "BoardId");
+
+                    b.HasIndex("BoardId");
+
+                    b.ToTable("ItemsBoards");
+                });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.AttachmentEntity", b =>
                 {
@@ -180,7 +198,7 @@ namespace ProjectService.Migrations
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ItemTypeId")
+                    b.Property<int?>("ItemTypeId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("ParentId")
@@ -198,7 +216,7 @@ namespace ProjectService.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("StatusId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -279,6 +297,28 @@ namespace ProjectService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.ProjectLinkEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("VisibilityLinks");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.RoleEntity", b =>
@@ -381,28 +421,6 @@ namespace ProjectService.Migrations
                     b.ToTable("UserProjects");
                 });
 
-            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.VisibilityLinkEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("VisibilityLinks");
-                });
-
             modelBuilder.Entity("SharedLibrary.Entities.UserService.UserEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -445,6 +463,25 @@ namespace ProjectService.Migrations
                     b.HasIndex("sprint_id");
 
                     b.ToTable("items_sprints");
+                });
+
+            modelBuilder.Entity("ItemBoardEntity", b =>
+                {
+                    b.HasOne("SharedLibrary.Entities.ProjectService.BoardEntity", "Board")
+                        .WithMany("ItemsBoards")
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SharedLibrary.Entities.ProjectService.ItemEntity", "Item")
+                        .WithMany("ItemsBoards")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.AttachmentEntity", b =>
@@ -511,9 +548,7 @@ namespace ProjectService.Migrations
                 {
                     b.HasOne("SharedLibrary.Entities.ProjectService.ItemTypeEntity", "ItemType")
                         .WithMany("Items")
-                        .HasForeignKey("ItemTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemTypeId");
 
                     b.HasOne("SharedLibrary.Entities.ProjectService.ItemEntity", "Parent")
                         .WithMany("Children")
@@ -525,9 +560,7 @@ namespace ProjectService.Migrations
 
                     b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", "Status")
                         .WithMany("Items")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StatusId");
 
                     b.Navigation("ItemType");
 
@@ -536,6 +569,17 @@ namespace ProjectService.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.ProjectLinkEntity", b =>
+                {
+                    b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", "Project")
+                        .WithMany("VisibilityLinks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.SprintEntity", b =>
@@ -568,17 +612,6 @@ namespace ProjectService.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.VisibilityLinkEntity", b =>
-                {
-                    b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", "Project")
-                        .WithMany("VisibilityLinks")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("items_sprints", b =>
                 {
                     b.HasOne("SharedLibrary.Entities.ProjectService.ItemEntity", null)
@@ -596,6 +629,8 @@ namespace ProjectService.Migrations
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.BoardEntity", b =>
                 {
+                    b.Navigation("ItemsBoards");
+
                     b.Navigation("Sprints");
                 });
 
@@ -609,6 +644,8 @@ namespace ProjectService.Migrations
                     b.Navigation("Children");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("ItemsBoards");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.ItemTypeEntity", b =>

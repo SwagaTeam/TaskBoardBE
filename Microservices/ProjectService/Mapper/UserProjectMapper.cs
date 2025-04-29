@@ -8,7 +8,6 @@ public class UserProjectMapper
     {
         return new UserProjectEntity
         {
-            Id = model.Id,
             ProjectId = model.ProjectId,
             Privilege = model.Privilege,
             RoleId = model.RoleId,

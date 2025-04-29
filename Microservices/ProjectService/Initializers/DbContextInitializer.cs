@@ -16,9 +16,9 @@ namespace ProjectService.Initializers
 
         public static async Task Migrate(ProjectDbContext context)
         {
+            await context.Database.MigrateAsync();
             await InitRole(context);
             await InitItemType(context);
-            await context.Database.MigrateAsync();
             await context.SaveChangesAsync();
         }
 

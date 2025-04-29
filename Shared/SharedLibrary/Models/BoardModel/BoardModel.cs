@@ -13,7 +13,6 @@ public class BoardModel
     [JsonIgnore]
     public ProjectModel? Project { get; set; }
 
-    [JsonIgnore]
     public StatusModel? Status { get; set; }
 
     [JsonIgnore]

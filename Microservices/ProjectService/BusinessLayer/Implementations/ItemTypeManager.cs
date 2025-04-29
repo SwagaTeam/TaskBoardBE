@@ -4,7 +4,7 @@ using ProjectService.Mapper;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ItemTypeRepository(IItemTypeRepository itemTypeRepository) : IItemTypeManager
+public class ItemTypeManager(IItemTypeRepository itemTypeRepository) : IItemTypeManager
 {
     public async Task<IEnumerable<ItemTypeModel>> GetAllAsync()
     {

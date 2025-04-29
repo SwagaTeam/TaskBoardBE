@@ -103,6 +103,13 @@ public class ItemController(IItemManager manager) : ControllerBase
         return Ok(item);
     }
 
+    [HttpGet("board/{boardId}")]
+    public async Task<IActionResult> GetItemsByBoardIdAsync(int boardId)
+    {
+        var items = await manager.GetByBoardIdAsync(boardId);
+        return Ok(items);
+    }
+
     [HttpGet("{title}")]
     public async Task<IActionResult> GetItemByName(string title)
     {

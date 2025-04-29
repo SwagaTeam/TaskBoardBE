@@ -73,6 +73,13 @@ internal class Program
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
+        services.AddScoped<IUserProjectManager, UserProjectManager>();
+        services.AddScoped<IUserProjectRepository, UserProjectRepository>();
+        services.AddScoped<IItemTypeManager, ItemTypeManager>();
+        services.AddScoped<IItemTypeRepository, ItemTypeRepository>();
+        services.AddScoped <IStatusRepository, StatusRepository>();
+        services.AddScoped<IStatusManager, StatusManager>();
+        services.AddScoped<IItemBoardsRepository, ItemBoardsRepository>();
 
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();

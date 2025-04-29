@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectService.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -185,8 +185,8 @@ namespace ProjectService.Migrations
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpectedEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: false),
-                    ItemTypeId = table.Column<int>(type: "integer", nullable: false),
-                    StatusId = table.Column<int>(type: "integer", nullable: false),
+                    ItemTypeId = table.Column<int>(type: "integer", nullable: true),
+                    StatusId = table.Column<int>(type: "integer", nullable: true),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -196,8 +196,7 @@ namespace ProjectService.Migrations
                         name: "FK_Items_ItemTypes_ItemTypeId",
                         column: x => x.ItemTypeId,
                         principalTable: "ItemTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Items_Items_ParentId",
                         column: x => x.ParentId,
@@ -212,8 +211,7 @@ namespace ProjectService.Migrations
                         name: "FK_Items_Statuses_StatusId",
                         column: x => x.StatusId,
                         principalTable: "Statuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -285,6 +283,30 @@ namespace ProjectService.Migrations
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Comments_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemsBoards",
+                columns: table => new
+                {
+                    BoardId = table.Column<int>(type: "integer", nullable: false),
+                    ItemId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemsBoards", x => new { x.ItemId, x.BoardId });
+                    table.ForeignKey(
+                        name: "FK_ItemsBoards_Boards_BoardId",
+                        column: x => x.BoardId,
+                        principalTable: "Boards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemsBoards_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
@@ -393,6 +415,11 @@ namespace ProjectService.Migrations
                 column: "sprint_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemsBoards_BoardId",
+                table: "ItemsBoards",
+                column: "BoardId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sprints_BoardId",
                 table: "Sprints",
                 column: "BoardId");
@@ -424,6 +451,9 @@ namespace ProjectService.Migrations
 
             migrationBuilder.DropTable(
                 name: "items_sprints");
+
+            migrationBuilder.DropTable(
+                name: "ItemsBoards");
 
             migrationBuilder.DropTable(
                 name: "UserProjects");

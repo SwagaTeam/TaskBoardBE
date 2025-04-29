@@ -8,7 +8,6 @@ public class ItemMapper
     {
         return new ItemEntity
         {
-            Id = item.Id,
             BusinessId = item.BusinessId,
             ParentId = item.ParentId,
             ProjectId = item.ProjectId,
@@ -45,6 +44,7 @@ public class ItemMapper
             ItemTypeId = item.ItemTypeId,
             StatusId = item.StatusId,
             IsArchived = item.IsArchived,
+            Status = StatusMapper.ToModel(item.Status)
         };
     }
 }

@@ -54,5 +54,27 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             projectDbContext.Projects.Update(project);
             await projectDbContext.SaveChangesAsync();
         }
+
+        public async Task<int> SetUserRoleAsync(int userId, int projectId, RoleEntity role)
+        {
+            var userProject = await projectDbContext.UserProjects.FirstOrDefaultAsync(x => x.ProjectId == projectId
+                                                                                         && x.UserId == userId);
+
+            var existingRole = await projectDbContext.Roles.FirstOrDefaultAsync(x => x.Role == role.Role);
+
+            if (userProject is not null)
+            {
+                if (existingRole is not null)
+                    userProject.Role = existingRole;
+                else
+                    userProject.Role = role;
+            }
+            else return -1;
+
+            await projectDbContext.SaveChangesAsync();
+
+            return userId;
+        }
+
     }
 }

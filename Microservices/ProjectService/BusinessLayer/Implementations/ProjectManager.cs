@@ -1,5 +1,6 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.DataLayer.Repositories.Implementations;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Auth;
@@ -24,13 +25,15 @@ public class ProjectManager(
             throw new NotAuthorizedException();
 
         await projectRepository.Create(projectEntity);
+
         var userProject = new UserProjectModel
         {
-            ProjectId = project.Id,
+            ProjectId = projectEntity.Id,
             UserId = (int)currentUserId,
             RoleId = DefaultRoles.CREATOR,
             Privilege = Privilege.ADMIN
         };
+
         await userProjectManager.CreateAsync(userProject);
         return projectEntity.Id;
     }
@@ -127,4 +130,26 @@ public class ProjectManager(
         var board = await projectRepository.GetByBoardIdAsync(id);
         return ProjectMapper.ToModel(board);
     }
+
+    public async Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role)
+    {
+        var roleEntity = RoleMapper.ToEntity(role);
+        var currentUserId = auth.GetCurrentUserId();
+
+        var project = await projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+            throw new ProjectNotFoundException();
+        bool isCurrentUserAdminAndUserInProject = false;
+
+        if (await userProjectManager.IsUserAdminAsync((int)currentUserId, project.Id)
+            && project.UserProjects.Any(x => x.UserId == userId && x.ProjectId == projectId))
+            isCurrentUserAdminAndUserInProject = true;
+
+        if (isCurrentUserAdminAndUserInProject)
+            return await projectRepository.SetUserRoleAsync(userId, projectId, roleEntity);
+
+        throw new NotAuthorizedException("Пользователь не админ проекта");
+    }
+
 }

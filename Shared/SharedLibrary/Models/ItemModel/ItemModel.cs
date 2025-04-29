@@ -31,7 +31,6 @@ public class ItemModel
     [JsonIgnore]
     public ItemTypeModel? ItemType { get; set; } = null;
 
-    [JsonIgnore]
     public StatusModel? Status { get; set; } = null;
 
     [JsonIgnore]

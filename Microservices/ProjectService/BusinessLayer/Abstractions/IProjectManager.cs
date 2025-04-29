@@ -12,6 +12,7 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<int> AddUserInProjectAsync(int userId, int projectId);
         Task<bool> IsUserAdminAsync(int userId, int projectId);
         Task<bool> IsUserViewerAsync(int userId, int projectId);
+        Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role);
         Task<int> CreateAsync(ProjectModel project);
         Task UpdateAsync(ProjectModel project);
         Task DeleteAsync(int id);

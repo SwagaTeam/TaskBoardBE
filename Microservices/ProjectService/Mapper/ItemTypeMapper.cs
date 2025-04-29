@@ -9,7 +9,6 @@ public class ItemTypeMapper
     {
         return new ItemTypeEntity
         {
-            Id = itemType.Id,
             Level = itemType.Level,
         };
     }

@@ -7,14 +7,24 @@ using ProjectService.Models;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(IItemRepository itemRepository, IValidateItemManager validateItemManager,
-    IKafkaProducer<ItemModel> kafkaProducer) : IItemManager
+    IKafkaProducer<ItemModel> kafkaProducer, IItemBoardsRepository itemBoardsRepository) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
         await validateItemManager.ValidateCreateAsync(createItemModel);
         var item = createItemModel.Item;
         var entity = ItemMapper.ItemToEntity(item);
+
         await itemRepository.CreateAsync(entity);
+
+        await itemBoardsRepository.Create(
+            new ItemBoardEntity()
+            {
+                ItemId = entity.Id,
+                BoardId = createItemModel.BoardId
+            }
+        );
+
         return entity.Id;
     }
 
@@ -34,6 +44,12 @@ public class ItemManager(IItemRepository itemRepository, IValidateItemManager va
     {
         var model = ItemMapper.ItemToModel(await itemRepository.GetByIdAsync(id));
         return model;
+    }
+
+    public async Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId)
+    {
+        var items = await itemRepository.GetByBoardIdAsync(boardId);
+        return items.Select(ItemMapper.ItemToModel).ToList();
     }
 
     public async Task<int> UpdateAsync(ItemModel item)

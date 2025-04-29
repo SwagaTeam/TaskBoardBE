@@ -10,4 +10,5 @@ public interface IItemRepository
     public Task DeleteAsync(int id);
     public Task<ICollection<ItemEntity>> GetItemsAsync();
     public Task<ItemEntity> GetByNameAsync(string name);
+    public Task<ICollection<ItemEntity>> GetByBoardIdAsync(int boardId);
 }

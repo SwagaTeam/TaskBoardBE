@@ -8,7 +8,6 @@ public class ProjectLinkMapper
     {
         return new ProjectLinkEntity
         {
-            Id = model.Id,
             ProjectId = model.ProjectId,
             Url = model.Url,
         };

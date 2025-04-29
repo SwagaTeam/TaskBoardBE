@@ -13,11 +13,11 @@ namespace ProjectService.DataLayer
         public DbSet<CommentEntity> Comments => Set<CommentEntity>();
 
         public DbSet<ItemEntity> Items => Set<ItemEntity>();
+        public DbSet<ItemBoardEntity> ItemsBoards => Set<ItemBoardEntity>();
         public DbSet<ItemTypeEntity> ItemTypes => Set<ItemTypeEntity>();
         public DbSet<SprintEntity> Sprints => Set<SprintEntity>();
         public DbSet<StatusEntity> Statuses => Set<StatusEntity>();
         public DbSet<RoleEntity> Roles => Set<RoleEntity>();
-
         public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
         public DbSet<UserProjectEntity> UserProjects => Set<UserProjectEntity>();
         public DbSet<DocumentEntity> Documents => Set<DocumentEntity>();
@@ -46,6 +46,19 @@ namespace ProjectService.DataLayer
                 .WithMany(r => r.UserProjects)
                 .HasForeignKey(up => up.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ItemBoardEntity>()
+                .HasKey(ib => new { ib.ItemId, ib.BoardId });
+
+            modelBuilder.Entity<ItemBoardEntity>()
+                .HasOne(ib => ib.Item)
+                .WithMany(i => i.ItemsBoards)
+                .HasForeignKey(ib => ib.ItemId);
+
+            modelBuilder.Entity<ItemBoardEntity>()
+                .HasOne(ib => ib.Board)
+                .WithMany(b => b.ItemsBoards)
+                .HasForeignKey(ib => ib.BoardId);
 
             modelBuilder.Entity<ProjectLinkEntity>()
                 .HasOne(v => v.Project)

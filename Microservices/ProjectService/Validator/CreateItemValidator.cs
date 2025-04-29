@@ -48,9 +48,9 @@ public class CreateItemValidator
     private async Task<bool> IsEpicAndParentExist(CreateItemModel createItemModel, CancellationToken cancellation)
     {
         var item = createItemModel.Item;
-        if (item.ParentId is null) return false;
+        if (item.ParentId is null) return true;
         var parent = await itemRepository.GetByIdAsync((int)item.ParentId);
-        return item.ItemTypeId == ItemType.EPIC && parent is not null;
+        return !(item.ItemTypeId == ItemType.EPIC && parent is not null);
     }
     
     private async Task<bool> BeValidBoard(CreateItemModel item, CancellationToken cancellation)

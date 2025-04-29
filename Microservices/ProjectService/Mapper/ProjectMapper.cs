@@ -23,6 +23,7 @@ namespace ProjectService.Mapper
         {
             return new ProjectModel()
             {
+                Id = projectModel.Id,
                 Name = projectModel.Name,
                 Key = projectModel.Key,
                 Description = projectModel.Description,
