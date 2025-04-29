@@ -37,5 +37,7 @@ namespace SharedLibrary.Entities.ProjectService
         public ICollection<CommentEntity> Comments { get; set; }
         public ICollection<SprintEntity> Sprints { get; set; }
         public virtual ICollection<ItemBoardEntity> ItemsBoards { get; set; } = new List<ItemBoardEntity>();
+        public virtual ICollection<UserItemEntity> UserItems { get; set; } = new List<UserItemEntity>();
+
     }
 }

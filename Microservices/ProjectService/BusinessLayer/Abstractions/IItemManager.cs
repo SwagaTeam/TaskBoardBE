@@ -13,5 +13,7 @@ public interface IItemManager
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);
     public Task<ItemModel> ChangeParam(ItemModel itemModel);
+    public Task<int> AddUserToItem(int userId, int itemId);
+    public Task<ICollection<ItemModel>> GetItemsByUserId(int userId);
 
 }

@@ -3,6 +3,7 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
 using ProjectService.Models;
+using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
@@ -59,6 +60,18 @@ public class ItemManager(IItemRepository itemRepository, IValidateItemManager va
         return entity.Id;
     }
 
+    public async Task<int> AddUserToItem(int userId, int itemId)
+    {
+        //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
+        var itemUserEntity = new UserItemEntity()
+        {
+            ItemId = itemId,
+            UserId = userId
+        };
+        await itemRepository.AddUserToItem(itemUserEntity);
+        return itemUserEntity.Id;
+    }
+
     public async Task<ItemModel> GetByTitle(string title)
     {
         return ItemMapper.ItemToModel(await itemRepository.GetByNameAsync(title));
@@ -69,5 +82,12 @@ public class ItemManager(IItemRepository itemRepository, IValidateItemManager va
         await validateItemManager.ValidateItemModelAsync(itemModel);
         await UpdateAsync(itemModel);
         return itemModel;
+    }
+
+    public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId)
+    {
+        //TODO: Добавить валидацию
+        var items = await itemRepository.GetItemsByUserId(userId);
+        return items.Select(ItemMapper.ItemToModel).ToList();
     }
 }

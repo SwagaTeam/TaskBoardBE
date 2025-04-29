@@ -55,4 +55,21 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
         return items;
     }
+
+    public async Task AddUserToItem(UserItemEntity userItemEntity)
+    {
+        await context.UserItems.AddAsync(userItemEntity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<ItemEntity>> GetItemsByUserId(int userId)
+    {
+        var items = await context.Items
+            .Include(i => i.Status)
+            .Include(i => i.UserItems)
+            .Where(i => i.UserItems.Any(x=>x.UserId == userId))
+            .ToListAsync();
+
+        return items;
+    }
 }

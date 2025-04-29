@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
+using System.Xml;
 
 namespace ProjectService.Controllers;
 
@@ -18,6 +19,34 @@ public class ItemController(IItemManager manager) : ControllerBase
         {
             var id = await manager.CreateAsync(item, cancellationToken);
             return Ok(id);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserItems(int userId)
+    {
+        try
+        {
+            var items = await manager.GetItemsByUserId(userId);
+            return Ok(items);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("add-user-to-item")]
+    public async Task<IActionResult> AddUserInItem(AddUserInItemModel model)
+    {
+        try
+        {
+            await manager.AddUserToItem(model.UserId, model.ItemId);
+            return Ok($"Пользователь {model.UserId} присоединен к задаче {model.ItemId}");
         }
         catch (Exception ex)
         {

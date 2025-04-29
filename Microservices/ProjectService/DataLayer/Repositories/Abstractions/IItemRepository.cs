@@ -11,4 +11,6 @@ public interface IItemRepository
     public Task<ICollection<ItemEntity>> GetItemsAsync();
     public Task<ItemEntity> GetByNameAsync(string name);
     public Task<ICollection<ItemEntity>> GetByBoardIdAsync(int boardId);
+    public Task<ICollection<ItemEntity>> GetItemsByUserId(int userId);
+    public Task AddUserToItem(UserItemEntity itemUserEntity);
 }

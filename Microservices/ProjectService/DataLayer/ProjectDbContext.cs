@@ -19,6 +19,7 @@ namespace ProjectService.DataLayer
         public DbSet<StatusEntity> Statuses => Set<StatusEntity>();
         public DbSet<RoleEntity> Roles => Set<RoleEntity>();
         public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
+        public DbSet<UserItemEntity> UserItems => Set<UserItemEntity>();
         public DbSet<UserProjectEntity> UserProjects => Set<UserProjectEntity>();
         public DbSet<DocumentEntity> Documents => Set<DocumentEntity>();
         public DbSet<ProjectLinkEntity> VisibilityLinks => Set<ProjectLinkEntity>();
@@ -39,13 +40,19 @@ namespace ProjectService.DataLayer
                 .HasOne(up => up.Project) // Проект для UserProject
                 .WithMany(p => p.UserProjects) // Проект может иметь много UserProject
                 .HasForeignKey(up => up.ProjectId) // Внешний ключ
-                .OnDelete(DeleteBehavior.Cascade); // Устанавливаем поведение при удалении, можно настроить по желанию
+                .OnDelete(DeleteBehavior.SetNull); // Устанавливаем поведение при удалении, можно настроить по желанию
 
             modelBuilder.Entity<UserProjectEntity>()
                 .HasOne(up => up.Role)
                 .WithMany(r => r.UserProjects)
                 .HasForeignKey(up => up.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<UserItemEntity>()
+                .HasOne(up => up.Item)
+                .WithMany(i => i.UserItems)
+                .HasForeignKey(up => up.ItemId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<ItemBoardEntity>()
                 .HasKey(ib => new { ib.ItemId, ib.BoardId });
