@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
+using ProjectService.Models;
 using ProjectService.Services.MailService;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper;
@@ -25,6 +26,21 @@ namespace ProjectService.Controllers
             _projectManager = projectManager;
             _emailSender = emailSender;
             _auth = auth;
+        }
+
+        [HttpPost("set-user-role")]
+        public async Task<IActionResult> SetUserRole([FromBody] SetUserRoleModel model)
+        {
+            try 
+            {
+                await _projectManager.SetUserRoleAsync(model.UserId, model.ProjectId, model.Role);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
         }
 
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
