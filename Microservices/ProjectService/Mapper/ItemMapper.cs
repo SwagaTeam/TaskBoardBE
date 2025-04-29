@@ -21,7 +21,7 @@ public class ItemMapper
             ExpectedEndDate = item.ExpectedEndDate,
             Priority = item.Priority,
             ItemTypeId = item.ItemTypeId,
-            StatusId = item.StatusId,
+            StatusId = (int)item.StatusId,
             IsArchived = item.IsArchived,
         };
     }

@@ -15,8 +15,8 @@ public class ItemModel
     public DateTime StartDate { get; set; }
     public DateTime ExpectedEndDate { get; set; }
     public int Priority { get; set; }
-    public int ItemTypeId { get; set; }
-    public int StatusId { get; set; }
+    public int? ItemTypeId { get; set; }
+    public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
 
     [JsonIgnore]

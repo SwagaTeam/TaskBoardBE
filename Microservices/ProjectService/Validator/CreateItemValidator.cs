@@ -14,14 +14,18 @@ public class CreateItemValidator
     private readonly IBoardManager boardManager;
     private readonly IAuth authManager;
     private readonly IItemRepository itemRepository;
+    private readonly IStatusManager statusManager;
+    private readonly IItemTypeManager itemTypeManager;
     
     public CreateItemValidator(IBoardManager boardManager, IProjectManager projectManager, IAuth authManager, 
-        IItemRepository itemRepository)
+        IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager)
     {
         this.boardManager = boardManager;
         this.projectManager = projectManager;
         this.authManager = authManager;
         this.itemRepository = itemRepository;
+        this.statusManager = statusManager;
+        this.itemTypeManager = itemTypeManager;
         
         RuleFor(x => x)
             .MustAsync(IsUserMember)
@@ -34,6 +38,14 @@ public class CreateItemValidator
         RuleFor(x => x)
             .MustAsync(IsEpicAndParentExist)
             .WithMessage("У эпика не может быть родительского item");
+
+        RuleFor(x => x)
+            .MustAsync(IsStatusExist)
+            .WithMessage("Такого статуса не существует");
+        
+        RuleFor(x => x)
+            .MustAsync(IsItemTypeExist)
+            .WithMessage("Такого item type не существует");
     }
 
     private async Task<bool> IsUserMember(CreateItemModel item, CancellationToken cancellation)
@@ -46,7 +58,18 @@ public class CreateItemValidator
 
     private async Task<bool> IsStatusExist(CreateItemModel item, CancellationToken cancellation)
     {
-        
+        var statusId = item.Item.StatusId;
+        if (statusId is null) return false;
+        var status = await statusManager.GetById((int)statusId);
+        return status is not null;
+    }
+    
+    private async Task<bool> IsItemTypeExist(CreateItemModel item, CancellationToken cancellation)
+    {
+        var itemTypeId = item.Item.ItemTypeId;
+        if (itemTypeId is null) return false;
+        var itemType = await itemTypeManager.GetById((int)itemTypeId);
+        return itemType is not null;
     }
 
     private async Task<bool> IsEpicAndParentExist(CreateItemModel createItemModel, CancellationToken cancellation)
