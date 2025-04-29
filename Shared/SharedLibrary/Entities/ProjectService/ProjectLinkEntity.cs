@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedLibrary.Entities.ProjectService
 {
-    public class VisibilityLinkEntity
+    public class ProjectLinkEntity
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }

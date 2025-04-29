@@ -20,7 +20,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                return Ok(await _boardManager.Create(boardModel));
+                return Ok(await _boardManager.CreateAsync(boardModel));
             }
             catch (Exception ex)
             {
@@ -33,7 +33,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                return Ok(await _boardManager.Update(boardModel));
+                return Ok(await _boardManager.UpdateAsync(boardModel));
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                await _boardManager.ChangeBoardOrder(updateOrderModel.BoardId, updateOrderModel.Order);
+                await _boardManager.ChangeBoardOrderAsync(updateOrderModel.BoardId, updateOrderModel.Order);
                 return Ok("Порядок изменён");
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                return Ok(await _boardManager.Delete(id));
+                return Ok(await _boardManager.DeleteAsync(id));
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                return Ok(await _boardManager.GetById(id));
+                return Ok(await _boardManager.GetByIdAsync(id));
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace ProjectService.Controllers
         {
             try
             {
-                return Ok(await _boardManager.GetByProjectId(id));
+                return Ok(await _boardManager.GetByProjectIdAsync(id));
             }
             catch (Exception ex)
             {

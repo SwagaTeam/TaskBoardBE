@@ -3,18 +3,15 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
 using ProjectService.Models;
-using ProjectService.Validator;
-using SharedLibrary.Auth;
-using SharedLibrary.Constants;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ItemManager(IItemRepository itemRepository, ICreateItemManager createItemManager,
+public class ItemManager(IItemRepository itemRepository, IValidateItemManager validateItemManager,
     IKafkaProducer<ItemModel> kafkaProducer) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
-        await createItemManager.Validate(createItemModel);
+        await validateItemManager.ValidateCreateAsync(createItemModel);
         var item = createItemModel.Item;
         var entity = ItemMapper.ItemToEntity(item);
         await itemRepository.CreateAsync(entity);
@@ -50,5 +47,11 @@ public class ItemManager(IItemRepository itemRepository, ICreateItemManager crea
     {
         return ItemMapper.ItemToModel(await itemRepository.GetByNameAsync(title));
     }
-    
+
+    public async Task<ItemModel> ChangeParam(ItemModel itemModel)
+    {
+        await validateItemManager.ValidateItemModelAsync(itemModel);
+        await UpdateAsync(itemModel);
+        return itemModel;
+    }
 }

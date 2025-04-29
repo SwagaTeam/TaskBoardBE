@@ -1,11 +1,12 @@
-﻿using SharedLibrary.ProjectModels;
+﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.ProjectModels;
 
 namespace ProjectService.DataLayer.Repositories.Abstractions
 {
     public interface IProjectLinkRepository
     {
-        Task<int> Create(ProjectLinkModel projectLink);
-        Task<ProjectLinkModel?> Get(int id);
-        Task<ProjectLinkModel?> GetByLink(string link);
+        Task CreateAsync(ProjectLinkEntity projectLink);
+        Task<ProjectLinkEntity?> GetByIdAsync(int id);
+        Task<ProjectLinkEntity?> GetByLinkAsync(string link);
     }
 }

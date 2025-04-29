@@ -4,11 +4,11 @@ namespace ProjectService.BusinessLayer.Abstractions
 {
     public interface IBoardManager
     {
-        Task<BoardModel?> GetById(int id);
-        Task<ICollection<BoardModel>> GetByProjectId(int projectId);
-        Task ChangeBoardOrder(int boardId, int newOrder);
-        Task<int> Create(BoardModel board);
-        Task<int> Update(BoardModel board);
-        Task<int> Delete(int id);
+        Task<BoardModel?> GetByIdAsync(int id);
+        Task<ICollection<BoardModel>> GetByProjectIdAsync(int projectId);
+        Task ChangeBoardOrderAsync(int boardId, int newOrder);
+        Task<int> CreateAsync(BoardModel board);
+        Task<int> UpdateAsync(BoardModel board);
+        Task<int> DeleteAsync(int id);
     }
 }

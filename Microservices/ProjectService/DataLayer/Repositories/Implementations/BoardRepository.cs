@@ -1,79 +1,64 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using ProjectService.Mapper;
 using SharedLibrary.Entities.ProjectService;
-using SharedLibrary.ProjectModels;
-using System.Linq;
-using System.Xml.Linq;
-using static Dapper.SqlMapper;
 
-namespace ProjectService.DataLayer.Repositories.Implementations
+namespace ProjectService.DataLayer.Repositories.Implementations;
+
+public class BoardRepository(ProjectDbContext context) : IBoardRepository
 {
-    public class BoardRepository : IBoardRepository
+    public async Task CreateAsync(BoardEntity board)
     {
-        private readonly ProjectDbContext _projectDbContext;
-        public BoardRepository(ProjectDbContext context)
-        {
-            _projectDbContext = context;
-        }
-        public async Task Create(BoardEntity board)
-        {
-            await _projectDbContext.Boards.AddAsync(board);
+        await context.Boards.AddAsync(board);
+        await context.SaveChangesAsync();
+    }
 
-            await _projectDbContext.SaveChangesAsync();
-        }
+    public async Task DeleteAsync(int id)
+    {
+        var board = await GetByIdAsync(id);
 
-        public async Task Delete(int id)
-        {
-            var board = await _projectDbContext.Boards.FindAsync(id);
+        if (board is null) throw new NullReferenceException("Доска не найдена");
+        
+        context.Boards.Remove(board);
+        await context.SaveChangesAsync();
+    }
 
-            if (board != null)
-            {
-                _projectDbContext.Boards.Remove(board);
-                await _projectDbContext.SaveChangesAsync();
-            }
-        }
+    public async Task<BoardEntity?> GetByIdAsync(int id)
+    {
+        var board = await context.Boards
+            .Include(x => x.Status)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<BoardEntity?> GetById(int id)
-        {
-            var board = await _projectDbContext.Boards
-                                .Include(x=>x.Status)
-                                .FirstOrDefaultAsync(x=>x.Id == id);
-            
-            return board;
-        }
+        return board;
+    }
 
-        public async Task<BoardEntity?> GetByName(string name)
-        {
-            var board = await _projectDbContext.Boards
-                                .FirstOrDefaultAsync(x => x.Name == name);
-            
+    public async Task<BoardEntity?> GetByNameAsync(string name)
+    {
+        var board = await context.Boards
+            .FirstOrDefaultAsync(x => x.Name == name);
 
-            return board;
-        }
 
-        public async Task<IQueryable<BoardEntity>> GetByProjectId(int projectId)
-        {
-            var boards = _projectDbContext.Boards
-                                .Include(x=>x.Status)
-                                .Where(x => x.ProjectId == projectId);
+        return board;
+    }
 
-            return boards;
-        }
+    public async Task<IQueryable<BoardEntity>> GetByProjectIdAsync(int projectId)
+    {
+        var boards = context.Boards
+            .Include(x => x.Status)
+            .Where(x => x.ProjectId == projectId);
 
-        public async Task Update(BoardEntity board)
-        {
-            _projectDbContext.Update(board);
-            await _projectDbContext.SaveChangesAsync();
-        }
+        return boards;
+    }
 
-        public async Task UpdateRange(ICollection<BoardEntity> boards)
-        {
-            foreach (var board in boards)
-            {
-                _projectDbContext.Update(board);
-            }
-            await _projectDbContext.SaveChangesAsync();
-        }
+    public async Task UpdateAsync(BoardEntity board)
+    {
+        context.Boards.Update(board);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateRangeAsync(ICollection<BoardEntity> boards)
+    {
+        foreach (var board in boards)
+            context.Boards.Update(board);
+        await context.SaveChangesAsync();
     }
 }

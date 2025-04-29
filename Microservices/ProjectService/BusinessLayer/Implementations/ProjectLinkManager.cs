@@ -1,39 +1,32 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
-using ProjectService.BusinessLayer.Abstractions;
+﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using SharedLibrary.ProjectModels;
+using ProjectService.Mapper;
+using SharedLibrary.Entities.ProjectService;
 
-namespace ProjectService.BusinessLayer.Implementations
+namespace ProjectService.BusinessLayer.Implementations;
+
+public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository) : IProjectLinkManager
 {
-    public class ProjectLinkManager : IProjectLinkManager
+    public async Task<string> CreateAsync(int projectId)
     {
-        private readonly IProjectLinkRepository _projectLinkRepository;
-        public ProjectLinkManager(IProjectLinkRepository projectLinkRepository)
+        // Генерация уникального URL
+        var url = Guid.NewGuid().ToString("N");
+        var entity = new ProjectLinkEntity
         {
-            _projectLinkRepository = projectLinkRepository;
-        }
-        public async Task<string> Create(int projectId)
-        {
-            // Генерация уникального URL
-            var url = Guid.NewGuid().ToString("N");
+            ProjectId = projectId,
+            Url = url
+        };
+        await projectLinkRepository.CreateAsync(entity);
+        return url;
+    }
 
-            await _projectLinkRepository.Create(new ProjectLinkModel()
-            {
-                ProjectId = projectId,
-                URL = url
-            });
+    public async Task<ProjectLinkModel?> GetByIdAsync(int id)
+    {
+        return ProjectLinkMapper.ToModel(await projectLinkRepository.GetByIdAsync(id));
+    }
 
-            return url;
-        }
-
-        public async Task<ProjectLinkModel?> Get(int id)
-        {
-            return await _projectLinkRepository.Get(id);
-        }
-
-        public async Task<ProjectLinkModel?> GetByLink(string link)
-        {
-            return await _projectLinkRepository.GetByLink(link);
-        }
+    public async Task<ProjectLinkModel?> GetByLinkAsync(string link)
+    {
+        return ProjectLinkMapper.ToModel(await projectLinkRepository.GetByLinkAsync(link));
     }
 }

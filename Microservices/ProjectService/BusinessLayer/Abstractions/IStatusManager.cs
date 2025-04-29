@@ -2,9 +2,9 @@
 
 public interface IStatusManager
 {
-    public Task<IEnumerable<StatusModel>> GetAll();
-    public Task<StatusModel> GetById(int id);
-    public Task<int?> Create(StatusModel statusModel);
-    public Task<int?> Update(StatusModel statusModel);
-    public Task Delete(int id);
+    public Task<IEnumerable<StatusModel>> GetAllAsync();
+    public Task<StatusModel> GetByIdAsync(int id);
+    public Task<int?> CreateAsync(StatusModel statusModel);
+    public Task<int?> UpdateAsync(StatusModel statusModel);
+    public Task DeleteAsync(int id);
 }

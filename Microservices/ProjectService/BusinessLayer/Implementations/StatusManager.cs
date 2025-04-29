@@ -6,18 +6,18 @@ namespace ProjectService.BusinessLayer.Implementations;
 
 public class StatusManager(IStatusRepository statusRepository) : IStatusManager
 {
-    public async Task<IEnumerable<StatusModel>> GetAll()
+    public async Task<IEnumerable<StatusModel>> GetAllAsync()
     {
         return (await statusRepository.GetAllAsync())
             .Select(StatusMapper.ToModel);
     }
 
-    public async Task<StatusModel> GetById(int id)
+    public async Task<StatusModel> GetByIdAsync(int id)
     {
         return StatusMapper.ToModel(await statusRepository.GetByIdAsync(id));
     }
 
-    public async Task<int?> Create(StatusModel statusModel)
+    public async Task<int?> CreateAsync(StatusModel statusModel)
     {
         var entity = StatusMapper.ToEntity(statusModel);
         if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
@@ -26,7 +26,7 @@ public class StatusManager(IStatusRepository statusRepository) : IStatusManager
         return statusModel.Id;
     }
 
-    public async Task<int?> Update(StatusModel statusModel)
+    public async Task<int?> UpdateAsync(StatusModel statusModel)
     {
         var entity = StatusMapper.ToEntity(statusModel);
         if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
@@ -34,7 +34,7 @@ public class StatusManager(IStatusRepository statusRepository) : IStatusManager
         return statusModel.Id;
     }
 
-    public async Task Delete(int id)
+    public async Task DeleteAsync(int id)
     {
         await statusRepository.DeleteAsync(id);
     }

@@ -6,18 +6,18 @@ namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemTypeRepository(IItemTypeRepository itemTypeRepository) : IItemTypeManager
 {
-    public async Task<IEnumerable<ItemTypeModel>> GetAll()
+    public async Task<IEnumerable<ItemTypeModel>> GetAllAsync()
     {
         return (await itemTypeRepository.GetAllAsync())
             .Select(ItemTypeMapper.ToModel);
     }
 
-    public async Task<ItemTypeModel> GetById(int id)
+    public async Task<ItemTypeModel> GetByIdAsync(int id)
     {
         return ItemTypeMapper.ToModel(await itemTypeRepository.GetByIdAsync(id));
     }
 
-    public async Task<int?> Create(ItemTypeModel itemTypeModel)
+    public async Task<int?> CreateAsync(ItemTypeModel itemTypeModel)
     {
         var entity = ItemTypeMapper.ToEntity(itemTypeModel);
         if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
@@ -26,7 +26,7 @@ public class ItemTypeRepository(IItemTypeRepository itemTypeRepository) : IItemT
         return itemTypeModel.Id;
     }
 
-    public async Task<int?> Update(ItemTypeModel itemTypeModel)
+    public async Task<int?> UpdateAsync(ItemTypeModel itemTypeModel)
     {
         var entity = ItemTypeMapper.ToEntity(itemTypeModel);
         if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");

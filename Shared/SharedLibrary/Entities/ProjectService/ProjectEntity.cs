@@ -26,7 +26,7 @@ namespace SharedLibrary.Entities.ProjectService
         [JsonIgnore]
         public virtual ICollection<UserProjectEntity> UserProjects { get; set; }
         public virtual ICollection<DocumentEntity> Documents { get; set; }
-        public virtual ICollection<VisibilityLinkEntity> VisibilityLinks { get; set; }
+        public virtual ICollection<ProjectLinkEntity> VisibilityLinks { get; set; }
     }
 
 }

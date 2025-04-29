@@ -5,15 +5,10 @@ namespace ProjectService.DataLayer.Repositories.Abstractions
 {
     public interface IProjectRepository
     {
-        Task<ProjectEntity?> GetById(int id);
-        Task<ProjectEntity?> GetByBoardId(int id);
-        Task<bool> IsUserInProject(int userId, int projectId);
-        Task<int> AddUserInProject(int userId, int projectId);
-        Task<bool> IsUserAdmin(int userId, int projectId);
-        Task<bool> IsUserCanView(int userId, int projectId);
-        Task Create(ProjectEntity project, int userId);
+        Task<ProjectEntity?> GetByIdAsync(int id);
+        Task<ProjectEntity?> GetByBoardIdAsync(int id);
+        Task Create(ProjectEntity project);
         Task Update(ProjectEntity project);
         Task Delete(int id);
-        public Task<bool> IsUserViewer(int userId, int projectId);
     }
 }

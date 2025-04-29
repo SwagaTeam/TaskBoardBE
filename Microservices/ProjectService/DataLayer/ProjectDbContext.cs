@@ -21,7 +21,7 @@ namespace ProjectService.DataLayer
         public DbSet<ProjectEntity> Projects => Set<ProjectEntity>();
         public DbSet<UserProjectEntity> UserProjects => Set<UserProjectEntity>();
         public DbSet<DocumentEntity> Documents => Set<DocumentEntity>();
-        public DbSet<VisibilityLinkEntity> VisibilityLinks => Set<VisibilityLinkEntity>();
+        public DbSet<ProjectLinkEntity> VisibilityLinks => Set<ProjectLinkEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,7 +47,7 @@ namespace ProjectService.DataLayer
                 .HasForeignKey(up => up.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<VisibilityLinkEntity>()
+            modelBuilder.Entity<ProjectLinkEntity>()
                 .HasOne(v => v.Project)
                 .WithMany(p => p.VisibilityLinks)
                 .HasForeignKey(v => v.ProjectId);

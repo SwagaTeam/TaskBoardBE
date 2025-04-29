@@ -25,6 +25,55 @@ public class ItemController(IItemManager manager) : ControllerBase
         }
     }
 
+    [HttpPost("change-status/{statusId}")]
+    public async Task<IActionResult> ChangeStatus([FromBody] ItemModel itemModel, int statusId, CancellationToken cancellationToken)
+    {
+        //с помощью токена уведомлять о изменении статуса надо сделать
+        try
+        {
+            itemModel.StatusId = statusId;
+            var newItemModel = await manager.ChangeParam(itemModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("change-itemTyp/{itemTypeId}")]
+
+    public async Task<IActionResult> ChangeItemType([FromBody] ItemModel itemModel, int itemTypeId,
+        CancellationToken cancellationToken)
+    {
+        //нужно подумать как обьединить эти 2 метода в один в зависимости от параметров
+        try
+        {
+            itemModel.ItemTypeId = itemTypeId;
+            var newItemModel = await manager.ChangeParam(itemModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("change-params")]//тут передается новая модель но со старым id и ищет в бд по id
+                               //запись и меняет в ней все что нужно
+    public async Task<IActionResult> ChangeParams([FromBody] ItemModel itemModel, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var newItemModel = await manager.ChangeParam(itemModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpGet("get")]
     [ProducesResponseType<IEnumerable<ItemModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

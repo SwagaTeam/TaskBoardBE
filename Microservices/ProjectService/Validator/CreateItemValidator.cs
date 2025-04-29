@@ -14,8 +14,6 @@ public class CreateItemValidator
     private readonly IBoardManager boardManager;
     private readonly IAuth authManager;
     private readonly IItemRepository itemRepository;
-    private readonly IStatusManager statusManager;
-    private readonly IItemTypeManager itemTypeManager;
     
     public CreateItemValidator(IBoardManager boardManager, IProjectManager projectManager, IAuth authManager, 
         IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager)
@@ -24,8 +22,7 @@ public class CreateItemValidator
         this.projectManager = projectManager;
         this.authManager = authManager;
         this.itemRepository = itemRepository;
-        this.statusManager = statusManager;
-        this.itemTypeManager = itemTypeManager;
+        var itemModelValidator = new ItemModelValidator(statusManager, itemTypeManager);
         
         RuleFor(x => x)
             .MustAsync(IsUserMember)
@@ -38,14 +35,6 @@ public class CreateItemValidator
         RuleFor(x => x)
             .MustAsync(IsEpicAndParentExist)
             .WithMessage("У эпика не может быть родительского item");
-
-        RuleFor(x => x)
-            .MustAsync(IsStatusExist)
-            .WithMessage("Такого статуса не существует");
-        
-        RuleFor(x => x)
-            .MustAsync(IsItemTypeExist)
-            .WithMessage("Такого item type не существует");
     }
 
     private async Task<bool> IsUserMember(CreateItemModel item, CancellationToken cancellation)
@@ -53,23 +42,7 @@ public class CreateItemValidator
         var currentId = authManager.GetCurrentUserId();
         if (currentId is null) return false;
         
-        return !await projectManager.IsUserViewer((int)currentId, (int)item.Item.ProjectId);
-    }
-
-    private async Task<bool> IsStatusExist(CreateItemModel item, CancellationToken cancellation)
-    {
-        var statusId = item.Item.StatusId;
-        if (statusId is null) return false;
-        var status = await statusManager.GetById((int)statusId);
-        return status is not null;
-    }
-    
-    private async Task<bool> IsItemTypeExist(CreateItemModel item, CancellationToken cancellation)
-    {
-        var itemTypeId = item.Item.ItemTypeId;
-        if (itemTypeId is null) return false;
-        var itemType = await itemTypeManager.GetById((int)itemTypeId);
-        return itemType is not null;
+        return !await projectManager.IsUserViewerAsync((int)currentId, (int)item.Item.ProjectId);
     }
 
     private async Task<bool> IsEpicAndParentExist(CreateItemModel createItemModel, CancellationToken cancellation)
@@ -82,7 +55,7 @@ public class CreateItemValidator
     
     private async Task<bool> BeValidBoard(CreateItemModel item, CancellationToken cancellation)
     {
-        var board = await boardManager.GetById(item.BoardId);
+        var board = await boardManager.GetByIdAsync(item.BoardId);
         return board != null && board.ProjectId == item.Item.ProjectId;
     }
 }

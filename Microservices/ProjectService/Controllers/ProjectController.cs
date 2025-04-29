@@ -33,22 +33,22 @@ namespace ProjectService.Controllers
         [HttpPost("send-invite")]
         public async Task<IActionResult> SendInvite([FromBody] InviteRequest request)
         {
-            var link = await _projectLinkManager.Create(request.ProjectId);
+            var link = await _projectLinkManager.CreateAsync(request.ProjectId);
 
             link = $"{Request.Scheme}://{Request.Host}/project/invite/{link}";
 
-            var project = await _projectManager.GetById(request.ProjectId);
+            var project = await _projectManager.GetByIdAsync(request.ProjectId);
 
             var user = await UserRepository.GetUserByEmail (request.Email);
 
             if (user is null || project is null)
-                return BadRequest("Пользователя или проекта не существует");
+                return BadRequest("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 
             await _emailSender.SendEmailAsync(
                 user.Email, 
-                "Приглашение в проект", 
-                $"Здравствуйте, {user.Username}, вас приглашают в проект {project.Name}.\n" +
-                $"Ссылка-приглашение: {link}");
+                "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ", 
+                $"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, {user.Username}, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ {project.Name}.\n" +
+                $"пїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {link}");
 
             return Ok(link);
         }
@@ -56,7 +56,7 @@ namespace ProjectService.Controllers
         [HttpGet("invite/{link}")]
         public async Task<IActionResult> GetProjectInfo(string link)
         {
-            var projectLink = await _projectLinkManager.GetByLink(link);
+            var projectLink = await _projectLinkManager.GetByLinkAsync(link);
 
             if (projectLink == null)
                 return NotFound();
@@ -65,7 +65,7 @@ namespace ProjectService.Controllers
         }
 
         [HttpPost("invite/{url}/join")]
-        //TODO Аттрибут AUTHORIZED
+        //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ AUTHORIZED
         public async Task<IActionResult> JoinProject(string url)
         {
             var userId = _auth.GetCurrentUserId();
@@ -73,19 +73,19 @@ namespace ProjectService.Controllers
             if (userId == -1 || userId is null)
                 return Unauthorized();
 
-            var projectLink = await _projectLinkManager.GetByLink(url);
+            var projectLink = await _projectLinkManager.GetByLinkAsync(url);
 
             if (projectLink == null)
                 return NotFound();
 
-            var alreadyIn = await _projectManager.IsUserInProject((int)userId, projectLink.ProjectId);
+            var alreadyIn = await _projectManager.IsUserInProjectAsync((int)userId, projectLink.ProjectId);
 
             if (alreadyIn)
-                return BadRequest("Пользователь уже состоит в проекте");
+                return BadRequest("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 
-            await _projectManager.AddUserInProject((int)userId, projectLink.ProjectId);
+            await _projectManager.AddUserInProjectAsync((int)userId, projectLink.ProjectId);
 
-            return Ok("Пользователь добавлен в проект");
+            return Ok("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
         }
 
         [ProducesResponseType<IEnumerable<ProjectModel>>(StatusCodes.Status200OK)]
@@ -113,7 +113,7 @@ namespace ProjectService.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] ProjectModel model)
         {
-            var projectId = await _projectManager.Create(model);
+            var projectId = await _projectManager.CreateAsync(model);
 
             return Ok(projectId);
         }
@@ -133,7 +133,7 @@ namespace ProjectService.Controllers
         [HttpPost("status/change/{id}")]
         public async Task<IActionResult> ChangeStatus([FromBody] StatusEntity status, int id)
         {
-            //TODO: поменять Entity на dto
+            //TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Entity пїЅпїЅ dto
             return Ok(id);
         }
     }

@@ -10,4 +10,7 @@ public interface IItemManager
     public Task<ItemModel> GetByIdAsync(int id);
     public Task<int> UpdateAsync(ItemModel item);
     public Task<ItemModel> GetByTitle(string title);
-    public Task Delete(int id); }
+    public Task Delete(int id);
+    public Task<ItemModel> ChangeParam(ItemModel itemModel);
+
+}

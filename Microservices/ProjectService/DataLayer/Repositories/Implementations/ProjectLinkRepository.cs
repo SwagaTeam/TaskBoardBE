@@ -6,48 +6,24 @@ using SharedLibrary.ProjectModels;
 
 namespace ProjectService.DataLayer.Repositories.Implementations
 {
-    public class ProjectLinkRepository : IProjectLinkRepository
+    public class ProjectLinkRepository(ProjectDbContext context) : IProjectLinkRepository
     {
-        private readonly ProjectDbContext _context;
-        public ProjectLinkRepository(ProjectDbContext context)
+        public async Task CreateAsync(ProjectLinkEntity projectLink)
         {
-            _context = context;
+            await context.VisibilityLinks.AddAsync(projectLink);
+            await context.SaveChangesAsync();
         }
 
-        public async Task<int> Create(ProjectLinkModel projectLink)
+        public async Task<ProjectLinkEntity?> GetByIdAsync(int id)
         {
-            await _context.VisibilityLinks.AddAsync(new VisibilityLinkEntity()
-            {
-                ProjectId = projectLink.ProjectId,
-                Url = projectLink.URL
-            });
-
-            await _context.SaveChangesAsync();
-
-            return projectLink.ProjectId;
+            var projectLink = await context.VisibilityLinks.FindAsync(id);
+            return projectLink;
         }
 
-        public async Task<ProjectLinkModel?> Get(int id)
+        public async Task<ProjectLinkEntity?> GetByLinkAsync(string link)
         {
-            var projectLink = await _context.VisibilityLinks.FindAsync(id);
-            if (projectLink == null)
-                return null;
-
-            return new ProjectLinkModel() {ProjectId = projectLink.ProjectId, URL = projectLink.Url};
-        }
-
-        public async Task<ProjectLinkModel?> GetByLink(string link)
-        {
-            var projectLink = await _context.VisibilityLinks.FirstOrDefaultAsync(x=>x.Url == link);
-
-            if (projectLink == null)
-                return null;
-
-            var project = await _context.Projects.FindAsync(projectLink.ProjectId);
-            
-
-
-            return new ProjectLinkModel() { ProjectId = projectLink.ProjectId, URL = projectLink.Url , Project = ProjectMapper.ToModel(project)};
+            var projectLink = await context.VisibilityLinks.FirstOrDefaultAsync(x=>x.Url == link);
+            return projectLink;
         }
     }
 }
