@@ -70,7 +70,7 @@ public class ItemController(IItemManager manager) : ControllerBase
         }
     }
 
-    [HttpPost("change-itemTyp/{itemTypeId}")]
+    [HttpPost("change-itemType/{itemTypeId}")]
 
     public async Task<IActionResult> ChangeItemType([FromBody] ItemModel itemModel, int itemTypeId,
         CancellationToken cancellationToken)

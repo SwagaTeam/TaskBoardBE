@@ -106,11 +106,19 @@ namespace ProjectService.Controllers
 
         [ProducesResponseType<IEnumerable<ProjectModel>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("get")]
+        [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {
-            List<ProjectModel> projects = new List<ProjectModel>();
-            return Ok(projects);
+            try 
+            {
+                var projects = await _projectManager.Get();
+                return Ok(projects);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [ProducesResponseType<ProjectModel>(StatusCodes.Status200OK)]
@@ -119,8 +127,15 @@ namespace ProjectService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            ProjectModel project = new ProjectModel();
-            return Ok(project);
+            try
+            {
+                var project = await _projectManager.GetByIdAsync(id);
+                return Ok(project);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [ProducesResponseType<int>(StatusCodes.Status200OK)]
@@ -140,17 +155,15 @@ namespace ProjectService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(id);
-        }
-
-        [ProducesResponseType<int>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpPost("status/change/{id}")]
-        public async Task<IActionResult> ChangeStatus([FromBody] StatusEntity status, int id)
-        {
-            //TODO: �������� Entity �� dto
-            return Ok(id);
+            try
+            {
+                await _projectManager.DeleteAsync(id);
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

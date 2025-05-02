@@ -127,8 +127,15 @@ public class ProjectManager(
 
     public async Task<ProjectModel?> GetByBoardIdAsync(int id)
     {
-        var board = await projectRepository.GetByBoardIdAsync(id);
-        return ProjectMapper.ToModel(board);
+        var project = await projectRepository.GetByBoardIdAsync(id);
+        return ProjectMapper.ToModel(project!);
+    }
+
+    public async Task<ICollection<ProjectModel?>> Get()
+    {
+        var currentUserId = auth.GetCurrentUserId();
+        var projects = projectRepository.GetByUserIdAsync(currentUserId);
+        return projects.Select(ProjectMapper.ToModel!).ToList()!;
     }
 
     public async Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role)

@@ -11,5 +11,6 @@ namespace ProjectService.DataLayer.Repositories.Abstractions
         Task Create(ProjectEntity project);
         Task Update(ProjectEntity project);
         Task Delete(int id);
+        IQueryable<ProjectEntity?> GetByUserIdAsync(int? currentUserId);
     }
 }

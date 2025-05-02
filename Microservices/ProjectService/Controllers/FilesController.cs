@@ -49,7 +49,7 @@ namespace ProjectService.Controllers
 
         [ProducesResponseType<FileModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("get/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             //логика

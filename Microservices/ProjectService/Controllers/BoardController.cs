@@ -68,7 +68,7 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpGet("get/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -81,7 +81,7 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpGet("get/project/{id}")]
+        [HttpGet("project/{id}")]
         public async Task<IActionResult> GetByProjectId(int id)
         {
             try

@@ -39,6 +39,15 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return project;
         }
 
+        public IQueryable<ProjectEntity?> GetByUserIdAsync(int? currentUserId)
+        {
+            var projects = projectDbContext.Projects
+                .Include(x => x.UserProjects)
+                .Where(x => x.UserProjects.Any(x=>x.UserId == currentUserId));
+
+            return projects;
+        }
+
         public async Task<ProjectEntity?> GetByIdAsync(int id)
         {
             var project = await projectDbContext.Projects
@@ -76,5 +85,6 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return userId;
         }
 
+        
     }
 }

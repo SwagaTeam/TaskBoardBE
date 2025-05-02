@@ -5,6 +5,7 @@ namespace ProjectService.BusinessLayer.Abstractions
 {
     public interface IProjectManager
     {
+        Task<ICollection<ProjectModel?>> Get();
         Task<ProjectModel?> GetByIdAsync(int id);
         Task<ProjectModel?> GetByBoardIdAsync(int id);
         Task<bool> IsUserInProjectAsync(int userId, int projectId);
