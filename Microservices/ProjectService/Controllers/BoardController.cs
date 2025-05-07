@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProjectService.Controllers
 {
@@ -9,6 +10,7 @@ namespace ProjectService.Controllers
     public class BoardController : ControllerBase
     {
         private readonly IBoardManager _boardManager;
+        private readonly IStatusManager _statusManager;
 
         public BoardController(IBoardManager boardManager)
         {
@@ -41,12 +43,20 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpPatch("change-order")]
-        public async Task<IActionResult> ChangeOrder([FromBody] UpdateOrderModel updateOrderModel)
+        /// <summary>
+        /// Изменение порядка колонки
+        /// </summary>
+        /// <remarks>
+        /// Этот метод меняет порядок статуса (колонки) в доске, двигая все остальные статусы в соответствующую сторону.
+        /// </remarks>
+        /// <param name="updateOrderModel">ID изменяемого статуса, ID доски в которой находится статус, новый порядок (отсчёт с 0).</param>
+        [SwaggerOperation("Изменение порядка колонки")]
+        [HttpPatch("change-status-order")]
+        public async Task<IActionResult> ChangeStatusOrder([FromBody] UpdateOrderModel updateOrderModel)
         {
             try
             {
-                await _boardManager.ChangeBoardOrderAsync(updateOrderModel.BoardId, updateOrderModel.Order);
+                await _statusManager.ChangeStatusOrderAsync(updateOrderModel);
                 return Ok("Порядок изменён");
             }
             catch (Exception ex)

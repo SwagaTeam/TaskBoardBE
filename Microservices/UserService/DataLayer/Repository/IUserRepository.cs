@@ -11,5 +11,6 @@ namespace UserService.DataLayer.Repositories.Abstractions
         Task<UserModel?> GetById(int id);
         Task<UserModel?> GetByEmail(string email);
         Task<IEnumerable<UserModel>> GetAll();
+        Task SetUserAvatar(int userId, string path);
     }
 }

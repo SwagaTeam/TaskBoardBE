@@ -1,5 +1,6 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Entities.ProjectService;
 
@@ -10,6 +11,11 @@ public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IP
     public async Task<string> CreateAsync(int projectId)
     {
         // Генерация уникального URL
+        var project = await projectRepository.GetByIdAsync(projectId);
+
+        if(project is null)
+            throw new ProjectNotFoundException();
+
         var url = Guid.NewGuid().ToString("N");
         var entity = new ProjectLinkEntity
         {

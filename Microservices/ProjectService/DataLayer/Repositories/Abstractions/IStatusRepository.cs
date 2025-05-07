@@ -9,4 +9,6 @@ public interface IStatusRepository
     public Task CreateAsync(StatusEntity statusEntity);
     public Task DeleteAsync(int id);
     public Task UpdateAsync(StatusEntity statusEntity);
+    public Task<IQueryable<StatusEntity>> GetByBoardIdAsync(int boardId);
+    public Task UpdateRangeAsync(ICollection<StatusEntity> statusEntities);
 }

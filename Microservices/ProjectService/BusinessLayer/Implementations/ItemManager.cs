@@ -8,7 +8,7 @@ using SharedLibrary.Entities.ProjectService;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(IItemRepository itemRepository, IValidateItemManager validateItemManager,
-    IKafkaProducer<ItemModel> kafkaProducer, IItemBoardsRepository itemBoardsRepository) : IItemManager
+    IKafkaProducer<ItemModel> kafkaProducer, IItemBoardsRepository itemBoardsRepository, IStatusRepository statusRepository) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
@@ -22,7 +22,8 @@ public class ItemManager(IItemRepository itemRepository, IValidateItemManager va
             new ItemBoardEntity()
             {
                 ItemId = entity.Id,
-                BoardId = createItemModel.BoardId
+                BoardId = createItemModel.BoardId,
+                StatusId = createItemModel.StatusId
             }
         );
 
@@ -89,5 +90,14 @@ public class ItemManager(IItemRepository itemRepository, IValidateItemManager va
         //TODO: Добавить валидацию
         var items = await itemRepository.GetItemsByUserId(userId);
         return items.Select(ItemMapper.ItemToModel).ToList();
+    }
+
+    public async Task UpdateStatus(UpdateItemStatusModel model)
+    {
+        var item = await itemRepository.GetByIdAsync(model.ItemId);
+
+        var status = await statusRepository.GetByIdAsync(model.StatusId);
+
+        await itemRepository.UpdateAsync(item);
     }
 }

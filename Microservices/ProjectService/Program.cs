@@ -14,9 +14,8 @@ using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.BusinessLayer.Implementations;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.DataLayer.Repositories.Implementations;
-using ProjectService.Models;
-using ProjectService.Validator;
 using SharedLibrary.Auth;
+using DotNetEnv;
 
 internal class Program
 {
@@ -25,6 +24,8 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services, builder.Configuration);
+
+        Env.Load();
 
         var app = builder.Build();
 
@@ -124,6 +125,10 @@ internal class Program
                     new string[] {}
                 }
             });
+
+            var xmlFile = $"{AppDomain.CurrentDomain.FriendlyName}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
         });
 
         services.AddProducer<ItemModel>(configuration.GetSection("Kafka:NotificationTask"));
@@ -150,7 +155,7 @@ internal class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)),
                     RoleClaimType = ClaimTypes.Role
                 };
             });

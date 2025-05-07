@@ -21,23 +21,40 @@ public class BoardManager(
         if (!await userProjectManager.IsUserAdminAsync((int)userId!, board.ProjectId))
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
 
-        var boards = await GetByProjectIdAsync(board.ProjectId);
+        //var boards = await GetByProjectIdAsync(board.ProjectId);
 
         int lastOrder;
 
-        if (boards.Count > 0)
-            lastOrder = boards.Max(x => x.Status.Order);
-        else lastOrder = 0;
+        //if (boards.Count > 0)
+        //    lastOrder = boards.Max(x => x.Status.Order);
+        //else lastOrder = 0;
 
         var boardEntity = BoardMapper.ToEntity(board);
 
-        boardEntity.Status = new StatusEntity
-        {
-            Name = board.Name,
-            IsDone = false,
-            IsRejected = false,
-            Order = lastOrder + 1
-        };
+        boardEntity.Statuses =
+        [
+            new StatusEntity()
+            {
+                Name = "В очереди",
+                IsDone = false,
+                IsRejected = false,
+                Order = 0
+            },
+            new StatusEntity()
+            {
+                Name = "На исполнении",
+                IsDone = false,
+                IsRejected = false,
+                Order = 1
+            },
+            new StatusEntity()
+            {
+                Name = "Готово",
+                IsDone = true,
+                IsRejected = false,
+                Order = 2
+            }
+        ];
 
         board.CreatedAt = DateTime.UtcNow;
 
@@ -101,37 +118,6 @@ public class BoardManager(
 
     public async Task ChangeBoardOrderAsync(int boardId, int newOrder)
     {
-        var userId = auth.GetCurrentUserId();
-        var boardToMove = await boardRepository.GetByIdAsync(boardId);
-
-        if (await userProjectManager.IsUserAdminAsync((int)userId!, boardToMove.ProjectId))
-        {
-            var boards = await boardRepository.GetByProjectIdAsync(boardToMove.ProjectId);
-            ;
-
-            var oldOrder = boardToMove.Status.Order;
-
-            if (newOrder == oldOrder)
-                return;
-
-            if (newOrder > oldOrder)
-                // Сдвигаем вверх доски между старым и новым порядком
-                foreach (var board in boards.Where(b => b.Status.Order > oldOrder && b.Status.Order <= newOrder))
-                    board.Status.Order--;
-            else
-                // Сдвигаем вниз доски между новым и старым порядком
-                foreach (var board in boards.Where(b => b.Status.Order >= newOrder && b.Status.Order < oldOrder))
-                    board.Status.Order++;
-
-            // Ставим новый порядок для нашей доски
-            boardToMove.Status.Order = newOrder;
-
-            await boardRepository.UpdateRangeAsync(boards.ToList());
-            await boardRepository.UpdateAsync(boardToMove);
-
-            return;
-        }
-
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+       
     }
 }

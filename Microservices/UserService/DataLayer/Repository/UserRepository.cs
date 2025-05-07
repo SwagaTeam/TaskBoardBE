@@ -73,7 +73,7 @@ namespace UserService.DataLayer.Repositories.Implementations
 
         public async Task<int> Update(UserModel user)
         {
-            var userEntity = await GetById(user.Id);
+            var userEntity = await _userDbContext.Users.FindAsync(user.Id);
 
             userEntity!.Username = user.Username;
             userEntity.Password = user.Password;
@@ -83,6 +83,20 @@ namespace UserService.DataLayer.Repositories.Implementations
             await _userDbContext.SaveChangesAsync();
 
             return userEntity.Id;
+        }
+
+        public async Task SetUserAvatar(int userId, string path)
+        {
+            var userEntity = await _userDbContext.Users.FindAsync(userId);
+
+            if(userEntity is not null)
+            {
+                userEntity.ImagePath = path;
+                await _userDbContext.SaveChangesAsync();
+                return;
+            }
+
+            throw new Exception("Пользователь не найден");
         }
     }
 }

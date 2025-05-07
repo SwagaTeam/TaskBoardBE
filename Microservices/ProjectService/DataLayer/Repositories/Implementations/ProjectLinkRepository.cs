@@ -16,13 +16,17 @@ namespace ProjectService.DataLayer.Repositories.Implementations
 
         public async Task<ProjectLinkEntity?> GetByIdAsync(int id)
         {
-            var projectLink = await context.VisibilityLinks.FindAsync(id);
+            var projectLink = await context.VisibilityLinks
+                .Include(x => x.Project)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return projectLink;
         }
 
         public async Task<ProjectLinkEntity?> GetByLinkAsync(string link)
         {
-            var projectLink = await context.VisibilityLinks.FirstOrDefaultAsync(x=>x.Url == link);
+            var projectLink = await context.VisibilityLinks
+                .Include(x => x.Project)
+                .FirstOrDefaultAsync(x => x.Url == link);
             return projectLink;
         }
     }

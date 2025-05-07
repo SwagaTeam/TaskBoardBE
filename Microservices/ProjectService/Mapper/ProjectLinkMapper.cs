@@ -19,6 +19,7 @@ public class ProjectLinkMapper
         {
             Id = model.Id,
             ProjectId = model.ProjectId,
+            Project = ProjectMapper.ToModel(model.Project),
             Url = model.Url,
         };
     }

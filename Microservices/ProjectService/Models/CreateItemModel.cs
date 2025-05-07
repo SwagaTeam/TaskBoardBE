@@ -7,4 +7,6 @@ public class CreateItemModel
     public ItemModel Item { get; set; }
     [Required]
     public int BoardId { get; set; }
+    [Required]
+    public int StatusId { get; set; }
 }

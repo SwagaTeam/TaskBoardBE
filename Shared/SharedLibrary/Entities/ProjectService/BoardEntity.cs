@@ -17,9 +17,9 @@ namespace SharedLibrary.Entities.ProjectService
 
         public ProjectEntity Project { get; set; }
 
-        public StatusEntity Status { get; set; }
-
-        public ICollection<SprintEntity> Sprints { get; set; }
+        public virtual ICollection<SprintEntity> Sprints { get; set; }
         public virtual ICollection<ItemBoardEntity> ItemsBoards { get; set; } = new List<ItemBoardEntity>();
+        public virtual ICollection<StatusEntity> Statuses { get; set; } = new List<StatusEntity>();
+
     }
 }

@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Xml;
 
 namespace ProjectService.Controllers;
 
 [ApiController]
 
-public class ItemController(IItemManager manager) : ControllerBase
+public class ItemController(IItemManager itemManager) : ControllerBase
 {
     [HttpPost("create")]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
@@ -17,7 +18,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     {
         try
         {
-            var id = await manager.CreateAsync(item, cancellationToken);
+            var id = await itemManager.CreateAsync(item, cancellationToken);
             return Ok(id);
         }
         catch (Exception ex)
@@ -31,7 +32,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     {
         try
         {
-            var items = await manager.GetItemsByUserId(userId);
+            var items = await itemManager.GetItemsByUserId(userId);
             return Ok(items);
         }
         catch (Exception ex)
@@ -45,7 +46,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     {
         try
         {
-            await manager.AddUserToItem(model.UserId, model.ItemId);
+            await itemManager.AddUserToItem(model.UserId, model.ItemId);
             return Ok($"Пользователь {model.UserId} присоединен к задаче {model.ItemId}");
         }
         catch (Exception ex)
@@ -54,15 +55,23 @@ public class ItemController(IItemManager manager) : ControllerBase
         }
     }
 
-    [HttpPost("change-status/{statusId}")]
-    public async Task<IActionResult> ChangeStatus([FromBody] ItemModel itemModel, int statusId, CancellationToken cancellationToken)
+
+    /// <summary>
+    /// Изменение статуса задачи
+    /// </summary>
+    /// <remarks>
+    /// Меняет статус задачи при перемещении её из одной колонки в другую.
+    /// </remarks>
+    /// <param name="model">ID изменяемой задачи, ID статуса</param>
+    [SwaggerOperation("Изменение статуса задачи")]
+    [HttpPost("change-status")]
+    public async Task<IActionResult> ChangeStatus([FromBody] UpdateItemStatusModel model, CancellationToken cancellationToken)
     {
         //с помощью токена уведомлять о изменении статуса надо сделать
         try
         {
-            itemModel.StatusId = statusId;
-            var newItemModel = await manager.ChangeParam(itemModel);
-            return Ok(newItemModel);
+            await itemManager.UpdateStatus(model);
+            return Ok("Статус обновлён");
         }
         catch (Exception ex)
         {
@@ -79,7 +88,7 @@ public class ItemController(IItemManager manager) : ControllerBase
         try
         {
             itemModel.ItemTypeId = itemTypeId;
-            var newItemModel = await manager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.ChangeParam(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -94,7 +103,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     {
         try
         {
-            var newItemModel = await manager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.ChangeParam(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -108,7 +117,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetItemsAsync()
     {
-        var items = await manager.GetAllItemsAsync();
+        var items = await itemManager.GetAllItemsAsync();
         return Ok(items);
     }
     
@@ -118,7 +127,7 @@ public class ItemController(IItemManager manager) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await manager.Delete(id);
+        await itemManager.Delete(id);
         return Ok(id);
     }
 
@@ -128,21 +137,21 @@ public class ItemController(IItemManager manager) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetItemByIdAsync(int id)
     {
-        var item = await manager.GetByIdAsync(id);
+        var item = await itemManager.GetByIdAsync(id);
         return Ok(item);
     }
 
     [HttpGet("board/{boardId}")]
     public async Task<IActionResult> GetItemsByBoardIdAsync(int boardId)
     {
-        var items = await manager.GetByBoardIdAsync(boardId);
+        var items = await itemManager.GetByBoardIdAsync(boardId);
         return Ok(items);
     }
 
     [HttpGet("{title}")]
     public async Task<IActionResult> GetItemByName(string title)
     {
-        var item = await manager.GetByTitle(title);
+        var item = await itemManager.GetByTitle(title);
         return Ok(item);
     }
 }

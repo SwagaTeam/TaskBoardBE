@@ -49,24 +49,31 @@ namespace ProjectService.Controllers
         [HttpPost("send-invite")]
         public async Task<IActionResult> SendInvite([FromBody] InviteRequest request)
         {
-            var link = await _projectLinkManager.CreateAsync(request.ProjectId);
+            try
+            {
+                var link = await _projectLinkManager.CreateAsync(request.ProjectId);
 
-            link = $"{Request.Scheme}://{Request.Host}/project/invite/{link}";
+                link = $"{Request.Scheme}://{Request.Host}/project/invite/{link}";
 
-            var project = await _projectManager.GetByIdAsync(request.ProjectId);
+                var project = await _projectManager.GetByIdAsync(request.ProjectId);
 
-            var user = await UserRepository.GetUserByEmail (request.Email);
+                var user = await UserRepository.GetUserByEmail(request.Email);
 
-            if (user is null || project is null)
-                return BadRequest("������������ ��� ������� �� ����������");
+                if (user is null || project is null)
+                    return BadRequest("������������ ��� ������� �� ����������");
 
-            await _emailSender.SendEmailAsync(
-                user.Email, 
-                "����������� � ������", 
-                $"������������, {user.Username}, ��� ���������� � ������ {project.Name}.\n" +
-                $"������-�����������: {link}");
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "����������� � ������",
+                    $"������������, {user.Username}, ��� ���������� � ������ {project.Name}.\n" +
+                    $"������-�����������: {link}");
 
-            return Ok(link);
+                return Ok(link);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("invite/{link}")]

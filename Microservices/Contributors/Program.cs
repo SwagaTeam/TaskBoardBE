@@ -5,6 +5,7 @@ using Contributors.BusinessLayer.Implementations;
 using Contributors.DataLayer.Repositories.Abstractions;
 using Contributors.DataLayer.Repositories.Implementations;
 using Contributors.Initilizers;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,6 +19,8 @@ class Program
         var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services, builder.Configuration);
+
+        Env.Load();
 
         var app = builder.Build();
         
@@ -114,7 +117,7 @@ class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)),
                     RoleClaimType = ClaimTypes.Role
                 };
             });

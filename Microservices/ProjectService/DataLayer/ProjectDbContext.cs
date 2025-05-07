@@ -67,6 +67,11 @@ namespace ProjectService.DataLayer
                 .WithMany(b => b.ItemsBoards)
                 .HasForeignKey(ib => ib.BoardId);
 
+            modelBuilder.Entity<ItemBoardEntity>()
+                .HasOne(ib => ib.Status)
+                .WithMany(b => b.ItemsBoards)
+                .HasForeignKey(ib => ib.StatusId);
+
             modelBuilder.Entity<ProjectLinkEntity>()
                 .HasOne(v => v.Project)
                 .WithMany(p => p.VisibilityLinks)
@@ -80,9 +85,9 @@ namespace ProjectService.DataLayer
 
             // status -> boards (status_id)
             modelBuilder.Entity<BoardEntity>()
-                .HasOne(b => b.Status)
-                .WithMany(s => s.Boards)
-                .HasForeignKey(b => b.StatusId);
+                .HasMany(b => b.Statuses)
+                .WithOne(s => s.Board)
+                .HasForeignKey(b => b.BoardId);
 
             // items -> items (parent_id)
             modelBuilder.Entity<ItemEntity>()

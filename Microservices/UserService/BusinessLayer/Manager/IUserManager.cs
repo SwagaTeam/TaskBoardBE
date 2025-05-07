@@ -12,5 +12,6 @@ namespace UserService.BusinessLayer.Manager
         Task<UserModel?> GetByEmail(string email);
         Task<IEnumerable<UserModel>> GetAll();
         Task<UserModel?> ValidateCredentials(string email, string password);
+        Task SetUserAvatar(int userId, IFormFile avatar);
     }
 }

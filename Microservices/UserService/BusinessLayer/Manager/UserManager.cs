@@ -34,6 +34,28 @@ namespace UserService.BusinessLayer.Manager
             return id;
         }
 
+        public async Task SetUserAvatar(int userId, IFormFile avatar)
+        {
+            var avatarPath = Environment.GetEnvironmentVariable("AVATAR_STORAGE_PATH");
+
+            if (string.IsNullOrEmpty(avatarPath))
+                throw new Exception("Переменная окружения AVATAR_STORAGE_PATH не задана");
+
+            Directory.CreateDirectory(avatarPath);
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{avatar.FileName}";
+            var filePath = Path.Combine(avatarPath, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await avatar.CopyToAsync(stream);
+            }
+
+            var imagePath = $"/avatars/{uniqueFileName}";
+
+            await _userRepository.SetUserAvatar(userId, imagePath);
+        }
+
         public Task<int> Delete(int id)
         {
             return _userRepository.Delete(id);

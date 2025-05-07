@@ -70,13 +70,13 @@ namespace UserService.Controllers
         [ProducesResponseType<JsonProperty>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("login")]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             try
             {
                 if (auth.GetCurrentUserId() != -1)
                     throw new Exception($"Вы уже авторизованы");
-                var user = await userManager.ValidateCredentials(email, password);
+                var user = await userManager.ValidateCredentials(loginModel.Email, loginModel.Password);
                 if (user == null)
                     return Unauthorized("Неверный номер/пароль");
                 var token = auth.GenerateJwtToken(user);

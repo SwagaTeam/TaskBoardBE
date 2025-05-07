@@ -1,4 +1,6 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SharedLibrary.Auth;
@@ -20,6 +22,8 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services, builder.Configuration);
+
+        Env.Load();
 
         var app = builder.Build();
 
@@ -43,6 +47,14 @@ internal class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+
+        var avatarPath = Environment.GetEnvironmentVariable("AVATAR_STORAGE_PATH");
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(avatarPath),
+            RequestPath = "/avatars"
+        });
 
         app.MapControllers();
 
@@ -121,7 +133,7 @@ internal class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)),
                     RoleClaimType = ClaimTypes.Role
                 };
             });

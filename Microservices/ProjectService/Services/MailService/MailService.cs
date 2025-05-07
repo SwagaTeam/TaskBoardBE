@@ -12,6 +12,7 @@ namespace ProjectService.Services.MailService
         public MailService(IOptions<MailSettings> settings)
         {
             _settings = settings.Value;
+            _settings.Password = Environment.GetEnvironmentVariable("MAIL_PASSWORD");
         }
 
         public async Task<bool> SendAsync(MailData mailData)

@@ -13,7 +13,7 @@ public class BoardModel
     [JsonIgnore]
     public ProjectModel? Project { get; set; }
 
-    public StatusModel? Status { get; set; }
+    public ICollection<StatusModel>? Statuses { get; set; }
 
     [JsonIgnore]
     public ICollection<SprintModel>? Sprints { get; set; } = new List<SprintModel>();

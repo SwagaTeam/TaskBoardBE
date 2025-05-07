@@ -14,7 +14,6 @@ namespace ProjectService.Mapper
                 CreatedAt = model.CreatedAt,
                 StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
-                Status = model.Status is null ? null : StatusMapper.ToEntity(model.Status),
             };
         }
 
@@ -29,7 +28,7 @@ namespace ProjectService.Mapper
                 ProjectId = model.ProjectId,
                 Project = model.Project is null ? null : ProjectMapper.ToModel(model.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
-                Status = model.Status is null ? null : StatusMapper.ToModel(model.Status)
+                Statuses = model.Statuses.Select(StatusMapper.ToModel).ToList()
             };
         }
     }
