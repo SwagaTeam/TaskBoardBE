@@ -40,15 +40,14 @@ internal class Program
             });
         }
 
-        app.MapReverseProxy();
-
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
-
         app.UseMiddleware<JwtBlacklistMiddleware>();
 
         app.MapControllers();
+        app.MapReverseProxy();
+
 
         app.Run();
     }
