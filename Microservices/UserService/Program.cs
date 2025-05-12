@@ -18,12 +18,12 @@ using UserService.Initializers;
 internal class Program
 {
     private static async Task Main(string[] args)
-    {
+    {        Env.Load();
+
         var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services, builder.Configuration);
 
-        Env.Load();
 
         var app = builder.Build();
 
@@ -125,6 +125,7 @@ internal class Program
             })
             .AddJwtBearer(options =>
             {
+                    var key = Environment.GetEnvironmentVariable("JWT_KEY");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -133,8 +134,8 @@ internal class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
-                    RoleClaimType = ClaimTypes.Role
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                            RoleClaimType = ClaimTypes.Role
                 };
             });
     }

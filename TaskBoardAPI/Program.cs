@@ -32,22 +32,24 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("https://localhost:7000/swagger/v1/swagger.json", "API Gateway");
-                c.SwaggerEndpoint("https://localhost:7001/swagger/v1/swagger.json", "Project Service");
-                c.SwaggerEndpoint("https://localhost:7002/swagger/v1/swagger.json", "User Service");
-                c.SwaggerEndpoint("https://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
-                c.SwaggerEndpoint("https://localhost:7004/swagger/v1/swagger.json", "Contributors Service");
+                // All swagger endpoints use HTTP
+                c.SwaggerEndpoint("http://localhost:7000/swagger/v1/swagger.json", "API Gateway");
+                c.SwaggerEndpoint("http://localhost:7001/swagger/v1/swagger.json", "Project Service");
+                c.SwaggerEndpoint("http://localhost:7002/swagger/v1/swagger.json", "User Service");
+                c.SwaggerEndpoint("http://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
+                c.SwaggerEndpoint("http://localhost:7004/swagger/v1/swagger.json", "Contributors Service");
             });
         }
 
-        app.UseHttpsRedirection();
+        // Remove HTTPS redirection to use HTTP only
+        // app.UseHttpsRedirection();
+
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseMiddleware<JwtBlacklistMiddleware>();
 
         app.MapControllers();
         app.MapReverseProxy();
-
 
         app.Run();
     }
@@ -140,11 +142,12 @@ internal class Program
                 }
             });
 
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7000", Description = "API Gateway" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7004", Description = "Contributors Service" });
+            // Swagger servers use HTTP only
+            options.AddServer(new OpenApiServer { Url = "http://localhost:7000", Description = "API Gateway" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:7001", Description = "Project Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:7002", Description = "User Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:7003", Description = "Analytics Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:7004", Description = "Contributors Service" });
         });
     }
 }
