@@ -21,6 +21,7 @@ namespace ProjectService.Mapper
         {
             return new BoardModel
             {
+                Id = model.Id,
                 Name = model.Name,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,

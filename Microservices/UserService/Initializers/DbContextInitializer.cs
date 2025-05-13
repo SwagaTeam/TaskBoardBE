@@ -16,6 +16,15 @@ namespace UserService.Initializers
         {
             await context.Database.MigrateAsync();
 
+            if (!context.Users.Any())
+                context.Users.Add(new UserEntity() 
+                { 
+                    Username = "Sample User",
+                    Password = "liu0/z+pmykycxiF/6r8UjK3vZKpRg8wx0ZrAS60Vb9SspUJA92A0BS+pE1dpMEz2k4nPj8WANrY19jtOBlLmA==",
+                    Salt = "ba3666ea-dd16-4fb1-a5c6-c53ad6a49966",
+                    Email = "TestMessagesService@yandex.ru"
+                });
+
             await context.SaveChangesAsync();
         }
     }

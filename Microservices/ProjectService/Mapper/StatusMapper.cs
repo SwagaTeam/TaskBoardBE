@@ -23,6 +23,7 @@ namespace ProjectService.Mapper
             if (statusEntity is null) return null;
             return new StatusEntity
             {
+                Id = (int)statusEntity.Id,
                 Order = statusEntity.Order,
                 //Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),
                 IsDone = statusEntity.IsDone,

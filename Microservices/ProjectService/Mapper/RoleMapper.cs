@@ -16,6 +16,7 @@ namespace ProjectService.Mapper
         {
             return new RoleModel()
             {
+                Id = roleEntity.Id,
                 Role = roleEntity.Role,
             };
         }
