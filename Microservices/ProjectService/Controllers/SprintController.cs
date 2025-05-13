@@ -56,13 +56,27 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpPost("update")]
+        [HttpPatch("update")]
         public async Task<IActionResult> Update(SprintModel model)
         {
             try
             {
                 var result = await sprintManager.UpdateAsync(model);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("delete/{sprintId}")]
+        public async Task<IActionResult> Delete(int sprintId)
+        {
+            try
+            {
+                await sprintManager.DeleteAsync(sprintId);
+                return Ok(sprintId);
             }
             catch (Exception ex)
             {

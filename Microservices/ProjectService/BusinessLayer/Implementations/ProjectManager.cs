@@ -26,6 +26,8 @@ public class ProjectManager(
 
         await projectRepository.Create(projectEntity);
 
+        projectEntity.Key = $"PRJ-{projectEntity.Id}";
+
         var userProject = new UserProjectModel
         {
             ProjectId = projectEntity.Id,

@@ -7,7 +7,7 @@ public class ItemModel
     public int? ParentId { get; set; }
     public int? ProjectId { get; set; }
     public int? ProjectItemNumber { get; set; }
-    public int BusinessId { get; set; }
+    public string BusinessId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }

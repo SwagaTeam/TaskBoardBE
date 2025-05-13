@@ -7,16 +7,27 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ItemManager(IItemRepository itemRepository, IValidateItemManager validateItemManager,
-    IKafkaProducer<ItemModel> kafkaProducer, IItemBoardsRepository itemBoardsRepository, IStatusRepository statusRepository) : IItemManager
+public class ItemManager(
+    IItemRepository itemRepository, 
+    IValidateItemManager validateItemManager,
+    IKafkaProducer<ItemModel> kafkaProducer, 
+    IItemBoardsRepository itemBoardsRepository, 
+    IStatusRepository statusRepository, 
+    IProjectRepository projectRepository) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
         await validateItemManager.ValidateCreateAsync(createItemModel);
+
+        var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
+
         var item = createItemModel.Item;
         var entity = ItemMapper.ItemToEntity(item);
+        entity.CreatedAt = DateTime.UtcNow;
 
         await itemRepository.CreateAsync(entity);
+
+        entity.BusinessId = $"{project.Key}-ITEM-{entity.Id}";
 
         await itemBoardsRepository.Create(
             new ItemBoardEntity()
