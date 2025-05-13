@@ -11,7 +11,7 @@ using UserService.DataLayer;
 namespace UserService.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250513151511_init")]
+    [Migration("20250513172303_init")]
     partial class init
     {
         /// <inheritdoc />
