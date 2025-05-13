@@ -7,7 +7,8 @@ using SharedLibrary.Auth;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ValidateItemManager(IProjectManager projectManager, IBoardManager boardManager, IAuth authManager, 
-    IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager) 
+    IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager, 
+    IUserProjectManager userProjectManager) 
     : IValidateItemManager
 {
     public async Task ValidateCreateAsync(CreateItemModel createItemModel)
@@ -22,6 +23,22 @@ public class ValidateItemManager(IProjectManager projectManager, IBoardManager b
     {
         var validator = new ItemModelValidator(statusManager, itemTypeManager);
         var result = await validator.ValidateAsync(itemModel);
+        if (!result.IsValid)
+            throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    public async Task ValidateAddUserToItemAsync(int? projectId, int newUserId)
+    {
+        var userId = authManager.GetCurrentUserId();
+        var validateModel = new UsersInProjectModel
+        {
+            CurrentUserId = userId,
+            NewUserId = newUserId,
+            ProjectId = projectId
+        };
+
+        var validator = new AddUserToItemValidator(userProjectManager);
+        var result = await validator.ValidateAsync(validateModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }

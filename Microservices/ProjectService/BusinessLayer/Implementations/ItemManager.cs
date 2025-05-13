@@ -1,19 +1,22 @@
 ﻿using Kafka.Messaging.Services.Abstractions;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
+using SharedLibrary.Auth;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
-    IItemRepository itemRepository, 
+    IItemRepository itemRepository,
     IValidateItemManager validateItemManager,
-    IKafkaProducer<ItemModel> kafkaProducer, 
-    IItemBoardsRepository itemBoardsRepository, 
-    IStatusRepository statusRepository, 
-    IProjectRepository projectRepository) : IItemManager
+    IKafkaProducer<ItemModel> kafkaProducer,
+    IItemBoardsRepository itemBoardsRepository,
+    IStatusRepository statusRepository,
+    IProjectRepository projectRepository,
+    IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
@@ -30,7 +33,7 @@ public class ItemManager(
         entity.BusinessId = $"{project.Key}-ITEM-{entity.Id}";
 
         await itemBoardsRepository.Create(
-            new ItemBoardEntity()
+            new ItemBoardEntity
             {
                 ItemId = entity.Id,
                 BoardId = createItemModel.BoardId,
@@ -53,9 +56,10 @@ public class ItemManager(
         return items;
     }
 
-    public async Task<ItemModel> GetByIdAsync(int id)
+    public async Task<ItemModel> GetByIdAsync(int? id)
     {
-        var model = ItemMapper.ItemToModel(await itemRepository.GetByIdAsync(id));
+        if (id is null) throw new ArgumentNullException(nameof(id));
+        var model = ItemMapper.ItemToModel(await itemRepository.GetByIdAsync((int)id));
         return model;
     }
 
@@ -73,16 +77,17 @@ public class ItemManager(
         await itemRepository.UpdateAsync(entity);
         return entity.Id;
     }
-    
-    public async Task<int> AddUserToItem(int userId, int itemId)
+
+    public async Task<int> AddUserToItem(int newUserId, int itemId)
     {
-        //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
-        var itemUserEntity = new UserItemEntity()
+        var item = await GetByIdAsync(itemId);
+        await validateItemManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
+        var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
-            UserId = userId
+            UserId = newUserId
         };
-        await itemRepository.AddUserToItem(itemUserEntity);
+        await itemRepository.AddUserToItemAsync(itemUserEntity);
         return itemUserEntity.Id;
     }
 
@@ -91,12 +96,19 @@ public class ItemManager(
         return ItemMapper.ItemToModel(await itemRepository.GetByNameAsync(title));
     }
 
-   
 
-    public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId)
+    public async Task<ICollection<ItemModel>> GetCurrentUserItems()
     {
-        //TODO: Добавить валидацию
-        var items = await itemRepository.GetItemsByUserId(userId);
+        var userId = auth.GetCurrentUserId();
+        if (userId is null || userId == -1) throw new NotAuthorizedException();
+        var items = await itemRepository.GetCurrentUserItemsAsync((int)userId);
+        return items.Select(ItemMapper.ItemToModel).ToList();
+    }
+
+    public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId)
+    {
+        await validateItemManager.ValidateAddUserToItemAsync(projectId, userId);
+        var items = await itemRepository.GetItemsByUserIdAsync(userId, projectId);
         return items.Select(ItemMapper.ItemToModel).ToList();
     }
 }

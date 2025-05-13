@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
-using System.Collections.Specialized;
 using ProjectService.Exceptions;
 
 namespace ProjectService.DataLayer.Repositories.Implementations;
@@ -78,13 +76,13 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
-    public async Task AddUserToItem(UserItemEntity userItemEntity)
+    public async Task AddUserToItemAsync(UserItemEntity userItemEntity)
     {
         await context.UserItems.AddAsync(userItemEntity);
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<ItemEntity>> GetItemsByUserId(int userId)
+    public async Task<ICollection<ItemEntity>> GetCurrentUserItemsAsync(int userId)
     {
         var items = await context.Items
             .Include(i => i.Status)
@@ -93,5 +91,17 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
             .ToListAsync();
 
         return items;
+    }
+
+    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
+    {
+        var items = await context.Items
+            .Include(i => i.Status)
+            .Include(i => i.UserItems)
+            .Where(i => i.UserItems.Any(x=>x.UserId == userId && i.ProjectId == projectId))
+            .ToListAsync();
+        
+        return items;
+
     }
 }
