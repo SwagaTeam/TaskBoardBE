@@ -29,7 +29,6 @@ internal class Program
 
         app.UseCors("AllowAll");
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

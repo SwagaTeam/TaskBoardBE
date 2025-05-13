@@ -22,7 +22,9 @@ public class CreateItemValidator
         this.projectManager = projectManager;
         this.authManager = authManager;
         this.itemRepository = itemRepository;
-        var itemModelValidator = new ItemModelValidator(statusManager, itemTypeManager);
+        
+        RuleFor(x => x.Item)
+            .SetValidator(new ItemModelValidator(statusManager, itemTypeManager));
         
         RuleFor(x => x)
             .MustAsync(IsUserMember)
@@ -45,6 +47,7 @@ public class CreateItemValidator
         return !await projectManager.IsUserViewerAsync((int)currentId, (int)item.Item.ProjectId);
     }
 
+    //у эпика не может быть родителя
     private async Task<bool> IsEpicAndParentExist(CreateItemModel createItemModel, CancellationToken cancellation)
     {
         var item = createItemModel.Item;

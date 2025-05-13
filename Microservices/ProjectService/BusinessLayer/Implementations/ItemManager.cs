@@ -67,11 +67,13 @@ public class ItemManager(
 
     public async Task<int> UpdateAsync(ItemModel item)
     {
+        await validateItemManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
+        entity.UpdatedAt = DateTime.UtcNow;
         await itemRepository.UpdateAsync(entity);
         return entity.Id;
     }
-
+    
     public async Task<int> AddUserToItem(int userId, int itemId)
     {
         //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
@@ -89,26 +91,12 @@ public class ItemManager(
         return ItemMapper.ItemToModel(await itemRepository.GetByNameAsync(title));
     }
 
-    public async Task<ItemModel> ChangeParam(ItemModel itemModel)
-    {
-        await validateItemManager.ValidateItemModelAsync(itemModel);
-        await UpdateAsync(itemModel);
-        return itemModel;
-    }
+   
 
     public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId)
     {
         //TODO: Добавить валидацию
         var items = await itemRepository.GetItemsByUserId(userId);
         return items.Select(ItemMapper.ItemToModel).ToList();
-    }
-
-    public async Task UpdateStatus(UpdateItemStatusModel model)
-    {
-        var item = await itemRepository.GetByIdAsync(model.ItemId);
-
-        var status = await statusRepository.GetByIdAsync(model.StatusId);
-
-        await itemRepository.UpdateAsync(item);
     }
 }

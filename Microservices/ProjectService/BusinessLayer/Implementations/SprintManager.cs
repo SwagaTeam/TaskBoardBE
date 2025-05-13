@@ -36,9 +36,9 @@ namespace ProjectService.BusinessLayer.Implementations
                 throw new SprintNotFoundException();
 
             var existingItem = await itemRepository.GetByIdAsync(itemId);
-
+        
             if (existingItem is null)
-                throw new TaskNotFoundException();
+                throw new ItemNotFoundException();
 
             if (existingItem.ProjectId != existingSprint.Board.ProjectId)
                 throw new DifferentAreaException();

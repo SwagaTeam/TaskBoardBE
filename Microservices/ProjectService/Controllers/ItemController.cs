@@ -64,13 +64,15 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// </remarks>
     /// <param name="model">ID изменяемой задачи, ID статуса</param>
     [SwaggerOperation("Изменение статуса задачи")]
-    [HttpPost("change-status")]
-    public async Task<IActionResult> ChangeStatus([FromBody] UpdateItemStatusModel model, CancellationToken cancellationToken)
+    [HttpPost("change-status/{itemId}")]
+    public async Task<IActionResult> ChangeStatus([FromBody] int statusId, int itemId, CancellationToken cancellationToken)
     {
         //с помощью токена уведомлять о изменении статуса надо сделать
         try
         {
-            await itemManager.UpdateStatus(model);
+            var itemModel = await itemManager.GetByIdAsync(itemId); 
+            itemModel.StatusId = statusId;
+            await itemManager.UpdateAsync(itemModel);
             return Ok("Статус обновлён");
         }
         catch (Exception ex)
@@ -79,16 +81,17 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
-    [HttpPost("change-itemType/{itemTypeId}")]
+    [HttpPost("change-itemType/{itemId}")]
 
-    public async Task<IActionResult> ChangeItemType([FromBody] ItemModel itemModel, int itemTypeId,
+    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId,
         CancellationToken cancellationToken)
     {
         //нужно подумать как обьединить эти 2 метода в один в зависимости от параметров
         try
         {
+            var itemModel = await itemManager.GetByIdAsync(itemId); 
             itemModel.ItemTypeId = itemTypeId;
-            var newItemModel = await itemManager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -103,7 +106,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     {
         try
         {
-            var newItemModel = await itemManager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)

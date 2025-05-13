@@ -1,8 +1,8 @@
 ﻿namespace ProjectService.Exceptions
 {
-    public class TaskNotFoundException : Exception
+    public class ItemNotFoundException : Exception
     {
-        public TaskNotFoundException(string? message = "Задача не найдена") : base(message)
+        public ItemNotFoundException(string? message = "Задача не найдена") : base(message)
         {
         }
     }
