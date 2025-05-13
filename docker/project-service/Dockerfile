@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY Microservices/ProjectService/ Microservices/ProjectService/
 
-COPY Shared/SharedLibrary/ Shared/SharedLibrary/
+COPY Shared/ Shared/
 
 WORKDIR /src/Microservices/ProjectService
 

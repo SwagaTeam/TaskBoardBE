@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY Microservices/UserService/ Microservices/UserService/
 
-COPY Shared/SharedLibrary/ Shared/SharedLibrary/
+COPY Shared/ Shared/
 
 WORKDIR /src/Microservices/UserService
 
@@ -22,6 +22,6 @@ WORKDIR /app
 
 COPY --from=publish /app/publish .
 
-EXPOSE 8081
+EXPOSE 7002
 
 ENTRYPOINT ["dotnet", "UserService.dll"]

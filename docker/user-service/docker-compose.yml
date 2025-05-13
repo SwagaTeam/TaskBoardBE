@@ -1,16 +1,17 @@
 services:
   user-service:
     container_name: taskboard-user-serv
+    env_file: ./.env
     build:
-      context: .
+      context: ../..
       dockerfile: docker/user-service/Dockerfile
     environment:
-      - ASPNETCORE_URLS=http://+:8081
+      - ASPNETCORE_URLS=http://+:5003
       - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
       - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets
     restart: always
+    ports:
+      - 5003:5003
     depends_on:
       user-db:
         condition: service_healthy
@@ -27,10 +28,11 @@ services:
     networks:
       - swaga-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${USERNAME} -d ${POSTGRES_DB}"]
       interval: 7s
       timeout: 3s
       retries: 5
 
-networks:
-  swaga-network:
+volumes:
+  user-data:
+    external: false
