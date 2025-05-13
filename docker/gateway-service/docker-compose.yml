@@ -1,0 +1,17 @@
+services:
+  gateway-service:
+    container_name: taskboard-gateway-serv
+    env_file:
+      - ./.env
+    build:
+      context: ../..
+      dockerfile: docker/gateway-service/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    restart: always
+    ports:
+      - 5000:5000
+    networks:
+      - swaga-network

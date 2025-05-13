@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY Microservices/AnalyticsService/ Microservices/AnalyticsService/
 
-COPY Shared/SharedLibrary/ Shared/SharedLibrary/
+COPY Shared/ Shared/
 
 WORKDIR /src/Microservices/AnalyticsService
 
@@ -22,6 +22,6 @@ WORKDIR /app
 
 COPY --from=publish /app/publish .
 
-EXPOSE 8083
+EXPOSE 5002
 
 ENTRYPOINT ["dotnet", "AnalyticsService.dll"]

@@ -25,16 +25,20 @@ services:
       
   analytics-service:
     container_name: taskboard-analytics-serv
+    env_file:
+      - ./.env
     build:
-      context: .
+      context: ../..
       dockerfile: docker/analytics-service/Dockerfile
     environment:
-      - ASPNETCORE_URLS=http://+:8083
+      - ASPNETCORE_URLS=http://+:5002
       - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
       - DOTNET_RUNNING_IN_CONTAINER=true
     volumes:
       - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets
     restart: always
+    ports:
+      - 5002:5002
     depends_on:
       analytics-db:
         condition: service_healthy
@@ -51,10 +55,11 @@ services:
     networks:
       - swaga-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${USERNAME} -d ${POSTGRES_DB}"]
       interval: 7s
       timeout: 3s
       retries: 5
 
-networks:
-  swaga-network:
+volumes:
+  analytics-data:
+    external: false
