@@ -7,6 +7,7 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations
 {
+    //TODO: Вынести валидацию
     public class SprintManager : ISprintManager
     {
         private readonly ISprintRepository sprintRepository;
