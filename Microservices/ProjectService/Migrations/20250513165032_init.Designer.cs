@@ -12,7 +12,7 @@ using ProjectService.DataLayer;
 namespace ProjectService.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250512234452_init")]
+    [Migration("20250513165032_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -185,8 +185,9 @@ namespace ProjectService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BusinessId")
-                        .HasColumnType("integer");
+                    b.Property<string>("BusinessId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");

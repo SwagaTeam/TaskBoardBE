@@ -1,6 +1,7 @@
 ﻿using Kafka.Messaging.Services.Abstractions;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
+using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
 using SharedLibrary.Entities.ProjectService;
@@ -107,8 +108,16 @@ public class ItemManager(
     {
         var item = await itemRepository.GetByIdAsync(model.ItemId);
 
+        if (item is null)
+            throw new ItemNotFoundException();
+
         var status = await statusRepository.GetByIdAsync(model.StatusId);
 
-        await itemRepository.UpdateAsync(item);
+        if (status is null)
+            throw new StatusNotFoundException();
+
+        item.Status = status;
+
+        await itemRepository.UpdateStatusAsync(item);
     }
 }

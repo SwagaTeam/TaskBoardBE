@@ -232,7 +232,7 @@ namespace ProjectService.Migrations
                     ParentId = table.Column<int>(type: "integer", nullable: true),
                     ProjectId = table.Column<int>(type: "integer", nullable: true),
                     ProjectItemNumber = table.Column<int>(type: "integer", nullable: true),
-                    BusinessId = table.Column<int>(type: "integer", nullable: false),
+                    BusinessId = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

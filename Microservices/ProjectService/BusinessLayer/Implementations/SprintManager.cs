@@ -7,6 +7,7 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations
 {
+    //TODO: Вынести валидацию
     public class SprintManager : ISprintManager
     {
         private readonly ISprintRepository sprintRepository;
@@ -38,7 +39,7 @@ namespace ProjectService.BusinessLayer.Implementations
             var existingItem = await itemRepository.GetByIdAsync(itemId);
 
             if (existingItem is null)
-                throw new TaskNotFoundException();
+                throw new ItemNotFoundException();
 
             if (existingItem.ProjectId != existingSprint.Board.ProjectId)
                 throw new DifferentAreaException();
