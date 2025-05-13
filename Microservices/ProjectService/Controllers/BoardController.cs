@@ -65,6 +65,28 @@ namespace ProjectService.Controllers
             }
         }
 
+        /// <summary>
+        /// Добавление новой колонки
+        /// </summary>
+        /// <remarks>
+        /// Этот метод добавляет новую колонку в конец доски, указывать Order не нужно.
+        /// </remarks>
+        /// <param name="statusModel">Модель колонки, указывать Order не нужно.</param>
+        [SwaggerOperation("Добавление новой колонки")]
+        [HttpPost("create-status")]
+        public async Task<IActionResult> AddNewStatus([FromBody] StatusModel statusModel)
+        {
+            try
+            {
+                await _statusManager.CreateAsync(statusModel);
+                return Ok("Порядок изменён");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {

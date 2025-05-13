@@ -27,19 +27,6 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
-    [HttpGet("user/{userId}")]
-    public async Task<IActionResult> GetUserItems(int userId)
-    {
-        try
-        {
-            var items = await itemManager.GetItemsByUserId(userId);
-            return Ok(items);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
     [HttpPost("add-user-to-item")]
     public async Task<IActionResult> AddUserInItem(AddUserInItemModel model)
@@ -57,20 +44,22 @@ public class ItemController(IItemManager itemManager) : ControllerBase
 
 
     /// <summary>
-    /// Изменение статуса задачи
+    /// Архивация задачи
     /// </summary>
     /// <remarks>
-    /// Меняет статус задачи при перемещении её из одной колонки в другую.
+    /// Делает задачу "заархивированной"
     /// </remarks>
-    /// <param name="model">ID изменяемой задачи, ID статуса</param>
-    [SwaggerOperation("Изменение статуса задачи")]
-    [HttpPost("change-status")]
-    public async Task<IActionResult> ChangeStatus([FromBody] UpdateItemStatusModel model, CancellationToken cancellationToken)
+    /// <param name="itemId">ID изменяемой задачи</param>
+    [SwaggerOperation("Архивация задачи")]
+    [HttpPost("archieve-item/{itemId}")]
+    public async Task<IActionResult> ArchieveItem([FromBody] int itemId, CancellationToken cancellationToken)
     {
         //с помощью токена уведомлять о изменении статуса надо сделать
         try
         {
-            await itemManager.UpdateStatus(model);
+            var itemModel = await itemManager.GetByIdAsync(itemId);
+            itemModel.IsArchived = true;
+            await itemManager.UpdateAsync(itemModel);
             return Ok("Статус обновлён");
         }
         catch (Exception ex)
@@ -79,16 +68,67 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
-    [HttpPost("change-itemType/{itemTypeId}")]
+    /// <summary>
+    /// Разархивация задачи
+    /// </summary>
+    /// <remarks>
+    /// Делает задачу "НЕ заархивированной"
+    /// </remarks>
+    /// <param name="itemId">ID изменяемой задачи</param>
+    [SwaggerOperation("Разархивация задачи")]
+    [HttpPost("unarchieve-item/{itemId}")]
+    public async Task<IActionResult> UnarchieveItem([FromBody] int itemId, CancellationToken cancellationToken)
+    {
+        //с помощью токена уведомлять о изменении статуса надо сделать
+        try
+        {
+            var itemModel = await itemManager.GetByIdAsync(itemId);
+            itemModel.IsArchived = false;
+            await itemManager.UpdateAsync(itemModel);
+            return Ok("Статус обновлён");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
-    public async Task<IActionResult> ChangeItemType([FromBody] ItemModel itemModel, int itemTypeId,
+    /// <summary>
+    /// Изменение статуса задачи
+    /// </summary>
+    /// <remarks>
+    /// Меняет статус задачи при перемещении её из одной колонки в другую.
+    /// </remarks>
+    /// <param name="model">ID изменяемой задачи, ID статуса</param>
+    [SwaggerOperation("Изменение статуса задачи")]
+    [HttpPost("change-status/{itemId}")]
+    public async Task<IActionResult> ChangeStatus([FromBody] int statusId, int itemId, CancellationToken cancellationToken)
+    {
+        //с помощью токена уведомлять о изменении статуса надо сделать
+        try
+        {
+            var itemModel = await itemManager.GetByIdAsync(itemId); 
+            itemModel.StatusId = statusId;
+            await itemManager.UpdateAsync(itemModel);
+            return Ok("Статус обновлён");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("change-itemType/{itemId}")]
+
+    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId,
         CancellationToken cancellationToken)
     {
         //нужно подумать как обьединить эти 2 метода в один в зависимости от параметров
         try
         {
+            var itemModel = await itemManager.GetByIdAsync(itemId); 
             itemModel.ItemTypeId = itemTypeId;
-            var newItemModel = await itemManager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -103,7 +143,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     {
         try
         {
-            var newItemModel = await itemManager.ChangeParam(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -130,6 +170,53 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         await itemManager.Delete(id);
         return Ok(id);
     }
+
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserItems(int userId)
+    {
+        try
+        {
+            var items = await itemManager.GetItemsByUserId(userId);
+            return Ok(items);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("archieved-items/project/{projectId}")]
+    [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetArchievedItemsInProject(int projectId)
+    {
+        try
+        {
+            return Ok(await itemManager.GetArchievedItemsInProject(projectId));
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("archieved-items/board/{boardId}")]
+    [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetArchievedItemsInBoard(int boardId)
+    {
+        try
+        {
+            return Ok(await itemManager.GetArchievedItemsInBoard(boardId));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 
     [HttpGet("get/{id}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]

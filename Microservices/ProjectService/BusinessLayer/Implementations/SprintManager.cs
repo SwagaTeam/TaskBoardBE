@@ -37,7 +37,7 @@ namespace ProjectService.BusinessLayer.Implementations
                 throw new SprintNotFoundException();
 
             var existingItem = await itemRepository.GetByIdAsync(itemId);
-
+        
             if (existingItem is null)
                 throw new ItemNotFoundException();
 

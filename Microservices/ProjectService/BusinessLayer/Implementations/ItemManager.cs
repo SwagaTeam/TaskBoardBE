@@ -50,29 +50,31 @@ public class ItemManager(
     public async Task<IEnumerable<ItemModel>> GetAllItemsAsync()
     {
         var items = (await itemRepository.GetItemsAsync())
-            .Select(ItemMapper.ItemToModel);
+            .Select(ItemMapper.ToModel);
         return items;
     }
 
     public async Task<ItemModel> GetByIdAsync(int id)
     {
-        var model = ItemMapper.ItemToModel(await itemRepository.GetByIdAsync(id));
+        var model = ItemMapper.ToModel(await itemRepository.GetByIdAsync(id));
         return model;
     }
 
     public async Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId)
     {
-        var items = await itemRepository.GetByBoardIdAsync(boardId);
-        return items.Select(ItemMapper.ItemToModel).ToList();
+        var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
+        return items.Select(ItemMapper.ToModel).ToList();
     }
 
     public async Task<int> UpdateAsync(ItemModel item)
     {
+        await validateItemManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
+        entity.UpdatedAt = DateTime.UtcNow;
         await itemRepository.UpdateAsync(entity);
         return entity.Id;
     }
-
+    
     public async Task<int> AddUserToItem(int userId, int itemId)
     {
         //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
@@ -81,43 +83,37 @@ public class ItemManager(
             ItemId = itemId,
             UserId = userId
         };
-        await itemRepository.AddUserToItem(itemUserEntity);
+        await itemRepository.AddUserToItemAsync(itemUserEntity);
         return itemUserEntity.Id;
     }
 
     public async Task<ItemModel> GetByTitle(string title)
     {
-        return ItemMapper.ItemToModel(await itemRepository.GetByNameAsync(title));
-    }
-
-    public async Task<ItemModel> ChangeParam(ItemModel itemModel)
-    {
-        await validateItemManager.ValidateItemModelAsync(itemModel);
-        await UpdateAsync(itemModel);
-        return itemModel;
+        return ItemMapper.ToModel(await itemRepository.GetByNameAsync(title));
     }
 
     public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId)
     {
         //TODO: Добавить валидацию
-        var items = await itemRepository.GetItemsByUserId(userId);
-        return items.Select(ItemMapper.ItemToModel).ToList();
+        var items = await itemRepository.GetItemsByUserIdAsync(userId);
+        return items.Select(ItemMapper.ToModel).ToList();
     }
 
-    public async Task UpdateStatus(UpdateItemStatusModel model)
+    public async Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId)
     {
-        var item = await itemRepository.GetByIdAsync(model.ItemId);
+        //TODO: Добавить валидацию
 
-        if (item is null)
-            throw new ItemNotFoundException();
+        var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
 
-        var status = await statusRepository.GetByIdAsync(model.StatusId);
+        return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
+    }
 
-        if (status is null)
-            throw new StatusNotFoundException();
+    public async Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId)
+    {
+        //TODO: Добавить валидацию
 
-        item.Status = status;
+        var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
 
-        await itemRepository.UpdateStatusAsync(item);
+        return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
 }

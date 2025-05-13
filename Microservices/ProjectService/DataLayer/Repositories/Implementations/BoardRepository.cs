@@ -26,6 +26,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
     {
         var board = await context.Boards
             .Include(x => x.Statuses)
+            .ThenInclude(x=>x.Items) //?
             .FirstOrDefaultAsync(x => x.Id == id);
 
         return board;

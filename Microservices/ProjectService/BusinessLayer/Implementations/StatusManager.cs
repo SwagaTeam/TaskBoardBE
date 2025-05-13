@@ -38,7 +38,18 @@ public class StatusManager(
             currentUser != -1   &&
             await userProjectManager.IsUserInProjectAsync((int)currentUser, project.Id))
         {
+            int lastOrder;
+
+            var statuses = await statusRepository.GetByBoardIdAsync(statusModel.BoardId);
+
+            if (statuses.Count() > 0)
+                lastOrder = statuses.Max(x => x.Order);
+            else lastOrder = 0;
+
+            entity.Order = lastOrder;
+
             await statusRepository.CreateAsync(entity);
+
             return statusModel.Id;
         }
 

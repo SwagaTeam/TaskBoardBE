@@ -46,7 +46,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return await context.Items.FirstOrDefaultAsync(item=>item.Title == title);
     }
 
-    public async Task<ICollection<ItemEntity>> GetByBoardIdAsync(int boardId)
+    public async Task<ICollection<ItemEntity>> GetItemsByBoardIdAsync(int boardId)
     {
         var items = await context.Items
             .Include(i => i.Status)
@@ -56,13 +56,13 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
-    public async Task AddUserToItem(UserItemEntity userItemEntity)
+    public async Task AddUserToItemAsync(UserItemEntity userItemEntity)
     {
         await context.UserItems.AddAsync(userItemEntity);
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<ItemEntity>> GetItemsByUserId(int userId)
+    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId)
     {
         var items = await context.Items
             .Include(i => i.Status)
@@ -76,5 +76,15 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task UpdateStatusAsync(ItemEntity item)
     {
         await context.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
+    {
+        var items = await context.Items
+           .Include(i => i.Status)
+           .Where(i => i.ProjectId == projectId)
+           .ToListAsync();
+
+        return items;
     }
 }

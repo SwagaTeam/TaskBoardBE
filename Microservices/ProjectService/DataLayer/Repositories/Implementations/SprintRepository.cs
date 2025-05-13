@@ -86,8 +86,9 @@ namespace ProjectService.DataLayer.Repositories.Implementations
                 existing.StartDate = sprintEntity.StartDate;
                 existing.BoardId = sprintEntity.BoardId;
                 existing.EndDate = sprintEntity.EndDate;
-
+                
                 await dbContext.SaveChangesAsync();
+                return;
             }
 
             throw new SprintNotFoundException();

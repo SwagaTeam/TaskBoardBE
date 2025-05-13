@@ -12,9 +12,8 @@ public interface IItemManager
     public Task<int> UpdateAsync(ItemModel item);
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);
-    public Task<ItemModel> ChangeParam(ItemModel itemModel);
     public Task<int> AddUserToItem(int userId, int itemId);
     public Task<ICollection<ItemModel>> GetItemsByUserId(int userId);
-    public Task ArchieveItem(int itemId);
-    public Task UpdateStatus(UpdateItemStatusModel model);
+    public Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId);
+    public Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int board);
 }

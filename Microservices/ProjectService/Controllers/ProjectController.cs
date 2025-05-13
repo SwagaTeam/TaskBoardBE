@@ -88,7 +88,6 @@ namespace ProjectService.Controllers
         }
 
         [HttpPost("invite/{url}/join")]
-        //TODO �������� AUTHORIZED
         public async Task<IActionResult> JoinProject(string url)
         {
             var userId = _auth.GetCurrentUserId();

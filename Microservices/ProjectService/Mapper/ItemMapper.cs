@@ -25,7 +25,7 @@ public class ItemMapper
         };
     }
 
-    public static ItemModel ItemToModel(ItemEntity item)
+    public static ItemModel ToModel(ItemEntity item)
     {
         return new ItemModel
         {
