@@ -135,9 +135,9 @@ internal class Program
         services.AddProducer<ItemModel>(configuration.GetSection("Kafka:NotificationTask"));
         services.AddConsumer<ItemModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
 
-        var host = Environment.GetEnvironmentVariable("POSTGRES_DB");
+        var host = Environment.GetEnvironmentVariable("HOST");
         var port = Environment.GetEnvironmentVariable("PORT");
-        var database = Environment.GetEnvironmentVariable("DATABASE");
+        var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
         var user = Environment.GetEnvironmentVariable("USERNAME");
         var pass = Environment.GetEnvironmentVariable("PASSWORD");
 

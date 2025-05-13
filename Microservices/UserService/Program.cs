@@ -111,9 +111,9 @@ internal class Program
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-        var host = Environment.GetEnvironmentVariable("POSTGRES_DB");
+        var host = Environment.GetEnvironmentVariable("HOST");
         var port = Environment.GetEnvironmentVariable("PORT");
-        var database = Environment.GetEnvironmentVariable("DATABASE");
+        var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
         var user = Environment.GetEnvironmentVariable("USERNAME");
         var pass = Environment.GetEnvironmentVariable("PASSWORD");
 
