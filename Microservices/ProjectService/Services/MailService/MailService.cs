@@ -13,6 +13,8 @@ namespace ProjectService.Services.MailService
         {
             _settings = settings.Value;
             _settings.Password = Environment.GetEnvironmentVariable("MAIL_PASSWORD");
+            _settings.Host = Environment.GetEnvironmentVariable("SMTP");
+            _settings.Port = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")!);
         }
 
         public async Task<bool> SendAsync(MailData mailData)

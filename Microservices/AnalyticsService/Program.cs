@@ -1,3 +1,5 @@
+using AnalyticsService.Initializers;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +12,11 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        if (builder.Environment.IsDevelopment())
+            Env.Load();
+
+        builder.Configuration.AddEnvironmentVariables();
 
         ConfigureServices(builder.Services, builder.Configuration);
 
@@ -36,7 +43,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("http://localhost:5000")  // ����� ��������� ����� ApiGateway
+                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!)  // ����� ��������� ����� ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -73,7 +80,15 @@ internal class Program
             });
         });
 
+        var host = Environment.GetEnvironmentVariable("POSTGRES_DB");
+        var port = Environment.GetEnvironmentVariable("PORT");
+        var database = Environment.GetEnvironmentVariable("DATABASE");
+        var user = Environment.GetEnvironmentVariable("USERNAME");
+        var pass = Environment.GetEnvironmentVariable("PASSWORD");
 
+        var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
+
+        DbContextInitializer.Initialize(services, conn);
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)
@@ -94,7 +109,7 @@ internal class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)),
                     RoleClaimType = ClaimTypes.Role
                 };
             });

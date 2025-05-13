@@ -18,9 +18,12 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        ConfigureServices(builder.Services, builder.Configuration);
+        if(builder.Environment.IsDevelopment())
+            Env.Load();
 
-        Env.Load();
+        builder.Configuration.AddEnvironmentVariables();
+
+        ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
@@ -32,18 +35,15 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("http://localhost:5000/swagger/v1/swagger.json", "API Gateway");
-                c.SwaggerEndpoint("http://localhost:5042/swagger/v1/swagger.json", "Project Service");
-                c.SwaggerEndpoint("http://localhost:5003/swagger/v1/swagger.json", "User Service");
-                c.SwaggerEndpoint("http://localhost:5002/swagger/v1/swagger.json", "Analytics Service");
-                c.SwaggerEndpoint("http://localhost:5004/swagger/v1/swagger.json", "Contributors Service");
+                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("GATEWAY") + "/swagger/v1/swagger.json", "API Gateway");
+                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("PROJECT_API") + "/swagger/v1/swagger.json", "Project Service");
+                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("ANALYTICS_API") + "/swagger/v1/swagger.json", "Analytics Service");
+                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("USER_API") + "/swagger/v1/swagger.json", "User Service");
+                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("CONTRIBUTORS_API") + "/swagger/v1/swagger.json", "Contributors Service");
             });
         }
 
         app.MapReverseProxy();
-
-        // Убираем редирект на HTTPS
-        // app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
@@ -85,22 +85,17 @@ internal class Program
                     {
                         var authHeader = authHeaderValues.ToString().Trim();
 
-                        // Попробуем распарсить header
                         if (AuthenticationHeaderValue.TryParse(authHeader, out var parsedHeader))
                         {
-                            // parsedHeader.Scheme == "Bearer"
-                            // parsedHeader.Parameter == "<ваш токен>"
                             transformContext.ProxyRequest.Headers.Authorization =
                                 new AuthenticationHeaderValue(parsedHeader.Scheme, parsedHeader.Parameter);
                         }
                         else if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                         {
-                            // на всякий случай — альтернативный вариант
                             var token = authHeader["Bearer ".Length..].Trim();
                             transformContext.ProxyRequest.Headers.Authorization =
                                 new AuthenticationHeaderValue("Bearer", token);
                         }
-                        // иначе — не трогаем заголовок
                     }
 
                     return default;
@@ -162,11 +157,11 @@ internal class Program
                 }
             });
 
-            options.AddServer(new OpenApiServer { Url = "http://localhost:5000", Description = "API Gateway" });
-            options.AddServer(new OpenApiServer { Url = "http://localhost:5042", Description = "Project Service" });
-            options.AddServer(new OpenApiServer { Url = "http://localhost:5003", Description = "User Service" });
-            options.AddServer(new OpenApiServer { Url = "http://localhost:5002", Description = "Analytics Service" });
-            options.AddServer(new OpenApiServer { Url = "http://localhost:5004", Description = "Contributors Service" });
+            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("GATEWAY"), Description = "API Gateway" });
+            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("PROJECT_API"), Description = "Project Service" });
+            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("ANALYTICS_API"), Description = "Analytics Service" });
+            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("USER_API"), Description = "User Service" });
+            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("CONTRIBUTORS_API"), Description = "Contributors Service" });
         });
     }
 }

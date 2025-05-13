@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,11 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        if (builder.Environment.IsDevelopment())
+            Env.Load();
+
+        builder.Configuration.AddEnvironmentVariables();
 
         ConfigureServices(builder.Services, builder.Configuration);
 
@@ -38,7 +44,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("http://localhost:5000")  // Указываем адрес ApiGateway
+                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!)  // Указываем адрес ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });

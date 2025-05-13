@@ -18,9 +18,10 @@ class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        ConfigureServices(builder.Services, builder.Configuration);
+        if (builder.Environment.IsDevelopment())
+            Env.Load();
 
-        Env.Load();
+        ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
         
@@ -57,7 +58,7 @@ class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("http://localhost:5000")
+                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!)
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -93,8 +94,16 @@ class Program
                 }
             });
         });
-        
-        DbContextInitializer.Initialize(services, configuration["ConnectionStrings:DefaultConnection"]!);
+
+        var host = Environment.GetEnvironmentVariable("POSTGRES_DB");
+        var port = Environment.GetEnvironmentVariable("PORT");
+        var database = Environment.GetEnvironmentVariable("DATABASE");
+        var user = Environment.GetEnvironmentVariable("USERNAME");
+        var pass = Environment.GetEnvironmentVariable("PASSWORD");
+
+        var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
+
+        DbContextInitializer.Initialize(services, conn);
     }
     
     private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)

@@ -48,14 +48,12 @@ namespace UserService.Controllers
             try
             {
                 await userManager.SetUserAvatar((int)userId, avatar);
+                return Ok("Аватар обновлён");
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-
-            return Ok("Аватар обновлён");
         }
     }
 }

@@ -23,9 +23,12 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        ConfigureServices(builder.Services, builder.Configuration);
+        if (builder.Environment.IsDevelopment())
+            Env.Load();
 
-        Env.Load();
+        builder.Configuration.AddEnvironmentVariables();
+
+        ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
@@ -88,7 +91,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("http://localhost:5000")  // ����� ��������� ����� ApiGateway
+                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!)  // ����� ��������� ����� ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -131,7 +134,16 @@ internal class Program
 
         services.AddProducer<ItemModel>(configuration.GetSection("Kafka:NotificationTask"));
         services.AddConsumer<ItemModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
-        DbContextInitializer.Initialize(services, configuration["ConnectionStrings:DefaultConnection"]!);
+
+        var host = Environment.GetEnvironmentVariable("POSTGRES_DB");
+        var port = Environment.GetEnvironmentVariable("PORT");
+        var database = Environment.GetEnvironmentVariable("DATABASE");
+        var user = Environment.GetEnvironmentVariable("USERNAME");
+        var pass = Environment.GetEnvironmentVariable("PASSWORD");
+
+        var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
+
+        DbContextInitializer.Initialize(services, conn);
 
     }
 
