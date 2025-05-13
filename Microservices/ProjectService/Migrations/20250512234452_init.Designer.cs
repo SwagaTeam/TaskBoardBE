@@ -12,8 +12,8 @@ using ProjectService.DataLayer;
 namespace ProjectService.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20250429175821_new_relationships")]
-    partial class new_relationships
+    [Migration("20250512234452_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,14 @@ namespace ProjectService.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("integer");
+
                     b.HasKey("ItemId", "BoardId");
 
                     b.HasIndex("BoardId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("ItemsBoards");
                 });
@@ -99,8 +104,6 @@ namespace ProjectService.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("Boards");
                 });
@@ -374,6 +377,9 @@ namespace ProjectService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BoardId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDone")
                         .HasColumnType("boolean");
 
@@ -389,7 +395,30 @@ namespace ProjectService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BoardId");
+
                     b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.UserItemEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("UserItems");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.UserProjectEntity", b =>
@@ -430,6 +459,10 @@ namespace ProjectService.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -479,9 +512,17 @@ namespace ProjectService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", "Status")
+                        .WithMany("ItemsBoards")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Board");
 
                     b.Navigation("Item");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.AttachmentEntity", b =>
@@ -503,15 +544,7 @@ namespace ProjectService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedLibrary.Entities.ProjectService.StatusEntity", "Status")
-                        .WithMany("Boards")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Project");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.CommentEntity", b =>
@@ -593,18 +626,40 @@ namespace ProjectService.Migrations
                     b.Navigation("Board");
                 });
 
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.StatusEntity", b =>
+                {
+                    b.HasOne("SharedLibrary.Entities.ProjectService.BoardEntity", "Board")
+                        .WithMany("Statuses")
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
+                });
+
+            modelBuilder.Entity("SharedLibrary.Entities.ProjectService.UserItemEntity", b =>
+                {
+                    b.HasOne("SharedLibrary.Entities.ProjectService.ItemEntity", "Item")
+                        .WithMany("UserItems")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.UserProjectEntity", b =>
                 {
                     b.HasOne("SharedLibrary.Entities.ProjectService.ProjectEntity", "Project")
                         .WithMany("UserProjects")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.HasOne("SharedLibrary.Entities.ProjectService.RoleEntity", "Role")
                         .WithMany("UserProjects")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -632,6 +687,8 @@ namespace ProjectService.Migrations
                     b.Navigation("ItemsBoards");
 
                     b.Navigation("Sprints");
+
+                    b.Navigation("Statuses");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.CommentEntity", b =>
@@ -646,6 +703,8 @@ namespace ProjectService.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("ItemsBoards");
+
+                    b.Navigation("UserItems");
                 });
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.ItemTypeEntity", b =>
@@ -673,9 +732,9 @@ namespace ProjectService.Migrations
 
             modelBuilder.Entity("SharedLibrary.Entities.ProjectService.StatusEntity", b =>
                 {
-                    b.Navigation("Boards");
-
                     b.Navigation("Items");
+
+                    b.Navigation("ItemsBoards");
                 });
 #pragma warning restore 612, 618
         }

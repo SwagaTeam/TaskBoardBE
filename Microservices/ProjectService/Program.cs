@@ -43,9 +43,7 @@ internal class Program
         }
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
-
-        app.UseHttpsRedirection();
-
+        
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -90,7 +88,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("https://localhost:7000")  // ����� ��������� ����� ApiGateway
+                policy.WithOrigins("http://localhost:5000")  // ����� ��������� ����� ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });

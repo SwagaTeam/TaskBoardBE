@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SharedLibrary.Middleware;
-using SharedLibrary.ProjectModels;
 using System.Security.Claims;
 using System.Text;
 
@@ -23,7 +22,8 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        // РЈР±РёСЂР°РµРј РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ HTTPS СЂРµРґРёСЂРµРєС‚Р°
+        // app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
@@ -38,7 +38,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
+                policy.WithOrigins("http://localhost:5000")  // РЈРєР°Р·С‹РІР°РµРј Р°РґСЂРµСЃ ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -50,10 +50,9 @@ internal class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Введите 'Bearer' [пробел] для авторизации",
+                Description = "Р’РІРµРґРёС‚Рµ 'Bearer' [РїСЂРѕР±РµР»] РґР»СЏ Р°РІС‚РѕСЂРёР·Р°С†РёРё",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey
@@ -74,8 +73,6 @@ internal class Program
                 }
             });
         });
-
-
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)

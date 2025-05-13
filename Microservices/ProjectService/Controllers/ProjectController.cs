@@ -113,7 +113,7 @@ namespace ProjectService.Controllers
 
         [ProducesResponseType<IEnumerable<ProjectModel>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
             try 
@@ -131,7 +131,7 @@ namespace ProjectService.Controllers
         [ProducesResponseType<ProjectModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpGet("{id}")]
+        [HttpGet("delete/{id}")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -159,7 +159,7 @@ namespace ProjectService.Controllers
         [ProducesResponseType<int>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpDelete("{id}")]
+        [HttpDelete("get/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try

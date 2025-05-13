@@ -28,7 +28,7 @@ internal class Program
         var app = builder.Build();
 
         using var scope = app.Services.CreateScope();
-        using var appDbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+        await using var appDbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
 
         await DbContextInitializer.Migrate(appDbContext);
 
@@ -44,7 +44,6 @@ internal class Program
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
 
-        app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
@@ -67,15 +66,16 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("https://localhost:7000")  // ����� ��������� ����� ApiGateway
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
+                policy.WithOrigins("http://localhost:5000") // ����� ��������� ����� ApiGateway
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
         });
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options => {
+        services.AddSwaggerGen(options =>
+        {
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "������� 'Bearer' [������] ��� �����������",
@@ -95,7 +95,7 @@ internal class Program
                             Id = "Bearer"
                         }
                     },
-                    new string[] {}
+                    new string[] { }
                 }
             });
         });
@@ -111,7 +111,7 @@ internal class Program
 
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+        
         DbContextInitializer.Initialize(services, configuration["ConnectionStrings:DefaultConnection"]!);
     }
 
@@ -133,11 +133,11 @@ internal class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!)),
                     RoleClaimType = ClaimTypes.Role
                 };
             });
     }
-
-
 }

@@ -26,7 +26,6 @@ class Program
         
         app.UseCors("AllowApiGateway");
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -58,8 +57,7 @@ class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                //надо
-                policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
+                policy.WithOrigins("http://localhost:5000")
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });

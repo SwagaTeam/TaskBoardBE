@@ -124,14 +124,14 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         await itemManager.Delete(id);
         return Ok(id);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

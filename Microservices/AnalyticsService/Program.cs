@@ -22,9 +22,7 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        app.UseHttpsRedirection();
-
+        
         app.UseAuthorization();
 
         app.MapControllers();
@@ -38,7 +36,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins("https://localhost:7000")  // Здесь указываем адрес ApiGateway
+                policy.WithOrigins("http://localhost:5000")  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ApiGateway
                       .AllowAnyMethod()
                       .AllowAnyHeader();
             });
@@ -53,7 +51,7 @@ internal class Program
 
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Введите 'Bearer' [пробел] для авторизации",
+                Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer' [пїЅпїЅпїЅпїЅпїЅпїЅ] пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey

@@ -32,22 +32,24 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("https://localhost:7000/swagger/v1/swagger.json", "API Gateway");
-                c.SwaggerEndpoint("https://localhost:7001/swagger/v1/swagger.json", "Project Service");
-                c.SwaggerEndpoint("https://localhost:7002/swagger/v1/swagger.json", "User Service");
-                c.SwaggerEndpoint("https://localhost:7003/swagger/v1/swagger.json", "Analytics Service");
-                c.SwaggerEndpoint("https://localhost:7004/swagger/v1/swagger.json", "Contributors Service");
+                c.SwaggerEndpoint("http://localhost:5000/swagger/v1/swagger.json", "API Gateway");
+                c.SwaggerEndpoint("http://localhost:5042/swagger/v1/swagger.json", "Project Service");
+                c.SwaggerEndpoint("http://localhost:5003/swagger/v1/swagger.json", "User Service");
+                c.SwaggerEndpoint("http://localhost:5002/swagger/v1/swagger.json", "Analytics Service");
+                c.SwaggerEndpoint("http://localhost:5004/swagger/v1/swagger.json", "Contributors Service");
             });
         }
 
-        app.UseHttpsRedirection();
-        app.UseAuthentication();
+        app.MapReverseProxy();
+
+        // Убираем редирект на HTTPS
+        // app.UseHttpsRedirection();
+
         app.UseAuthorization();
+
         app.UseMiddleware<JwtBlacklistMiddleware>();
 
         app.MapControllers();
-        app.MapReverseProxy();
-
 
         app.Run();
     }
@@ -74,17 +76,37 @@ internal class Program
         AddSwagger(services);
 
         services.AddReverseProxy()
-                 .LoadFromConfig(configuration.GetSection("ReverseProxy"))
-                 .AddTransforms(builderContext =>
-                 {
-                     builderContext.AddRequestTransform(async transformContext =>
-                     {
-                         if (transformContext.HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
-                         {
-                             transformContext.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(authHeader);
-                         }
-                     });
-                 });
+            .LoadFromConfig(configuration.GetSection("ReverseProxy"))
+            .AddTransforms(builderContext =>
+            {
+                builderContext.AddRequestTransform(transformContext =>
+                {
+                    if (transformContext.HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeaderValues))
+                    {
+                        var authHeader = authHeaderValues.ToString().Trim();
+
+                        // Попробуем распарсить header
+                        if (AuthenticationHeaderValue.TryParse(authHeader, out var parsedHeader))
+                        {
+                            // parsedHeader.Scheme == "Bearer"
+                            // parsedHeader.Parameter == "<ваш токен>"
+                            transformContext.ProxyRequest.Headers.Authorization =
+                                new AuthenticationHeaderValue(parsedHeader.Scheme, parsedHeader.Parameter);
+                        }
+                        else if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // на всякий случай — альтернативный вариант
+                            var token = authHeader["Bearer ".Length..].Trim();
+                            transformContext.ProxyRequest.Headers.Authorization =
+                                new AuthenticationHeaderValue("Bearer", token);
+                        }
+                        // иначе — не трогаем заголовок
+                    }
+
+                    return default;
+                });
+            });
+
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfigurationManager configuration)
@@ -140,11 +162,11 @@ internal class Program
                 }
             });
 
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7000", Description = "API Gateway" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7001", Description = "Project Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7002", Description = "User Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7003", Description = "Analytics Service" });
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7004", Description = "Contributors Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:5000", Description = "API Gateway" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:5042", Description = "Project Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:5003", Description = "User Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:5002", Description = "Analytics Service" });
+            options.AddServer(new OpenApiServer { Url = "http://localhost:5004", Description = "Contributors Service" });
         });
     }
 }

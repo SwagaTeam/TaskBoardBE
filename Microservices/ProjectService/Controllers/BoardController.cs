@@ -65,7 +65,7 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -78,7 +78,7 @@ namespace ProjectService.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
