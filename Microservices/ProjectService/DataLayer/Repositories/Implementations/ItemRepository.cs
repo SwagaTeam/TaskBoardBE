@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 using ProjectService.Exceptions;
@@ -48,6 +49,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         
         throw new ItemNotFoundException();
     }
+    
 
     public async Task DeleteAsync(int id)
     {
@@ -65,8 +67,19 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     {
         return await context.Items.FirstOrDefaultAsync(item=>item.Title == title);
     }
+    
+    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
+    {
+        var items = await context.Items
+            .Include(i => i.Status)
+            .Include(i => i.UserItems)
+            .Where(i => i.UserItems.Any(x=>x.UserId == userId && i.ProjectId == projectId))
+            .ToListAsync();
+        
+        return items;
+    }
 
-    public async Task<ICollection<ItemEntity>> GetByBoardIdAsync(int boardId)
+    public async Task<ICollection<ItemEntity>> GetItemsByBoardIdAsync(int boardId)
     {
         var items = await context.Items
             .Include(i => i.Status)
@@ -93,15 +106,16 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
-    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
+    
+
+    public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
     {
         var items = await context.Items
-            .Include(i => i.Status)
-            .Include(i => i.UserItems)
-            .Where(i => i.UserItems.Any(x=>x.UserId == userId && i.ProjectId == projectId))
-            .ToListAsync();
-        
-        return items;
+           .Include(i => i.Status)
+           .Where(i => i.ProjectId == projectId)
+           .ToListAsync();
 
+        return items;
     }
+    
 }

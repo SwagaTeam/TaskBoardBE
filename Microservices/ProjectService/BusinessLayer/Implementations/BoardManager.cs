@@ -21,14 +21,6 @@ public class BoardManager(
         if (!await userProjectManager.IsUserAdminAsync((int)userId!, board.ProjectId))
             throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
 
-        //var boards = await GetByProjectIdAsync(board.ProjectId);
-
-        int lastOrder;
-
-        //if (boards.Count > 0)
-        //    lastOrder = boards.Max(x => x.Status.Order);
-        //else lastOrder = 0;
-
         var boardEntity = BoardMapper.ToEntity(board);
 
         boardEntity.Statuses =
@@ -53,6 +45,13 @@ public class BoardManager(
                 IsDone = true,
                 IsRejected = false,
                 Order = 2
+            },
+            new StatusEntity()
+            {
+                Name = "Отклонено",
+                IsDone = false,
+                IsRejected = true,
+                Order = 3
             }
         ];
 
@@ -114,10 +113,5 @@ public class BoardManager(
         }
 
         throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
-    }
-
-    public async Task ChangeBoardOrderAsync(int boardId, int newOrder)
-    {
-       
     }
 }

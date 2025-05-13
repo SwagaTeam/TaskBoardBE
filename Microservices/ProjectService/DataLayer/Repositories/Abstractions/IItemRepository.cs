@@ -10,9 +10,10 @@ public interface IItemRepository
     public Task DeleteAsync(int id);
     public Task<ICollection<ItemEntity>> GetItemsAsync();
     public Task<ItemEntity> GetByNameAsync(string name);
-    public Task<ICollection<ItemEntity>> GetByBoardIdAsync(int boardId);
-    public Task<ICollection<ItemEntity>> GetCurrentUserItemsAsync(int userId);
-    public Task AddUserToItemAsync(UserItemEntity itemUserEntity);
+    public Task<ICollection<ItemEntity>> GetItemsByBoardIdAsync(int boardId);
     public Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId);
+    public Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId);
+    public Task<ICollection<ItemEntity>> GetCurrentUserItemsAsync(int userId);
 
+    public Task AddUserToItemAsync(UserItemEntity itemUserEntity);
 }
