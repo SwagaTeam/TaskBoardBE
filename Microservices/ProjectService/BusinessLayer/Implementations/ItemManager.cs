@@ -79,13 +79,14 @@ public class ItemManager(
         return entity.Id;
     }
     
-    public async Task<int> AddUserToItem(int userId, int itemId)
+    public async Task<int> AddUserToItemAsync(int newUserId, int itemId)
     {
-        //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
-        var itemUserEntity = new UserItemEntity()
+        var item = await GetByIdAsync(itemId);
+        await validateItemManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
+        var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
-            UserId = userId
+            UserId = newUserId
         };
         await itemRepository.AddUserToItemAsync(itemUserEntity);
         return itemUserEntity.Id;
