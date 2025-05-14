@@ -34,8 +34,6 @@ services:
       - ASPNETCORE_URLS=http://+:5002
       - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
       - DOTNET_RUNNING_IN_CONTAINER=true
-    volumes:
-      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets
     restart: always
     ports:
       - 5002:5002
