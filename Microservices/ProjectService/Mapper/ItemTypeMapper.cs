@@ -3,18 +3,24 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper;
 
-public class ItemTypeMapper
+public static class ItemTypeMapper
 {
-    public static ItemTypeEntity ToEntity(ItemTypeModel itemType)
+    public static ItemTypeEntity? ToEntity(ItemTypeModel itemType)
     {
+        if (itemType == null)
+            return null;
+
         return new ItemTypeEntity
         {
             Level = itemType.Level,
         };
     }
     
-    public static ItemTypeModel ToModel(ItemTypeEntity itemType)
+    public static ItemTypeModel? ToModel(ItemTypeEntity itemType)
     {
+        if (itemType == null)
+            return null;
+
         return new ItemTypeModel
         {
             Id = itemType.Id,

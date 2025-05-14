@@ -16,6 +16,7 @@ using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.DataLayer.Repositories.Implementations;
 using SharedLibrary.Auth;
 using DotNetEnv;
+using Microsoft.Extensions.FileProviders;
 
 internal class Program
 {
@@ -44,6 +45,14 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        var avatarPath = Environment.GetEnvironmentVariable("DOCUMENT_STORAGE_PATH");
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(avatarPath),
+            RequestPath = "/documents"
+        });
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
         
@@ -82,6 +91,10 @@ internal class Program
         services.AddScoped <IStatusRepository, StatusRepository>();
         services.AddScoped<IStatusManager, StatusManager>();
         services.AddScoped<IItemBoardsRepository, ItemBoardsRepository>();
+        services.AddScoped<ISprintManager, SprintManager>();
+        services.AddScoped<ISprintRepository, SprintRepository>();
+        services.AddScoped<IDocumentManager,  DocumentManager>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
 
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();

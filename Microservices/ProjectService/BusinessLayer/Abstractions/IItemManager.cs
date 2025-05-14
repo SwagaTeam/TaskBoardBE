@@ -11,8 +11,6 @@ public interface IItemManager
     public Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId);
     public Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId);
     public Task<ICollection<ItemModel>> GetCurrentUserItems();
-
-
     public Task<int> UpdateAsync(ItemModel item);
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);

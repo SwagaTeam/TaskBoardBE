@@ -12,7 +12,6 @@ namespace ProjectService.Mapper
                 Name = model.Name,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,
-                StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
             };
         }
@@ -25,7 +24,6 @@ namespace ProjectService.Mapper
                 Name = model.Name,
                 Description = model.Description,
                 CreatedAt = model.CreatedAt,
-                StatusId = model.StatusId,
                 ProjectId = model.ProjectId,
                 Project = model.Project is null ? null : ProjectMapper.ToModel(model.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),

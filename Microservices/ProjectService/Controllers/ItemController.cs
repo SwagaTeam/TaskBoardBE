@@ -10,6 +10,24 @@ namespace ProjectService.Controllers;
 
 public class ItemController(IItemManager itemManager) : ControllerBase
 {
+    /// <summary>
+    /// Добавление новой задачи/эпика/бага.
+    /// </summary>
+    /// <remarks>
+    /// Этот метод добавляет новую задачу/эпик/баг.
+    ///
+    /// <br/><br/>
+    /// <b>Типы задач (itemTypeId):</b>
+    /// <ul>
+    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    /// <li>3 – Bug</li>
+    /// </ul>
+    ///
+    /// Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели <c>Item</c> указывать его не нужно.
+    /// </remarks>
+    /// <param name="item">Модель создания задачи</param>
+    [SwaggerOperation("Добавление новой задачи/эпика/бага")]
     [HttpPost("create")]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -27,6 +45,9 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Получение задач текущего пользователя.
+    /// </summary>
     [HttpGet("get-current-user-items")]
     public async Task<IActionResult> GetCurrentUserItems()
     {
@@ -41,6 +62,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Получение задач пользователя в проекте.
+    /// </summary>
+    /// <param name="projectId">ID проекта</param>
+    /// <param name="userId">ID пользователя</param>
     [HttpGet("get-user-item/{userId}")]
     public async Task<IActionResult> GetUserItem([FromBody] int projectId, int userId)
     {
@@ -55,6 +81,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Привязать пользователя к задаче.
+    /// </summary>
+    /// <param name="newUserId">ID пользователя</param>
+    /// <param name="itemId">ID задачи</param>
     [HttpPost("add-user-to-item/{itemId}")]
     public async Task<IActionResult> AddUserInItem([FromBody] int newUserId, int itemId)
     {
@@ -69,42 +100,29 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
-
-
     /// <summary>
-    /// Изменение статуса задачи
+    /// Изменение типа задачи.
     /// </summary>
-    /// <remarks>
-    /// Меняет статус задачи при перемещении её из одной колонки в другую.
+    /// /// <remarks>
+    /// 
+    /// <br/><br/>
+    /// <b>Типы задач (itemTypeId):</b>
+    /// <ul>
+    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    /// <li>3 – Bug</li>
+    /// </ul>
+    ///
     /// </remarks>
-    /// <param name="model">ID изменяемой задачи, ID статуса</param>
-    [SwaggerOperation("Изменение статуса задачи")]
-    [HttpPost("change-status/{itemId}")]
-    public async Task<IActionResult> ChangeStatus([FromBody] int statusId, int itemId, CancellationToken cancellationToken)
-    {
-        //с помощью токена уведомлять о изменении статуса надо сделать
-        try
-        {
-            var itemModel = await itemManager.GetByIdAsync(itemId); 
-            itemModel.StatusId = statusId;
-            await itemManager.UpdateAsync(itemModel);
-            return Ok("Статус обновлён");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
+    /// <param name="itemTypeId">ID нового типа</param>
+    /// <param name="itemId">ID задачи</param>
+    [SwaggerOperation("Изменение типа задачи")]
     [HttpPost("change-itemType/{itemId}")]
-
-    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId, CancellationToken cancellationToken)
     {
-        //нужно подумать как обьединить эти 2 метода в один в зависимости от параметров
         try
         {
-            var itemModel = await itemManager.GetByIdAsync(itemId); 
+            var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.ItemTypeId = itemTypeId;
             var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
@@ -115,8 +133,14 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
-    [HttpPost("change-params")]//тут передается новая модель но со старым id и ищет в бд по id
-                               //запись и меняет в ней все что нужно
+    /// <summary>
+    /// Изменение параметров задачи.
+    /// </summary>
+    /// <remarks>
+    /// Заменяет все параметры задачи на новые, кроме ID.
+    /// </remarks>
+    /// <param name="itemModel">Модель задачи с изменёнными параметрами</param>
+    [HttpPost("change-params")]
     public async Task<IActionResult> ChangeParams([FromBody] ItemModel itemModel, CancellationToken cancellationToken)
     {
         try
@@ -130,6 +154,9 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Получение всех задач.
+    /// </summary>
     [HttpGet("get")]
     [ProducesResponseType<IEnumerable<ItemModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -138,7 +165,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         var items = await itemManager.GetAllItemsAsync();
         return Ok(items);
     }
-    
+
+    /// <summary>
+    /// Удаление задачи по ID.
+    /// </summary>
+    /// <param name="id">ID задачи</param>
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -149,6 +180,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         return Ok(id);
     }
 
+    /// <summary>
+    /// Получение задачи по ID.
+    /// </summary>
+    /// <param name="id">ID задачи</param>
     [HttpGet("get/{id}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -159,6 +194,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         return Ok(item);
     }
 
+    /// <summary>
+    /// Получение задач по ID доски.
+    /// </summary>
+    /// <param name="boardId">ID доски</param>
     [HttpGet("board/{boardId}")]
     public async Task<IActionResult> GetItemsByBoardIdAsync(int boardId)
     {
@@ -166,63 +205,21 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         return Ok(items);
     }
 
+    /// <summary>
+    /// Получение задачи по названию.
+    /// </summary>
+    /// <param name="title">Название задачи</param>
     [HttpGet("{title}")]
     public async Task<IActionResult> GetItemByName(string title)
     {
         var item = await itemManager.GetByTitle(title);
         return Ok(item);
     }
-    
-    /// <summary>
-    /// Архивация задачи
-    /// </summary>
-    /// <remarks>
-    /// Делает задачу "заархивированной"
-    /// </remarks>
-    /// <param name="itemId">ID изменяемой задачи</param>
-    [SwaggerOperation("Архивация задачи")]
-    [HttpPost("archieve-item/{itemId}")]
-    public async Task<IActionResult> ArchieveItem([FromBody] int itemId, CancellationToken cancellationToken)
-    {
-        //с помощью токена уведомлять о изменении статуса надо сделать
-        try
-        {
-            var itemModel = await itemManager.GetByIdAsync(itemId);
-            itemModel.IsArchived = true;
-            await itemManager.UpdateAsync(itemModel);
-            return Ok("Статус обновлён");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
     /// <summary>
-    /// Разархивация задачи
+    /// Получение архивированных задач проекта.
     /// </summary>
-    /// <remarks>
-    /// Делает задачу "НЕ заархивированной"
-    /// </remarks>
-    /// <param name="itemId">ID изменяемой задачи</param>
-    [SwaggerOperation("Разархивация задачи")]
-    [HttpPost("unarchieve-item/{itemId}")]
-    public async Task<IActionResult> UnarchieveItem([FromBody] int itemId, CancellationToken cancellationToken)
-    {
-        //с помощью токена уведомлять о изменении статуса надо сделать
-        try
-        {
-            var itemModel = await itemManager.GetByIdAsync(itemId);
-            itemModel.IsArchived = false;
-            await itemManager.UpdateAsync(itemModel);
-            return Ok("Статус обновлён");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-    
+    /// <param name="projectId">ID проекта</param>
     [HttpGet("archieved-items/project/{projectId}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -233,12 +230,16 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             return Ok(await itemManager.GetArchievedItemsInProject(projectId));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
 
+    /// <summary>
+    /// Получение архивированных задач доски.
+    /// </summary>
+    /// <param name="boardId">ID доски</param>
     [HttpGet("archieved-items/board/{boardId}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -254,5 +255,6 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
 
 }

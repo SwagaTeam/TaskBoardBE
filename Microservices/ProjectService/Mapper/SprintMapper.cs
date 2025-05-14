@@ -29,7 +29,8 @@ namespace ProjectService.Mapper
                 Name = model.Name,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
-                BoardId = model.BoardId
+                BoardId = model.BoardId,
+                Items = model.Items.Select(ItemMapper.ToModel).ToList()!
             };
         }
     }

@@ -19,7 +19,13 @@ public class ItemManager(
     IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
-    {
+    {   
+        //TODO: При создании Item передается айди статуса и при этом в модели Item есть модель статуса (для отображения статусов задач допустим в доске)
+        //при валидации создания Item, он проверяет валидность не только CreateItemModel, но и валидность ItemModel, у неё не находит такого статуса
+        //и возвращает ошибку, пофиксил присваиванием статуса айди айдишником из модели. Тупо очень.
+
+        createItemModel.Item.StatusId = createItemModel.StatusId;
+
         await validateItemManager.ValidateCreateAsync(createItemModel);
 
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
@@ -74,6 +80,7 @@ public class ItemManager(
     {
         await validateItemManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
+        entity.Id = item.Id;
         entity.UpdatedAt = DateTime.UtcNow;
         await itemRepository.UpdateAsync(entity);
         return entity.Id;
@@ -82,6 +89,7 @@ public class ItemManager(
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId)
     {
         var item = await GetByIdAsync(itemId);
+        await UpdateAsync(item); // назначили человека на задачу, обновляем UpdatedAt
         await validateItemManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
         var itemUserEntity = new UserItemEntity
         {

@@ -5,8 +5,11 @@ namespace ProjectService.Mapper
 {
     public static class StatusMapper
     {
-        public static StatusModel ToModel(StatusEntity? statusEntity)
+        public static StatusModel? ToModel(StatusEntity? statusEntity)
         {
+            if (statusEntity == null)
+                return null;
+
             return new StatusModel
             {
                 Order = statusEntity.Order,
@@ -20,7 +23,9 @@ namespace ProjectService.Mapper
 
         public static StatusEntity? ToEntity(StatusModel statusEntity)
         {
-            if (statusEntity is null) return null;
+            if (statusEntity is null) 
+                return null;
+
             return new StatusEntity
             {
                 Id = (int)statusEntity.Id,

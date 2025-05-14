@@ -56,6 +56,20 @@ namespace ProjectService.Controllers
             }
         }
 
+        [HttpPost("add-item/{sprintId}")]
+        public async Task<IActionResult> AddItemToSprint(int sprintId, int itemId)
+        {
+            try
+            {
+                await sprintManager.AddItem(sprintId, itemId);
+                return Ok("Задача добавлена в спринт");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPatch("update")]
         public async Task<IActionResult> Update(SprintModel model)
         {

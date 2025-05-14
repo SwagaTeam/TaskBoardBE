@@ -21,9 +21,9 @@ namespace UserService.Controllers
             this.userManager = userManager;
         }
 
-        [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<UserModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("{id}")]
+        [HttpGet("current/{id}")]
         public async Task<IActionResult> GetCurrentUserInfo(int id)
         {
             var userId = auth.GetCurrentUserId();

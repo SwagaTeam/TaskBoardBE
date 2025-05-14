@@ -9,9 +9,8 @@ public class SprintModel
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    [JsonIgnore]
-    public ICollection<ItemModel> Items { get; set; }
+    public ICollection<ItemModel>? Items { get; set; }
 
     [JsonIgnore]
-    public BoardEntity Board { get; set; }
+    public BoardEntity? Board { get; set; }
 }

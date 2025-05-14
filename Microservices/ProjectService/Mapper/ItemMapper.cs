@@ -4,8 +4,11 @@ namespace ProjectService.Mapper;
 
 public class ItemMapper
 {
-    public static ItemEntity ItemToEntity(ItemModel item)
+    public static ItemEntity? ItemToEntity(ItemModel item)
     {
+        if (item is null)
+            return null;
+
         return new ItemEntity
         {
             BusinessId = item.BusinessId,
@@ -25,8 +28,11 @@ public class ItemMapper
         };
     }
 
-    public static ItemModel ToModel(ItemEntity item)
+    public static ItemModel? ToModel(ItemEntity item)
     {
+        if (item is null)
+            return null;
+
         return new ItemModel
         {
             Id = item.Id,

@@ -13,8 +13,6 @@ namespace SharedLibrary.Entities.ProjectService
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int StatusId { get; set; }
-
         public ProjectEntity Project { get; set; }
 
         public virtual ICollection<SprintEntity> Sprints { get; set; }

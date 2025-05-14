@@ -1,13 +1,14 @@
-﻿using System;
+﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Entities.UserService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharedLibrary.Entities.UserService;
 
-namespace SharedLibrary.Entities.ProjectService
+namespace SharedLibrary.Models.DocumentModel
 {
-    public class DocumentEntity
+    public class DocumentModel
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
@@ -16,7 +17,5 @@ namespace SharedLibrary.Entities.ProjectService
         public string FilePath { get; set; } = string.Empty;
         public DateTime UploadedAt { get; set; }
         public string Description { get; set; } = string.Empty;
-
-        public ProjectEntity Project { get; set; } = null!;
     }
 }

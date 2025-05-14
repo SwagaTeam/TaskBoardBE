@@ -13,7 +13,7 @@ public class StatusModel
     public bool IsRejected { get; set; }
     
     [JsonIgnore]
-    public ICollection<ItemModel> Items { get; set; }
+    public ICollection<ItemModel>? Items { get; set; }
     [JsonIgnore]
-    public ICollection<BoardModel> Boards { get; set; }
+    public ICollection<BoardModel>? Boards { get; set; }
 }

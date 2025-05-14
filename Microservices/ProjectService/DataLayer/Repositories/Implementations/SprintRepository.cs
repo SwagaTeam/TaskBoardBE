@@ -24,6 +24,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             {
                 existingSprint.Items.Add(existingItem);
                 await dbContext.SaveChangesAsync();
+                return;
             }
 
             throw new SprintNotFoundException("Спринт или задача не найдены");
@@ -58,6 +59,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         public async Task<IEnumerable<SprintEntity>> GetByBoardId(int boardId)
         {
             var sprints = await dbContext.Sprints
+                                .Include(x => x.Items)
                                 .Where(x => x.BoardId == boardId)
                                 .ToListAsync();
 
@@ -68,6 +70,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         {
             var existingSprint = await dbContext.Sprints
                                     .Include(x => x.Board)
+                                    .Include(x => x.Items)
                                     .FirstOrDefaultAsync(x => x.Id == sprintId);
 
             if (existingSprint is not null)

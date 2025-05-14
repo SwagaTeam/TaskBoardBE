@@ -46,7 +46,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
@@ -64,7 +64,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingBoard.ProjectId))
@@ -86,7 +86,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
@@ -104,7 +104,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingBoard.ProjectId))
@@ -124,7 +124,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
@@ -144,7 +144,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var userId = auth.GetCurrentUserId();
 
-            if (userId is null || userId != -1)
+            if (userId is null || userId == -1)
                 throw new NotAuthorizedException();
 
             if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))

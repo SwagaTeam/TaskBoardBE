@@ -8,11 +8,11 @@ public class BoardModel
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
-    public int StatusId { get; set; }
 
     [JsonIgnore]
     public ProjectModel? Project { get; set; }
 
+    [JsonIgnore]
     public ICollection<StatusModel>? Statuses { get; set; }
 
     [JsonIgnore]
