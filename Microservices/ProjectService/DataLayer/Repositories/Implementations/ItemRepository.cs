@@ -2,7 +2,7 @@
 using Microsoft.VisualBasic;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
-using System.Collections.Specialized;
+using ProjectService.Exceptions;
 
 namespace ProjectService.DataLayer.Repositories.Implementations;
 
@@ -25,9 +25,31 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
     public async Task UpdateAsync(ItemEntity item)
     {
-        context.Items.Update(item);
-        await context.SaveChangesAsync();
+        var existing = await context.Items.FindAsync(item.Id);
+
+        if (existing is not null)
+        {
+            existing.Id=item.Id;
+            existing.ItemTypeId = item.ItemTypeId;
+            existing.Description = item.Description;
+            existing.ParentId = item.ParentId;
+            existing.Priority = item.Priority;
+            existing.ProjectId = item.ProjectId;
+            existing.StatusId = item.StatusId;
+            existing.ProjectItemNumber = item.ProjectItemNumber;
+            existing.ExpectedEndDate = item.ExpectedEndDate;
+            existing.UpdatedAt = item.UpdatedAt;
+            existing.StartDate = item.StartDate;
+            existing.IsArchived = item.IsArchived;
+            existing.BusinessId = item.BusinessId;
+            existing.Title = item.Title;
+            await context.SaveChangesAsync();
+            return;
+        }
+        
+        throw new ItemNotFoundException();
     }
+    
 
     public async Task DeleteAsync(int id)
     {
@@ -44,6 +66,17 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task<ItemEntity> GetByNameAsync(string title)
     {
         return await context.Items.FirstOrDefaultAsync(item=>item.Title == title);
+    }
+    
+    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
+    {
+        var items = await context.Items
+            .Include(i => i.Status)
+            .Include(i => i.UserItems)
+            .Where(i => i.UserItems.Any(x=>x.UserId == userId && i.ProjectId == projectId))
+            .ToListAsync();
+        
+        return items;
     }
 
     public async Task<ICollection<ItemEntity>> GetItemsByBoardIdAsync(int boardId)
@@ -62,7 +95,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId)
+    public async Task<ICollection<ItemEntity>> GetCurrentUserItemsAsync(int userId)
     {
         var items = await context.Items
             .Include(i => i.Status)
@@ -73,6 +106,10 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
+   
+
+
+
     public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
     {
         var items = await context.Items
@@ -82,4 +119,5 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
         return items;
     }
+    
 }

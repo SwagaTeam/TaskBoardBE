@@ -4,17 +4,19 @@ using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
+using SharedLibrary.Auth;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
-    IItemRepository itemRepository, 
+    IItemRepository itemRepository,
     IValidateItemManager validateItemManager,
-    IKafkaProducer<ItemModel> kafkaProducer, 
-    IItemBoardsRepository itemBoardsRepository, 
-    IStatusRepository statusRepository, 
-    IProjectRepository projectRepository) : IItemManager
+    IKafkaProducer<ItemModel> kafkaProducer,
+    IItemBoardsRepository itemBoardsRepository,
+    IStatusRepository statusRepository,
+    IProjectRepository projectRepository,
+    IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
@@ -31,7 +33,7 @@ public class ItemManager(
         entity.BusinessId = $"{project.Key}-ITEM-{entity.Id}";
 
         await itemBoardsRepository.Create(
-            new ItemBoardEntity()
+            new ItemBoardEntity
             {
                 ItemId = entity.Id,
                 BoardId = createItemModel.BoardId,
@@ -53,10 +55,12 @@ public class ItemManager(
             .Select(ItemMapper.ToModel);
         return items;
     }
+    
 
-    public async Task<ItemModel> GetByIdAsync(int id)
+    public async Task<ItemModel> GetByIdAsync(int? id)
     {
-        var model = ItemMapper.ToModel(await itemRepository.GetByIdAsync(id));
+        if (id is null) throw new ArgumentNullException(nameof(id));
+        var model = ItemMapper.ToModel(await itemRepository.GetByIdAsync((int)id));
         return model;
     }
 
@@ -75,28 +79,17 @@ public class ItemManager(
         return entity.Id;
     }
     
-    public async Task<int> AddUserToItem(int userId, int itemId)
+    public async Task<int> AddUserToItemAsync(int newUserId, int itemId)
     {
-        //TODO: Добавить валидацию (Текущий юзер в проекте, добавляемый юзер в проекте, item в проекте текущего юзера)
-        var itemUserEntity = new UserItemEntity()
+        var item = await GetByIdAsync(itemId);
+        await validateItemManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
+        var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
-            UserId = userId
+            UserId = newUserId
         };
         await itemRepository.AddUserToItemAsync(itemUserEntity);
         return itemUserEntity.Id;
-    }
-
-    public async Task<ItemModel> GetByTitle(string title)
-    {
-        return ItemMapper.ToModel(await itemRepository.GetByNameAsync(title));
-    }
-
-    public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId)
-    {
-        //TODO: Добавить валидацию
-        var items = await itemRepository.GetItemsByUserIdAsync(userId);
-        return items.Select(ItemMapper.ToModel).ToList();
     }
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId)
@@ -115,5 +108,26 @@ public class ItemManager(
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
 
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
+    }
+
+    public async Task<ItemModel> GetByTitle(string title)
+    {
+        return ItemMapper.ToModel(await itemRepository.GetByNameAsync(title));
+    }
+
+
+    public async Task<ICollection<ItemModel>> GetCurrentUserItems()
+    {
+        var userId = auth.GetCurrentUserId();
+        if (userId is null || userId == -1) throw new NotAuthorizedException();
+        var items = await itemRepository.GetCurrentUserItemsAsync((int)userId);
+        return items.Select(ItemMapper.ToModel).ToList();
+    }
+
+    public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId)
+    {
+        await validateItemManager.ValidateAddUserToItemAsync(projectId, userId);
+        var items = await itemRepository.GetItemsByUserIdAsync(userId, projectId);
+        return items.Select(ItemMapper.ToModel).ToList();
     }
 }
