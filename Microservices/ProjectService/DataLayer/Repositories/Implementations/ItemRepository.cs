@@ -73,11 +73,6 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
-    public async Task UpdateStatusAsync(ItemEntity item)
-    {
-        await context.SaveChangesAsync();
-    }
-
     public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
     {
         var items = await context.Items
