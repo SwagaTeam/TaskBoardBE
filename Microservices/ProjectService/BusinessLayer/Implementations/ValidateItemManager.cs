@@ -42,4 +42,12 @@ public class ValidateItemManager(IProjectManager projectManager, IBoardManager b
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
+
+    public async Task ValidateUserInProjectAsync(int? userId, int? projectId)
+    {
+        var validator = new UserInProjectValidator(userProjectManager, userId, projectId);
+        var result = await validator.ValidateAsync("");
+        if (!result.IsValid)
+            throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
 }

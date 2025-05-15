@@ -20,10 +20,6 @@ public class ItemManager(
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {   
-        //TODO: При создании Item передается айди статуса и при этом в модели Item есть модель статуса (для отображения статусов задач допустим в доске)
-        //при валидации создания Item, он проверяет валидность не только CreateItemModel, но и валидность ItemModel, у неё не находит такого статуса
-        //и возвращает ошибку, пофиксил присваиванием статуса айди айдишником из модели. Тупо очень.
-
         await validateItemManager.ValidateCreateAsync(createItemModel);
 
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
@@ -99,19 +95,18 @@ public class ItemManager(
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId)
     {
-        //TODO: Добавить валидацию
-
+        var userId = auth.GetCurrentUserId();
+        await validateItemManager.ValidateUserInProjectAsync(userId, projectId);
         var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
-
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId)
     {
-        //TODO: Добавить валидацию
-
+        var userId = auth.GetCurrentUserId();
+        var projectId = (await projectRepository.GetByBoardIdAsync(boardId)).Id;
+        await validateItemManager.ValidateUserInProjectAsync(userId, projectId);
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
-
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
 
