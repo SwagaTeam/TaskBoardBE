@@ -20,6 +20,14 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     ///         <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
     ///         <li>3 – Bug</li>
     ///     </ul>
+    ///     <b>Уровни приоритета (priority):</b>
+    ///     <ul>
+    ///         <li>0 – Очень низкий</li>
+    ///         <li>1 – Низкий</li>
+    ///         <li>2 – Средний</li>
+    ///         <li>3 – Высокий</li>
+    ///         <li>4 – Критический</li>
+    ///     </ul>
     ///     Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели
     ///     <c>Item</c> указывать его не нужно.
     /// </remarks>
@@ -121,6 +129,41 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.ItemTypeId = itemTypeId;
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Изменение Приоритета задачи.
+    /// </summary>
+    /// ///
+    /// <remarks>
+    ///     <br /><br />
+    ///     <b>Уровни приоритета (priority):</b>
+    ///     <ul>
+    ///         <li>0 – Очень низкий</li>
+    ///         <li>1 – Низкий</li>
+    ///         <li>2 – Средний</li>
+    ///         <li>3 – Высокий</li>
+    ///         <li>4 – Критический</li>
+    ///     </ul>
+    /// </remarks>
+    /// <param name="priority">Новый приоритет</param>
+    /// <param name="itemId">ID задачи</param>
+    [SwaggerOperation("Изменение типа задачи")]
+    [HttpPost("change-priority/{itemId}")]
+    public async Task<IActionResult> ChangePriority([FromBody] int priority, int itemId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var itemModel = await itemManager.GetByIdAsync(itemId);
+            itemModel.Priority = priority;
             var newItemModel = await itemManager.UpdateAsync(itemModel);
             return Ok(newItemModel);
         }

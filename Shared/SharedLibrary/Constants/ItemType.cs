@@ -1,6 +1,6 @@
 ﻿namespace SharedLibrary.Constants;
 
-public class ItemType
+public static class ItemType
 {
     public const int TASK = 0;
     public const int BUG = 1;
