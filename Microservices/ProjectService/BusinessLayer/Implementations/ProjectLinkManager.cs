@@ -6,14 +6,14 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository) : IProjectLinkManager
+public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository)
+    : IProjectLinkManager
 {
     public async Task<string> CreateAsync(int projectId)
     {
-        // Генерация уникального URL
         var project = await projectRepository.GetByIdAsync(projectId);
 
-        if(project is null)
+        if (project is null)
             throw new ProjectNotFoundException();
 
         var url = Guid.NewGuid().ToString("N");

@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using SharedLibrary.Entities.ProjectService;
 using ProjectService.Exceptions;
+using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.DataLayer.Repositories.Implementations;
 
@@ -11,8 +10,8 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task<ItemEntity> GetByIdAsync(int id)
     {
         var item = await context.Items
-            .Include(x=>x.ItemType)
-            .FirstOrDefaultAsync(x=>x.Id==id);
+            .Include(x => x.ItemType)
+            .FirstOrDefaultAsync(x => x.Id == id);
         return item;
     }
 
@@ -29,7 +28,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
         if (existing is not null)
         {
-            existing.Id=item.Id;
+            existing.Id = item.Id;
             existing.ItemTypeId = item.ItemTypeId;
             existing.Description = item.Description;
             existing.ParentId = item.ParentId;
@@ -46,10 +45,10 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
             await context.SaveChangesAsync();
             return;
         }
-        
+
         throw new ItemNotFoundException();
     }
-    
+
 
     public async Task DeleteAsync(int id)
     {
@@ -65,17 +64,17 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
     public async Task<ItemEntity> GetByNameAsync(string title)
     {
-        return await context.Items.FirstOrDefaultAsync(item=>item.Title == title);
+        return await context.Items.FirstOrDefaultAsync(item => item.Title == title);
     }
-    
+
     public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
     {
         var items = await context.Items
             .Include(i => i.Status)
             .Include(i => i.UserItems)
-            .Where(i => i.UserItems.Any(x=>x.UserId == userId && i.ProjectId == projectId))
+            .Where(i => i.UserItems.Any(x => x.UserId == userId && i.ProjectId == projectId))
             .ToListAsync();
-        
+
         return items;
     }
 
@@ -100,24 +99,20 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         var items = await context.Items
             .Include(i => i.Status)
             .Include(i => i.UserItems)
-            .Where(i => i.UserItems.Any(x=>x.UserId == userId))
+            .Where(i => i.UserItems.Any(x => x.UserId == userId))
             .ToListAsync();
 
         return items;
     }
 
-   
-
-
 
     public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
     {
         var items = await context.Items
-           .Include(i => i.Status)
-           .Where(i => i.ProjectId == projectId)
-           .ToListAsync();
+            .Include(i => i.Status)
+            .Where(i => i.ProjectId == projectId)
+            .ToListAsync();
 
         return items;
     }
-    
 }

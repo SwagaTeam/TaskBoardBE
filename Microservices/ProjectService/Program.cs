@@ -46,12 +46,19 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        var avatarPath = Environment.GetEnvironmentVariable("DOCUMENT_STORAGE_PATH");
+        var documentPath = Environment.GetEnvironmentVariable("DOCUMENT_STORAGE_PATH");
+        var attachmentPath = Environment.GetEnvironmentVariable("ATTACHMENT_STORAGE_PATH");
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(avatarPath),
+            FileProvider = new PhysicalFileProvider(documentPath),
             RequestPath = "/documents"
+        });
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(attachmentPath),
+            RequestPath = "/attachments"
         });
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
@@ -95,6 +102,8 @@ internal class Program
         services.AddScoped<ISprintRepository, SprintRepository>();
         services.AddScoped<IDocumentManager,  DocumentManager>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();
@@ -116,7 +125,6 @@ internal class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "������� 'Bearer' [������] ��� �����������",

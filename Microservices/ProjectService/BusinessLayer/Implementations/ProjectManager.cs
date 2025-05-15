@@ -1,6 +1,5 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using ProjectService.DataLayer.Repositories.Implementations;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Auth;
@@ -10,10 +9,8 @@ using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectManager(
-    IProjectRepository projectRepository,
-    IUserProjectManager userProjectManager,
-    IAuth auth) : IProjectManager
+public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth) 
+    : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
     {
@@ -149,7 +146,7 @@ public class ProjectManager(
 
         if (project is null)
             throw new ProjectNotFoundException();
-        bool isCurrentUserAdminAndUserInProject = false;
+        var isCurrentUserAdminAndUserInProject = false;
 
         if (await userProjectManager.IsUserAdminAsync((int)currentUserId, project.Id)
             && project.UserProjects.Any(x => x.UserId == userId && x.ProjectId == projectId))
@@ -160,5 +157,4 @@ public class ProjectManager(
 
         throw new NotAuthorizedException("Пользователь не админ проекта");
     }
-
 }

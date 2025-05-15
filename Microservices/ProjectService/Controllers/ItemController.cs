@@ -2,29 +2,26 @@
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Xml;
 
 namespace ProjectService.Controllers;
 
 [ApiController]
-
 public class ItemController(IItemManager itemManager) : ControllerBase
 {
     /// <summary>
-    /// Добавление новой задачи/эпика/бага.
+    ///     Добавление новой задачи/эпика/бага.
     /// </summary>
     /// <remarks>
-    /// Этот метод добавляет новую задачу/эпик/баг.
-    ///
-    /// <br/><br/>
-    /// <b>Типы задач (itemTypeId):</b>
-    /// <ul>
-    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
-    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
-    /// <li>3 – Bug</li>
-    /// </ul>
-    ///
-    /// Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели <c>Item</c> указывать его не нужно.
+    ///     Этот метод добавляет новую задачу/эпик/баг.
+    ///     <br /><br />
+    ///     <b>Типы задач (itemTypeId):</b>
+    ///     <ul>
+    ///         <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    ///         <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    ///         <li>3 – Bug</li>
+    ///     </ul>
+    ///     Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели
+    ///     <c>Item</c> указывать его не нужно.
     /// </remarks>
     /// <param name="item">Модель создания задачи</param>
     [SwaggerOperation("Добавление новой задачи/эпика/бага")]
@@ -46,7 +43,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач текущего пользователя.
+    ///     Получение задач текущего пользователя.
     /// </summary>
     [HttpGet("get-current-user-items")]
     public async Task<IActionResult> GetCurrentUserItems()
@@ -63,7 +60,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач пользователя в проекте.
+    ///     Получение задач пользователя в проекте.
     /// </summary>
     /// <param name="projectId">ID проекта</param>
     /// <param name="userId">ID пользователя</param>
@@ -82,7 +79,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Привязать пользователя к задаче.
+    ///     Привязать пользователя к задаче.
     /// </summary>
     /// <param name="newUserId">ID пользователя</param>
     /// <param name="itemId">ID задачи</param>
@@ -101,24 +98,24 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Изменение типа задачи.
+    ///     Изменение типа задачи.
     /// </summary>
-    /// /// <remarks>
-    /// 
-    /// <br/><br/>
-    /// <b>Типы задач (itemTypeId):</b>
-    /// <ul>
-    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
-    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
-    /// <li>3 – Bug</li>
-    /// </ul>
-    ///
+    /// ///
+    /// <remarks>
+    ///     <br /><br />
+    ///     <b>Типы задач (itemTypeId):</b>
+    ///     <ul>
+    ///         <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    ///         <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    ///         <li>3 – Bug</li>
+    ///     </ul>
     /// </remarks>
     /// <param name="itemTypeId">ID нового типа</param>
     /// <param name="itemId">ID задачи</param>
     [SwaggerOperation("Изменение типа задачи")]
     [HttpPost("change-itemType/{itemId}")]
-    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -134,10 +131,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Изменение параметров задачи.
+    ///     Изменение параметров задачи.
     /// </summary>
     /// <remarks>
-    /// Заменяет все параметры задачи на новые, кроме ID.
+    ///     Заменяет все параметры задачи на новые, кроме ID.
     /// </remarks>
     /// <param name="itemModel">Модель задачи с изменёнными параметрами</param>
     [HttpPost("change-params")]
@@ -158,15 +155,54 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// Добавление комментария к задаче.
     /// </summary>
     /// <remarks>
-    /// 
+    /// Прикреплять файл не обязательно!
     /// </remarks>
-    /// <param name="commentModel">Модель комментария</param>
+    /// <param name="itemId">ID задачи</param>
+    /// <param name="text">Текст комментария</param>
+    /// <param name="attachment">Прикрепляемый файл</param>
+
     [HttpPost("comment")]
-    public async Task<IActionResult> AddComment([FromBody] NewCommentModel commentModel, CancellationToken cancellationToken)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> AddComment(
+    [FromForm] int itemId,
+    [FromForm] string text,
+    IFormFile? attachment)
     {
         try
         {
+            var comment = new CommentModel
+            {
+                ItemId = itemId,
+                Text = text,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await itemManager.AddCommentToItemAsync(comment, attachment);
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Получение комментариев к задаче.
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="itemId">ID задачи</param>
+    ///
+    [ProducesResponseType<ICollection<CommentModel>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpGet("{itemId}/comments")]
+    public async Task<IActionResult> GetComments(int itemId)
+    {
+        try
+        {
+            var comments = await itemManager.GetComments(itemId);
+            return Ok(comments);
         }
         catch (Exception ex)
         {
@@ -179,7 +215,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// </summary>
     [HttpGet("get")]
     [ProducesResponseType<IEnumerable<ItemModel>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetItemsAsync()
     {
         var items = await itemManager.GetAllItemsAsync();
@@ -187,11 +223,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Удаление задачи по ID.
+    ///     Удаление задачи по ID.
     /// </summary>
     /// <param name="id">ID задачи</param>
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -201,12 +236,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задачи по ID.
+    ///     Получение задачи по ID.
     /// </summary>
     /// <param name="id">ID задачи</param>
-    [HttpGet("get/{id}")]
+    [HttpGet("{id}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetItemByIdAsync(int id)
     {
@@ -215,7 +249,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач по ID доски.
+    ///     Получение задач по ID доски.
     /// </summary>
     /// <param name="boardId">ID доски</param>
     [HttpGet("board/{boardId}")]
@@ -226,23 +260,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задачи по названию.
-    /// </summary>
-    /// <param name="title">Название задачи</param>
-    [HttpGet("{title}")]
-    public async Task<IActionResult> GetItemByName(string title)
-    {
-        var item = await itemManager.GetByTitle(title);
-        return Ok(item);
-    }
-
-    /// <summary>
-    /// Получение архивированных задач проекта.
+    ///     Получение архивированных задач проекта.
     /// </summary>
     /// <param name="projectId">ID проекта</param>
     [HttpGet("archieved-items/project/{projectId}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetArchievedItemsInProject(int projectId)
     {
@@ -257,12 +279,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение архивированных задач доски.
+    ///     Получение архивированных задач доски.
     /// </summary>
     /// <param name="boardId">ID доски</param>
     [HttpGet("archieved-items/board/{boardId}")]
     [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetArchievedItemsInBoard(int boardId)
     {
@@ -275,6 +296,4 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-
 }

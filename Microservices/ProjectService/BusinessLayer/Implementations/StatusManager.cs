@@ -1,6 +1,5 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using ProjectService.DataLayer.Repositories.Implementations;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
@@ -8,10 +7,7 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class StatusManager(
-    IStatusRepository statusRepository, 
-    IAuth auth, 
-    IProjectRepository projectRepository,
+public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProjectRepository projectRepository,
     IUserProjectManager userProjectManager) : IStatusManager
 {
     public async Task<IEnumerable<StatusModel>> GetAllAsync()
@@ -35,7 +31,7 @@ public class StatusManager(
         var project = await projectRepository.GetByBoardIdAsync((int)statusModel.Id);
 
         if (project is not null &&
-            currentUser != -1   &&
+            currentUser != -1 &&
             await userProjectManager.IsUserInProjectAsync((int)currentUser, project.Id))
         {
             int lastOrder;

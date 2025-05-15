@@ -1,7 +1,6 @@
-﻿namespace ProjectService.DataLayer.Repositories.Abstractions
+﻿namespace ProjectService.DataLayer.Repositories.Abstractions;
+
+public interface IItemBoardsRepository
 {
-    public interface IItemBoardsRepository
-    {
-        Task Create(ItemBoardEntity itemBoard);
-    }
+    Task Create(ItemBoardEntity itemBoard);
 }

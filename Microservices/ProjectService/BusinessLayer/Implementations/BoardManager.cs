@@ -25,28 +25,28 @@ public class BoardManager(
 
         boardEntity.Statuses =
         [
-            new StatusEntity()
+            new StatusEntity
             {
                 Name = "В очереди",
                 IsDone = false,
                 IsRejected = false,
                 Order = 0
             },
-            new StatusEntity()
+            new StatusEntity
             {
                 Name = "На исполнении",
                 IsDone = false,
                 IsRejected = false,
                 Order = 1
             },
-            new StatusEntity()
+            new StatusEntity
             {
                 Name = "Готово",
                 IsDone = true,
                 IsRejected = false,
                 Order = 2
             },
-            new StatusEntity()
+            new StatusEntity
             {
                 Name = "Отклонено",
                 IsDone = false,
@@ -100,7 +100,7 @@ public class BoardManager(
 
         throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет доступа к проекту");
     }
-    
+
 
     public async Task<int> UpdateAsync(BoardModel board)
     {

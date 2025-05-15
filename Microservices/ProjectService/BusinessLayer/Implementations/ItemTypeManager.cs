@@ -21,7 +21,7 @@ public class ItemTypeManager(IItemTypeRepository itemTypeRepository) : IItemType
     {
         var entity = ItemTypeMapper.ToEntity(itemTypeModel);
         if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
-        
+
         await itemTypeRepository.CreateAsync(entity);
         return itemTypeModel.Id;
     }

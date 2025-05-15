@@ -15,6 +15,8 @@ public interface IItemManager
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);
     public Task<int> AddUserToItemAsync(int userId, int itemId);
+    public Task<int> AddCommentToItemAsync(CommentModel commentModel, IFormFile? attachment);
+    public Task<ICollection<CommentModel>> GetComments(int itemId);
     public Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId);
     public Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int board);
 }

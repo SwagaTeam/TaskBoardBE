@@ -11,6 +11,5 @@ public class CommentModel
     [JsonIgnore]
     public ItemModel Item { get; set; }
 
-    [JsonIgnore]
     public ICollection<AttachmentModel> Attachments { get; set; }
 }
