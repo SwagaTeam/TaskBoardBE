@@ -155,6 +155,26 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
+    /// Добавление комментария к задаче.
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="commentModel">Модель комментария</param>
+    [HttpPost("comment")]
+    public async Task<IActionResult> AddComment([FromBody] NewCommentModel commentModel, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Получение всех задач.
     /// </summary>
     [HttpGet("get")]
