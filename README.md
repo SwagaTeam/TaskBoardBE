@@ -19,15 +19,15 @@
 
 ## Технологический стек
 
+- Микросервисная архитектура 
 - C# ASP.NET Core  
-- Entity Framework Core  
+- Entity Framework Core
+- Dapper
+- PostgreSQL
+- FluentValidation 
 - Kafka  
-- Микросервисная архитектура  
 - YARP (reverse proxy)  
-- Docker & Docker Compose  
-- PostgreSQL  
-- Dapper  
-- FluentValidation  
+- Docker  
 
 ---
 
