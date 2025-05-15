@@ -116,7 +116,6 @@ internal class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "������� 'Bearer' [������] ��� �����������",

@@ -5,8 +5,7 @@ using ProjectService.Mapper;
 using SharedLibrary.Auth;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.Models.DocumentModel;
-using System.Linq;
-using System.Reflection.Metadata;
+
 
 namespace ProjectService.BusinessLayer.Implementations
 {
@@ -57,7 +56,7 @@ namespace ProjectService.BusinessLayer.Implementations
 
             var filePath = Path.Combine(docPath, uniqueFileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            await using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }

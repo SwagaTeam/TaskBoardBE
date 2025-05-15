@@ -24,8 +24,6 @@ public class ItemManager(
         //при валидации создания Item, он проверяет валидность не только CreateItemModel, но и валидность ItemModel, у неё не находит такого статуса
         //и возвращает ошибку, пофиксил присваиванием статуса айди айдишником из модели. Тупо очень.
 
-        createItemModel.Item.StatusId = createItemModel.StatusId;
-
         await validateItemManager.ValidateCreateAsync(createItemModel);
 
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
@@ -43,7 +41,6 @@ public class ItemManager(
             {
                 ItemId = entity.Id,
                 BoardId = createItemModel.BoardId,
-                StatusId = createItemModel.StatusId
             }
         );
 

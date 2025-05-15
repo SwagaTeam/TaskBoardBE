@@ -1,9 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using SharedLibrary.ProjectModels;
 
 public class ItemModel
 {
     public int Id { get; set; }
+    [DefaultValue(null)]
     public int? ParentId { get; set; }
     public int? ProjectId { get; set; }
     public int? ProjectItemNumber { get; set; }
