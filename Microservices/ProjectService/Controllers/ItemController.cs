@@ -2,29 +2,26 @@
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Xml;
 
 namespace ProjectService.Controllers;
 
 [ApiController]
-
 public class ItemController(IItemManager itemManager) : ControllerBase
 {
     /// <summary>
-    /// Добавление новой задачи/эпика/бага.
+    ///     Добавление новой задачи/эпика/бага.
     /// </summary>
     /// <remarks>
-    /// Этот метод добавляет новую задачу/эпик/баг.
-    ///
-    /// <br/><br/>
-    /// <b>Типы задач (itemTypeId):</b>
-    /// <ul>
-    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
-    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
-    /// <li>3 – Bug</li>
-    /// </ul>
-    ///
-    /// Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели <c>Item</c> указывать его не нужно.
+    ///     Этот метод добавляет новую задачу/эпик/баг.
+    ///     <br /><br />
+    ///     <b>Типы задач (itemTypeId):</b>
+    ///     <ul>
+    ///         <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    ///         <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    ///         <li>3 – Bug</li>
+    ///     </ul>
+    ///     Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели
+    ///     <c>Item</c> указывать его не нужно.
     /// </remarks>
     /// <param name="item">Модель создания задачи</param>
     [SwaggerOperation("Добавление новой задачи/эпика/бага")]
@@ -46,7 +43,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач текущего пользователя.
+    ///     Получение задач текущего пользователя.
     /// </summary>
     [HttpGet("get-current-user-items")]
     public async Task<IActionResult> GetCurrentUserItems()
@@ -63,7 +60,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач пользователя в проекте.
+    ///     Получение задач пользователя в проекте.
     /// </summary>
     /// <param name="projectId">ID проекта</param>
     /// <param name="userId">ID пользователя</param>
@@ -82,7 +79,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Привязать пользователя к задаче.
+    ///     Привязать пользователя к задаче.
     /// </summary>
     /// <param name="newUserId">ID пользователя</param>
     /// <param name="itemId">ID задачи</param>
@@ -101,24 +98,24 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Изменение типа задачи.
+    ///     Изменение типа задачи.
     /// </summary>
-    /// /// <remarks>
-    /// 
-    /// <br/><br/>
-    /// <b>Типы задач (itemTypeId):</b>
-    /// <ul>
-    /// <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
-    /// <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
-    /// <li>3 – Bug</li>
-    /// </ul>
-    ///
+    /// ///
+    /// <remarks>
+    ///     <br /><br />
+    ///     <b>Типы задач (itemTypeId):</b>
+    ///     <ul>
+    ///         <li>1 – Task (ParentId должен быть <c>null</c> или ссылаться на другую задачу или эпик)</li>
+    ///         <li>2 – Epic (ParentId должен быть <c>null</c> ВСЕГДА)</li>
+    ///         <li>3 – Bug</li>
+    ///     </ul>
     /// </remarks>
     /// <param name="itemTypeId">ID нового типа</param>
     /// <param name="itemId">ID задачи</param>
     [SwaggerOperation("Изменение типа задачи")]
     [HttpPost("change-itemType/{itemId}")]
-    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeItemType([FromBody] int itemTypeId, int itemId,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -134,10 +131,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Изменение параметров задачи.
+    ///     Изменение параметров задачи.
     /// </summary>
     /// <remarks>
-    /// Заменяет все параметры задачи на новые, кроме ID.
+    ///     Заменяет все параметры задачи на новые, кроме ID.
     /// </remarks>
     /// <param name="itemModel">Модель задачи с изменёнными параметрами</param>
     [HttpPost("change-params")]
@@ -155,7 +152,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение всех задач.
+    ///     Получение всех задач.
     /// </summary>
     [HttpGet("get")]
     [ProducesResponseType<IEnumerable<ItemModel>>(StatusCodes.Status200OK)]
@@ -167,7 +164,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Удаление задачи по ID.
+    ///     Удаление задачи по ID.
     /// </summary>
     /// <param name="id">ID задачи</param>
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
@@ -181,7 +178,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задачи по ID.
+    ///     Получение задачи по ID.
     /// </summary>
     /// <param name="id">ID задачи</param>
     [HttpGet("get/{id}")]
@@ -195,7 +192,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задач по ID доски.
+    ///     Получение задач по ID доски.
     /// </summary>
     /// <param name="boardId">ID доски</param>
     [HttpGet("board/{boardId}")]
@@ -206,7 +203,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение задачи по названию.
+    ///     Получение задачи по названию.
     /// </summary>
     /// <param name="title">Название задачи</param>
     [HttpGet("{title}")]
@@ -217,7 +214,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение архивированных задач проекта.
+    ///     Получение архивированных задач проекта.
     /// </summary>
     /// <param name="projectId">ID проекта</param>
     [HttpGet("archieved-items/project/{projectId}")]
@@ -237,7 +234,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     }
 
     /// <summary>
-    /// Получение архивированных задач доски.
+    ///     Получение архивированных задач доски.
     /// </summary>
     /// <param name="boardId">ID доски</param>
     [HttpGet("archieved-items/board/{boardId}")]
@@ -255,6 +252,4 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-
 }

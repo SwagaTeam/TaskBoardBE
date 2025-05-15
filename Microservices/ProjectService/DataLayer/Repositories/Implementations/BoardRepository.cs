@@ -17,7 +17,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
         var board = await GetByIdAsync(id);
 
         if (board is null) throw new NullReferenceException("Доска не найдена");
-        
+
         context.Boards.Remove(board);
         await context.SaveChangesAsync();
     }
@@ -26,7 +26,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
     {
         var board = await context.Boards
             .Include(x => x.Statuses)
-            .ThenInclude(x=>x.Items) //?
+            .ThenInclude(x => x.Items) //?
             .FirstOrDefaultAsync(x => x.Id == id);
 
         return board;

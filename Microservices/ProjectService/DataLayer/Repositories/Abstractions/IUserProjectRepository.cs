@@ -9,5 +9,4 @@ public interface IUserProjectRepository
     Task<bool> IsUserAdmin(int userId, int projectId);
     Task<bool> IsUserCanView(int userId, int projectId);
     public Task<bool> IsUserViewer(int userId, int projectId);
-
 }

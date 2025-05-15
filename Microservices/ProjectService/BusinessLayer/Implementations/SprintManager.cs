@@ -1,160 +1,122 @@
-﻿using Microsoft.AspNetCore.Http;
-using ProjectService.BusinessLayer.Abstractions;
+﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Auth;
 
-namespace ProjectService.BusinessLayer.Implementations
+namespace ProjectService.BusinessLayer.Implementations;
+
+//TODO: Вынести валидацию
+public class SprintManager : ISprintManager
 {
-    //TODO: Вынести валидацию
-    public class SprintManager : ISprintManager
+    private readonly ISprintRepository sprintRepository;
+    private readonly IBoardRepository boardRepository;
+    private readonly IUserProjectRepository userProjectRepository;
+    private readonly IItemRepository itemRepository;
+    private readonly IAuth auth;
+    private readonly IValidateItemManager validateItemManager;
+
+    public SprintManager(ISprintRepository sprintRepository, IAuth auth, IUserProjectRepository userProjectRepository,
+        IBoardRepository boardRepository, IItemRepository itemRepository, IValidateItemManager validateItemManager)
     {
-        private readonly ISprintRepository sprintRepository;
-        private readonly IBoardRepository boardRepository;
-        private readonly IUserProjectRepository userProjectRepository;
-        private readonly IItemRepository itemRepository;
-        private readonly IAuth auth;
+        this.sprintRepository = sprintRepository;
+        this.auth = auth;
+        this.userProjectRepository = userProjectRepository;
+        this.boardRepository = boardRepository;
+        this.itemRepository = itemRepository;
+        this.validateItemManager = validateItemManager;
+    }
 
-        public SprintManager(ISprintRepository sprintRepository, 
-            IAuth auth, 
-            IUserProjectRepository userProjectRepository, 
-            IBoardRepository boardRepository,
-            IItemRepository itemRepository)
-        {
-            this.sprintRepository = sprintRepository;
-            this.auth = auth;
-            this.userProjectRepository = userProjectRepository;
-            this.boardRepository = boardRepository;
-            this.itemRepository = itemRepository;
-        }
-
-        public async Task AddItem(int sprintId, int itemId)
-        {
-            var existingSprint = await sprintRepository.GetByIdAsync(sprintId);
-
-            if (existingSprint is null)
-                throw new SprintNotFoundException();
-
-            var existingItem = await itemRepository.GetByIdAsync(itemId);
+    public async Task AddItem(int sprintId, int itemId)
+    {
+        var existingSprint = await sprintRepository.GetByIdAsync(sprintId);
         
-            if (existingItem is null)
-                throw new ItemNotFoundException();
+        if (existingSprint is null)
+            throw new SprintNotFoundException();
 
-            if (existingItem.ProjectId != existingSprint.Board.ProjectId)
-                throw new DifferentAreaException();
+        var existingItem = await itemRepository.GetByIdAsync(itemId);
 
-            var userId = auth.GetCurrentUserId();
+        if (existingItem is null)
+            throw new ItemNotFoundException();
 
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
+        if (existingItem.ProjectId != existingSprint.Board.ProjectId)
+            throw new DifferentAreaException();
+        
+        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
+        await sprintRepository.AddItem(sprintId, itemId);
+    }
 
-            await sprintRepository.AddItem(sprintId, itemId);
-        }
+    public async Task<int?> CreateAsync(SprintModel statusModel)
+    {
+        var existingBoard = await boardRepository.GetByIdAsync(statusModel.BoardId);
 
-        public async Task<int?> CreateAsync(SprintModel statusModel)
-        {
-            var existingBoard = await boardRepository.GetByIdAsync(statusModel.BoardId);
+        if (existingBoard is null)
+            throw new BoardNotFoundException();
 
-            if (existingBoard is null)
-                throw new BoardNotFoundException();
+        await validateItemManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
-            var userId = auth.GetCurrentUserId();
+        var sprintEntity = SprintMapper.ToEntity(statusModel);
 
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
+        await sprintRepository.CreateAsync(sprintEntity);
 
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingBoard.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
+        return sprintEntity.Id;
+    }
 
-            var sprintEntity = SprintMapper.ToEntity(statusModel);
+    public async Task DeleteAsync(int id)
+    {
+        var existingSprint = await sprintRepository.GetByIdAsync(id);
 
-            await sprintRepository.CreateAsync(sprintEntity);
+        if (existingSprint is null)
+            throw new SprintNotFoundException();
+        
+        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
+        
+        await sprintRepository.DeleteAsync(id);
+    }
 
-            return sprintEntity.Id;
-        }
+    public async Task<IEnumerable<SprintModel>> GetByBoardIdAsync(int boardId)
+    {
+        var existingBoard = await boardRepository.GetByIdAsync(boardId);
 
-        public async Task DeleteAsync(int id)
-        {
-            var existingSprint = await sprintRepository.GetByIdAsync(id);
+        if (existingBoard is null)
+            throw new BoardNotFoundException();
+        
+        await validateItemManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
-            if (existingSprint is null)
-                throw new SprintNotFoundException();
+        var entities = await sprintRepository.GetByBoardId(boardId);
 
-            var userId = auth.GetCurrentUserId();
+        return entities.Select(SprintMapper.ToModel);
+    }
 
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
+    public async Task<SprintModel> GetByIdAsync(int id)
+    {
+        var existingSprint = await sprintRepository.GetByIdAsync(id);
 
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
+        if (existingSprint is null)
+            throw new SprintNotFoundException();
 
-            await sprintRepository.DeleteAsync(id);
-        }
+        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
-        public async Task<IEnumerable<SprintModel>> GetByBoardIdAsync(int boardId)
-        {
-            var existingBoard = await boardRepository.GetByIdAsync(boardId);
 
-            if (existingBoard is null)
-                throw new BoardNotFoundException();
+        var sprint = await sprintRepository.GetByIdAsync(id);
 
-            var userId = auth.GetCurrentUserId();
+        return SprintMapper.ToModel(sprint);
+    }
 
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
+    public async Task<int?> UpdateAsync(SprintModel statusModel)
+    {
+        var existingSprint = await sprintRepository.GetByIdAsync(statusModel.Id);
 
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingBoard.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
+        if (existingSprint is null)
+            throw new SprintNotFoundException();
 
-            var entities = await sprintRepository.GetByBoardId(boardId);
+        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
-            return entities.Select(SprintMapper.ToModel);
-        }
+        var entity = SprintMapper.ToEntity(statusModel);
 
-        public async Task<SprintModel> GetByIdAsync(int id)
-        {
-            var existingSprint = await sprintRepository.GetByIdAsync(id);
+        await sprintRepository.UpdateAsync(entity);
 
-            if (existingSprint is null)
-                throw new SprintNotFoundException();
-
-            var userId = auth.GetCurrentUserId();
-
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
-
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
-
-            var sprint = await sprintRepository.GetByIdAsync(id);
-
-            return SprintMapper.ToModel(sprint);
-        }
-
-        public async Task<int?> UpdateAsync(SprintModel statusModel)
-        {
-            var existingSprint = await sprintRepository.GetByIdAsync(statusModel.Id);
-
-            if (existingSprint is null)
-                throw new SprintNotFoundException();
-
-            var userId = auth.GetCurrentUserId();
-
-            if (userId is null || userId == -1)
-                throw new NotAuthorizedException();
-
-            if (!await userProjectRepository.IsUserInProject((int)userId, existingSprint.Board.ProjectId))
-                throw new NotAuthorizedException("Текущий пользователь не состоит в проекте");
-
-            var entity = SprintMapper.ToEntity(statusModel);
-
-            await sprintRepository.UpdateAsync(entity);
-
-            return entity.Id;
-        }
+        return entity.Id;
     }
 }

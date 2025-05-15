@@ -6,14 +6,20 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ValidateItemManager(IProjectManager projectManager, IBoardManager boardManager, IAuth authManager, 
-    IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager, 
-    IUserProjectManager userProjectManager) 
+public class ValidateItemManager(
+    IProjectManager projectManager,
+    IBoardManager boardManager,
+    IAuth authManager,
+    IItemRepository itemRepository,
+    IStatusManager statusManager,
+    IItemTypeManager itemTypeManager,
+    IUserProjectManager userProjectManager)
     : IValidateItemManager
 {
     public async Task ValidateCreateAsync(CreateItemModel createItemModel)
     {
-        var validator = new CreateItemValidator(boardManager, projectManager, authManager, itemRepository, statusManager, itemTypeManager);
+        var validator = new CreateItemValidator(boardManager, projectManager, authManager, itemRepository,
+            statusManager, itemTypeManager);
         var result = await validator.ValidateAsync(createItemModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
@@ -43,8 +49,9 @@ public class ValidateItemManager(IProjectManager projectManager, IBoardManager b
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
 
-    public async Task ValidateUserInProjectAsync(int? userId, int? projectId)
+    public async Task ValidateUserInProjectAsync(int? projectId)
     {
+        var userId = authManager.GetCurrentUserId();
         var validator = new UserInProjectValidator(userProjectManager, userId, projectId);
         var result = await validator.ValidateAsync("");
         if (!result.IsValid)

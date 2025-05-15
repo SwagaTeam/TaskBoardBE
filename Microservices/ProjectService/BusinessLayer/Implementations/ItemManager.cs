@@ -19,7 +19,7 @@ public class ItemManager(
     IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
-    {   
+    {
         await validateItemManager.ValidateCreateAsync(createItemModel);
 
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
@@ -36,7 +36,7 @@ public class ItemManager(
             new ItemBoardEntity
             {
                 ItemId = entity.Id,
-                BoardId = createItemModel.BoardId,
+                BoardId = createItemModel.BoardId
             }
         );
 
@@ -54,7 +54,7 @@ public class ItemManager(
             .Select(ItemMapper.ToModel);
         return items;
     }
-    
+
 
     public async Task<ItemModel> GetByIdAsync(int? id)
     {
@@ -78,7 +78,7 @@ public class ItemManager(
         await itemRepository.UpdateAsync(entity);
         return entity.Id;
     }
-    
+
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId)
     {
         var item = await GetByIdAsync(itemId);
@@ -95,17 +95,15 @@ public class ItemManager(
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId)
     {
-        var userId = auth.GetCurrentUserId();
-        await validateItemManager.ValidateUserInProjectAsync(userId, projectId);
+        await validateItemManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId)
     {
-        var userId = auth.GetCurrentUserId();
         var projectId = (await projectRepository.GetByBoardIdAsync(boardId)).Id;
-        await validateItemManager.ValidateUserInProjectAsync(userId, projectId);
+        await validateItemManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
