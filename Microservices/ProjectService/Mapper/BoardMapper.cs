@@ -16,19 +16,23 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static BoardModel ToModel(BoardEntity model)
+        public static BoardModel ToModel(BoardEntity entity)
         {
-            return new BoardModel
+            var model = new BoardModel
             {
-                Id = model.Id,
-                Name = model.Name,
-                Description = model.Description,
-                CreatedAt = model.CreatedAt,
-                ProjectId = model.ProjectId,
-                Project = model.Project is null ? null : ProjectMapper.ToModel(model.Project),
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                CreatedAt = entity.CreatedAt,
+                ProjectId = entity.ProjectId,
+                Project = entity.Project is null ? null : ProjectMapper.ToModel(entity.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
-                Statuses = model.Statuses.Select(StatusMapper.ToModel).ToList()
+                Statuses = entity.Statuses.Select(StatusMapper.ToModel).ToList()
             };
+
+            model.SetItemsCount(entity.ItemsBoards.Count);
+
+            return model;
         }
     }
 }

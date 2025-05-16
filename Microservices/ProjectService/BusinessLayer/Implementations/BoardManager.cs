@@ -114,4 +114,30 @@ public class BoardManager(
 
         throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
     }
+
+    public async Task<ICollection<BoardModel>> GetByUserIdAsync(int userId)
+    {
+        var boards = (await boardRepository.GetByUserIdAsync(userId)).ToList();
+        var result = new List<BoardModel>();
+
+        foreach (var board in boards)
+        {
+            if (await userProjectManager.IsUserCanViewAsync(userId, board.ProjectId))
+            {
+                result.Add(BoardMapper.ToModel(board));
+            }
+        }
+
+        return result;
+    }
+
+    public async Task<ICollection<BoardModel>> GetCurrentBoardsAsync()
+    {
+        var userId = auth.GetCurrentUserId();
+        if (userId is null || userId == -1) throw new NotAuthorizedException();
+
+        var result = await GetByUserIdAsync((int)userId);
+
+        return result;
+    }
 }

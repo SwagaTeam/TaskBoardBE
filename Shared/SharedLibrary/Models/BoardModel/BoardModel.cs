@@ -8,6 +8,7 @@ public class BoardModel
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int ItemsCount { get; private set; }
 
     [JsonIgnore]
     public ProjectModel? Project { get; set; }
@@ -17,4 +18,10 @@ public class BoardModel
 
     [JsonIgnore]
     public ICollection<SprintModel>? Sprints { get; set; } = new List<SprintModel>();
+
+    public void SetItemsCount(int count)
+    {
+        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        ItemsCount = count;
+    }
 }

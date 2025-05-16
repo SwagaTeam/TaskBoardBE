@@ -25,6 +25,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
     public async Task<BoardEntity?> GetByIdAsync(int id)
     {
         var board = await context.Boards
+            .Include(x=>x.ItemsBoards)
             .Include(x => x.Statuses)
             .ThenInclude(x => x.Items) //?
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -46,6 +47,17 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
         var boards = context.Boards
             .Include(x => x.Statuses)
             .Where(x => x.ProjectId == projectId);
+
+        return boards;
+    }
+
+    public async Task<IQueryable<BoardEntity>> GetByUserIdAsync(int userId)
+    {
+        var boards = context.Boards
+                   .Include(x=>x.ItemsBoards)
+                   .Include(x => x.Project)
+                   .ThenInclude(x=>x.UserProjects)
+                   .Where(x => x.Project.UserProjects.Any(x => x.UserId == userId));
 
         return boards;
     }

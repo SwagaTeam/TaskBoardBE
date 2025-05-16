@@ -163,4 +163,24 @@ public class BoardController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    /// <summary>
+    /// Получение досок текущего пользователя.
+    /// </summary>
+    /// <remarks>
+    /// Возвращает список всех досок пользователя.
+    /// </remarks>
+    [HttpGet("current")]
+    public async Task<IActionResult> GetCurrentBoards()
+
+    {
+        try
+        {
+            return Ok(await _boardManager.GetCurrentBoardsAsync());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

@@ -10,5 +10,6 @@ public interface IBoardRepository
     Task UpdateAsync(BoardEntity board);
     Task DeleteAsync(int id);
     Task<IQueryable<BoardEntity>> GetByProjectIdAsync(int projectId);
+    Task<IQueryable<BoardEntity>> GetByUserIdAsync(int userId);
     Task UpdateRangeAsync(ICollection<BoardEntity> boards);
 }
