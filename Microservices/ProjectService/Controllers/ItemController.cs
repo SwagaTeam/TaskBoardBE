@@ -138,6 +138,33 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+
+    /// <summary>
+    ///     Изменение статуса задачи.
+    /// </summary>
+    /// ///
+    /// <remarks>
+    /// </remarks>
+    /// <param name="statusId">Новый статус</param>
+    /// <param name="itemId">ID задачи</param>
+    [SwaggerOperation("Изменение статуса задачи")]
+    [HttpPost("change-status/{itemId}")]
+    public async Task<IActionResult> ChangeStatus([FromBody] int statusId, int itemId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var itemModel = await itemManager.GetByIdAsync(itemId);
+            itemModel.StatusId = statusId;
+            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     /// <summary>
     ///     Изменение Приоритета задачи.
     /// </summary>
@@ -155,7 +182,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// </remarks>
     /// <param name="priority">Новый приоритет</param>
     /// <param name="itemId">ID задачи</param>
-    [SwaggerOperation("Изменение типа задачи")]
+    [SwaggerOperation("Изменение приоритета задачи")]
     [HttpPost("change-priority/{itemId}")]
     public async Task<IActionResult> ChangePriority([FromBody] int priority, int itemId,
         CancellationToken cancellationToken)
