@@ -15,7 +15,8 @@ namespace ProjectService.Mapper
                 ExpectedEndDate = projectModel.ExpectedEndDate,
                 IsPrivate = projectModel.IsPrivate,
                 Priority = projectModel.Priority,
-                StartDate = projectModel.StartDate
+                StartDate = projectModel.StartDate,
+                UpdatedAt = projectModel.UpdateDate
             };
         }
 
@@ -30,7 +31,8 @@ namespace ProjectService.Mapper
                 ExpectedEndDate = projectModel.ExpectedEndDate,
                 IsPrivate = projectModel.IsPrivate,
                 Priority = projectModel.Priority,
-                StartDate = projectModel.StartDate
+                StartDate = projectModel.StartDate,
+                UpdateDate = projectModel.UpdatedAt
             };
         }
     }

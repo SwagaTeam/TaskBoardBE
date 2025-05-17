@@ -266,4 +266,60 @@ public class ProjectController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    
+    /// <summary>
+    ///     Изменение Приоритета проекта.
+    /// </summary>
+    /// ///
+    /// <remarks>
+    ///     <br /><br />
+    ///     <b>Уровни приоритета (priority):</b>
+    ///     <ul>
+    ///         <li>0 – Очень низкий</li>
+    ///         <li>1 – Низкий</li>
+    ///         <li>2 – Средний</li>
+    ///         <li>3 – Высокий</li>
+    ///         <li>4 – Критический</li>
+    ///     </ul>
+    /// </remarks>
+    /// <param name="priority">Новый приоритет</param>
+    /// <param name="projectId">ID задачи</param>
+    [SwaggerOperation("Изменение типа задачи")]
+    [HttpPost("change-priority/{projectId}")]
+    public async Task<IActionResult> ChangePriority([FromBody] int priority, int projectId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var projectModel = await _projectManager.GetByIdAsync(projectId);
+            projectModel.Priority = priority;
+            var newItemModel = await _projectManager.UpdateAsync(projectModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    /// <summary>
+    ///     Изменение параметров проекта.
+    /// </summary>
+    /// <remarks>
+    ///     Заменяет все параметры проекта на новые, кроме ID.
+    /// </remarks>
+    /// <param name="projectModel">Модель проекта с изменёнными параметрами</param>
+    [HttpPost("change-params")]
+    public async Task<IActionResult> ChangeParams([FromBody] ProjectModel projectModel, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var newItemModel = await _projectManager.UpdateAsync(projectModel);
+            return Ok(newItemModel);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

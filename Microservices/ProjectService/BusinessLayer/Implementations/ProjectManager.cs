@@ -9,7 +9,7 @@ using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth) 
+public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth)
     : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
@@ -119,9 +119,13 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         return entity.Id;
     }
 
-    public async Task UpdateAsync(ProjectModel project)
+    public async Task<ProjectModel> UpdateAsync(ProjectModel project)
     {
+        if (project.Priority is > 5 or < 0)
+            throw new ArgumentException("Приоритет задачи не может быть отрицательным или больше 5");
+        project.UpdateDate = DateTime.UtcNow;
         await projectRepository.Update(ProjectMapper.ToEntity(project));
+        return project;
     }
 
     public async Task<ProjectModel?> GetByBoardIdAsync(int id)
@@ -134,7 +138,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
     {
         var currentUserId = auth.GetCurrentUserId();
         var projects = projectRepository.GetByUserIdAsync(currentUserId);
-        return projects.Select(ProjectMapper.ToModel!).ToList()!;
+        return projects.AsEnumerable().Select(ProjectMapper.ToModel!).ToList()!;
     }
 
     public async Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role)
@@ -146,11 +150,9 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
 
         if (project is null)
             throw new ProjectNotFoundException();
-        var isCurrentUserAdminAndUserInProject = false;
-
-        if (await userProjectManager.IsUserAdminAsync((int)currentUserId, project.Id)
-            && project.UserProjects.Any(x => x.UserId == userId && x.ProjectId == projectId))
-            isCurrentUserAdminAndUserInProject = true;
+        var isCurrentUserAdminAndUserInProject =
+            await userProjectManager.IsUserAdminAsync((int)currentUserId, project.Id)
+            && project.UserProjects.Any(x => x.UserId == userId && x.ProjectId == projectId);
 
         if (isCurrentUserAdminAndUserInProject)
             return await projectRepository.SetUserRoleAsync(userId, projectId, roleEntity);

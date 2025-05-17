@@ -19,7 +19,7 @@ public class ValidateItemManager(
     public async Task ValidateCreateAsync(CreateItemModel createItemModel)
     {
         var validator = new CreateItemValidator(boardManager, projectManager, authManager, itemRepository,
-            statusManager, itemTypeManager);
+            statusManager, itemTypeManager, userProjectManager);
         var result = await validator.ValidateAsync(createItemModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
@@ -27,7 +27,7 @@ public class ValidateItemManager(
 
     public async Task ValidateItemModelAsync(ItemModel itemModel)
     {
-        var validator = new ItemModelValidator(statusManager, itemTypeManager);
+        var validator = new ItemModelValidator(statusManager, itemTypeManager, userProjectManager, authManager, itemRepository);
         var result = await validator.ValidateAsync(itemModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));

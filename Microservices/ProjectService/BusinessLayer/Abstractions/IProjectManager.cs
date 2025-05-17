@@ -15,7 +15,7 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<bool> IsUserViewerAsync(int userId, int projectId);
         Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role);
         Task<int> CreateAsync(ProjectModel project);
-        Task UpdateAsync(ProjectModel project);
+        Task<ProjectModel> UpdateAsync(ProjectModel project);
         Task DeleteAsync(int id);
     }
 }

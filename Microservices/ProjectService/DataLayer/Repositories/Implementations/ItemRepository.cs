@@ -26,27 +26,22 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     {
         var existing = await context.Items.FindAsync(item.Id);
 
-        if (existing is not null)
-        {
-            existing.Id = item.Id;
-            existing.ItemTypeId = item.ItemTypeId;
-            existing.Description = item.Description;
-            existing.ParentId = item.ParentId;
-            existing.Priority = item.Priority;
-            existing.ProjectId = item.ProjectId;
-            existing.StatusId = item.StatusId;
-            existing.ProjectItemNumber = item.ProjectItemNumber;
-            existing.ExpectedEndDate = item.ExpectedEndDate;
-            existing.UpdatedAt = item.UpdatedAt;
-            existing.StartDate = item.StartDate;
-            existing.IsArchived = item.IsArchived;
-            existing.BusinessId = item.BusinessId;
-            existing.Title = item.Title;
-            await context.SaveChangesAsync();
-            return;
-        }
-
-        throw new ItemNotFoundException();
+        if (existing is null) throw new ItemNotFoundException();
+        existing.Id = item.Id;
+        existing.ItemTypeId = item.ItemTypeId;
+        existing.Description = item.Description;
+        existing.ParentId = item.ParentId;
+        existing.Priority = item.Priority;
+        existing.ProjectId = item.ProjectId;
+        existing.StatusId = item.StatusId;
+        existing.ProjectItemNumber = item.ProjectItemNumber;
+        existing.ExpectedEndDate = item.ExpectedEndDate;
+        existing.UpdatedAt = item.UpdatedAt;
+        existing.StartDate = item.StartDate;
+        existing.IsArchived = item.IsArchived;
+        existing.BusinessId = item.BusinessId;
+        existing.Title = item.Title;
+        await context.SaveChangesAsync();
     }
 
 
