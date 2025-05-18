@@ -1,7 +1,7 @@
-﻿using Contributors.BusinessLayer.Abstractions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProjectService.BusinessLayer.Abstractions;
 
-namespace Contributors.Controllers;
+namespace ProjectService.Controllers;
 
 [Route("contributors")]
 public class ContributorsController(IContributorsManager contributorsManager) : ControllerBase

@@ -91,6 +91,8 @@ internal class Program
         services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemManager, ItemManager>();
+        services.AddScoped<IContributorsRepository, ContributorsRepository>();
+        services.AddScoped<IContributorsManager, ContributorsManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IBoardManager, BoardManager>();

@@ -1,6 +1,6 @@
 ﻿using SharedLibrary.Entities.ProjectService;
 
-namespace Contributors.DataLayer.Repositories.Abstractions;
+namespace ProjectService.DataLayer.Repositories.Abstractions;
 
 public interface IContributorsRepository
 {
