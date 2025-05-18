@@ -7,8 +7,8 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class BoardManager(IBoardRepository boardRepository, IAuth auth, IUserProjectManager userProjectManager,
-    IProjectManager projectManager, IValidatorManager validatorManager) : IBoardManager
+public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProjectManager projectManager, 
+    IValidateBoardManager validatorManager) : IBoardManager
 {
     public async Task<int> CreateAsync(BoardModel board)
     {

@@ -13,10 +13,10 @@ public class DocumentManager : IDocumentManager
     private readonly IDocumentRepository documentRepository;
     private readonly IAuth auth;
     private readonly IUserProjectRepository userProjectRepository;
-    private readonly IValidatorManager _validatorManager;
+    private readonly IValidateDocumentManager _validatorManager;
 
     public DocumentManager(IDocumentRepository repository, IAuth auth, IUserProjectRepository userProjectRepository,
-        IValidatorManager validatorManager)
+        IValidateDocumentManager validatorManager)
     {
         documentRepository = repository;
         this.userProjectRepository = userProjectRepository;

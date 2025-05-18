@@ -8,7 +8,7 @@ using SharedLibrary.Auth;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProjectRepository projectRepository,
-    IUserProjectManager userProjectManager, IValidatorManager validatorManager) : IStatusManager
+    IValidateStatusManager validatorManager) : IStatusManager
 {
     public async Task<IEnumerable<StatusModel>> GetAllAsync()
     {

@@ -82,12 +82,16 @@ internal class Program
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
+        services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
+        services.AddScoped<IValidateItemManager, ValidateItemManager>();
+        services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
+        services.AddScoped<IValidateSprintManager, ValidateSprintManager>();
+        services.AddScoped<IValidateStatusManager, ValidateStatusManager>();
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
         services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemManager, ItemManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
-        services.AddScoped<IValidatorManager, ValidatorManager>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();

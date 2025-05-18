@@ -12,7 +12,7 @@ namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
     IItemRepository itemRepository,
-    IValidatorManager validatorManager,
+    IValidateItemManager validatorManager,
     IKafkaProducer<ItemModel> kafkaProducer,
     IItemBoardsRepository itemBoardsRepository,
     IStatusRepository statusRepository,

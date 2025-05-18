@@ -10,17 +10,13 @@ public class SprintManager : ISprintManager
 {
     private readonly ISprintRepository sprintRepository;
     private readonly IBoardRepository boardRepository;
-    private readonly IUserProjectRepository userProjectRepository;
     private readonly IItemRepository itemRepository;
-    private readonly IAuth auth;
-    private readonly IValidatorManager _validatorManager;
+    private readonly IValidateSprintManager _validatorManager;
 
-    public SprintManager(ISprintRepository sprintRepository, IAuth auth, IUserProjectRepository userProjectRepository,
-        IBoardRepository boardRepository, IItemRepository itemRepository, IValidatorManager validatorManager)
+    public SprintManager(ISprintRepository sprintRepository, IBoardRepository boardRepository,
+        IItemRepository itemRepository, IValidateSprintManager validatorManager)
     {
         this.sprintRepository = sprintRepository;
-        this.auth = auth;
-        this.userProjectRepository = userProjectRepository;
         this.boardRepository = boardRepository;
         this.itemRepository = itemRepository;
         this._validatorManager = validatorManager;
