@@ -12,7 +12,7 @@ namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
     IItemRepository itemRepository,
-    IValidateItemManager validateItemManager,
+    IValidatorManager validatorManager,
     IKafkaProducer<ItemModel> kafkaProducer,
     IItemBoardsRepository itemBoardsRepository,
     IStatusRepository statusRepository,
@@ -24,7 +24,7 @@ public class ItemManager(
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
     {
-        await validateItemManager.ValidateCreateAsync(createItemModel);
+        await validatorManager.ValidateCreateAsync(createItemModel);
 
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
 
@@ -75,7 +75,7 @@ public class ItemManager(
 
     public async Task<int> UpdateAsync(ItemModel item)
     {
-        await validateItemManager.ValidateItemModelAsync(item);
+        await validatorManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
         entity.Id = item.Id;
         entity.UpdatedAt = DateTime.UtcNow;
@@ -87,7 +87,7 @@ public class ItemManager(
     {
         var item = await GetByIdAsync(itemId);
         await UpdateAsync(item); // назначили человека на задачу, обновляем UpdatedAt
-        await validateItemManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
+        await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
         var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
@@ -99,7 +99,7 @@ public class ItemManager(
 
     public async Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId)
     {
-        await validateItemManager.ValidateUserInProjectAsync(projectId);
+        await validatorManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
@@ -107,7 +107,7 @@ public class ItemManager(
     public async Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId)
     {
         var projectId = (await projectRepository.GetByBoardIdAsync(boardId)).Id;
-        await validateItemManager.ValidateUserInProjectAsync(projectId);
+        await validatorManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
         return items.Where(x => x.IsArchived).Select(ItemMapper.ToModel).ToList();
     }
@@ -128,7 +128,7 @@ public class ItemManager(
 
     public async Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId)
     {
-        await validateItemManager.ValidateAddUserToItemAsync(projectId, userId);
+        await validatorManager.ValidateAddUserToItemAsync(projectId, userId);
         var items = await itemRepository.GetItemsByUserIdAsync(userId, projectId);
         return items.Select(ItemMapper.ToModel).ToList();
     }
@@ -137,13 +137,11 @@ public class ItemManager(
     {
         var userId = auth.GetCurrentUserId();
         if (userId is null || userId == -1) throw new NotAuthorizedException();
-
+        
         var item = await itemRepository.GetByIdAsync(commentModel.ItemId);
         if (item is null) throw new ItemNotFoundException();
 
-        if(!await userProjectManager.IsUserInProjectAsync((int)userId, (int)item.ProjectId!))
-            throw new NotAuthorizedException("Пользователь не состоит в проекте");
-
+        await validatorManager.ValidateUserInProjectAsync(item.ProjectId);
         var commentEntity = CommentMapper.ToEntity(commentModel);
 
         commentEntity.AuthorId = (int)userId;
@@ -192,8 +190,7 @@ public class ItemManager(
         var item = await itemRepository.GetByIdAsync(itemId);
         if (item is null) throw new ItemNotFoundException();
 
-        if (!await userProjectManager.IsUserInProjectAsync((int)userId, (int)item.ProjectId!))
-            throw new NotAuthorizedException("Пользователь не состоит в проекте");
+        await validatorManager.ValidateUserInProjectAsync(item.ProjectId);
 
         var comments = commentRepository.GetByItemId(itemId);
 

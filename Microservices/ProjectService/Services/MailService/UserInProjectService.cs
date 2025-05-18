@@ -14,13 +14,19 @@ public class UserInProjectService
         return await userProjectManager.IsUserInProjectAsync(userId.Value, projectId.Value);
     }
     
-    public static async Task<bool> IsUserMember(IUserProjectManager userProjectManager, IAuth authManager, 
+    public static async Task<bool> IsUserCanViewAsync(IUserProjectManager userProjectManager, int? userId, 
         int? projectId, CancellationToken cancellation)
     {
-        var currentId = authManager.GetCurrentUserId();
-        if (currentId is null) return false;
+        if (userId is null) return false;
         if (projectId is null) return false;
         
-        return !await userProjectManager.IsUserViewerAsync((int)currentId, (int)projectId);
+        return !await userProjectManager.IsUserCanViewAsync((int)userId, (int)projectId);
+    }
+
+    public static async Task<bool> IsUserAdmin(IUserProjectManager userProjectManager, int? userId, int? projectId, 
+        CancellationToken cancellation)
+    {
+        if (userId is null || userId == -1 || projectId is null || projectId == -1) return false;
+        return await userProjectManager.IsUserAdminAsync((int)userId, (int)projectId);
     }
 }

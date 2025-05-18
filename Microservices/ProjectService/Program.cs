@@ -87,7 +87,7 @@ internal class Program
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemManager, ItemManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();
-        services.AddScoped<IValidateItemManager, ValidateItemManager>();
+        services.AddScoped<IValidatorManager, ValidatorManager>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();

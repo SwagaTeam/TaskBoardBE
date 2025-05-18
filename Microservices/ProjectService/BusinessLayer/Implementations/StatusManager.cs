@@ -8,7 +8,7 @@ using SharedLibrary.Auth;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProjectRepository projectRepository,
-    IUserProjectManager userProjectManager) : IStatusManager
+    IUserProjectManager userProjectManager, IValidatorManager validatorManager) : IStatusManager
 {
     public async Task<IEnumerable<StatusModel>> GetAllAsync()
     {
@@ -25,31 +25,20 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
     {
         if (statusModel is null) throw new NullReferenceException("Нельзя создать пустую модель");
         var entity = StatusMapper.ToEntity(statusModel);
-
-        var currentUser = auth.GetCurrentUserId();
-
+        
         var project = await projectRepository.GetByBoardIdAsync((int)statusModel.Id);
+        await validatorManager.ValidateUserInProjectAsync(project.Id);
 
-        if (project is not null &&
-            currentUser != -1 &&
-            await userProjectManager.IsUserInProjectAsync((int)currentUser, project.Id))
-        {
-            int lastOrder;
+        var statuses = await statusRepository.GetByBoardIdAsync(statusModel.BoardId);
 
-            var statuses = await statusRepository.GetByBoardIdAsync(statusModel.BoardId);
+        var lastOrder = statuses.Any() ? statuses.Max(x => x.Order) : 0;
 
-            if (statuses.Count() > 0)
-                lastOrder = statuses.Max(x => x.Order);
-            else lastOrder = 0;
+        entity.Order = lastOrder;
 
-            entity.Order = lastOrder;
+        await statusRepository.CreateAsync(entity);
 
-            await statusRepository.CreateAsync(entity);
+        return statusModel.Id;
 
-            return statusModel.Id;
-        }
-
-        throw new BoardNotFoundException();
     }
 
     public async Task<int?> UpdateAsync(StatusModel statusModel)
@@ -68,37 +57,31 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
 
     public async Task ChangeStatusOrderAsync(UpdateOrderModel updateOrderModel)
     {
-        var userId = auth.GetCurrentUserId();
         var statusToMove = await statusRepository.GetByIdAsync(updateOrderModel.StatusId);
         var newOrder = updateOrderModel.Order;
+        await validatorManager.ValidateUserAdminAsync(statusToMove.Board.ProjectId);
+        
+        var statuses = await statusRepository.GetByBoardIdAsync(statusToMove.BoardId);
 
-        if (await userProjectManager.IsUserAdminAsync((int)userId!, statusToMove.Board.ProjectId))
-        {
-            var statuses = await statusRepository.GetByBoardIdAsync(statusToMove.BoardId);
+        var oldOrder = statusToMove.Order;
 
-            var oldOrder = statusToMove.Order;
-
-            if (newOrder == oldOrder)
-                return;
-
-            if (newOrder > oldOrder)
-                // Сдвигаем вверх доски между старым и новым порядком
-                foreach (var status in statuses.Where(s => s.Order > oldOrder && s.Order <= newOrder))
-                    status.Order--;
-            else
-                // Сдвигаем вниз доски между новым и старым порядком
-                foreach (var status in statuses.Where(s => s.Order >= newOrder && s.Order < oldOrder))
-                    status.Order++;
-
-            // Ставим новый порядок для нашей доски
-            statusToMove.Order = newOrder;
-
-            await statusRepository.UpdateRangeAsync(statuses.ToList());
-            await statusRepository.UpdateAsync(statusToMove);
-
+        if (newOrder == oldOrder)
             return;
-        }
 
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+        if (newOrder > oldOrder)
+            // Сдвигаем вверх доски между старым и новым порядком
+            foreach (var status in statuses.Where(s => s.Order > oldOrder && s.Order <= newOrder))
+                status.Order--;
+        else
+            // Сдвигаем вниз доски между новым и старым порядком
+            foreach (var status in statuses.Where(s => s.Order >= newOrder && s.Order < oldOrder))
+                status.Order++;
+
+        // Ставим новый порядок для нашей доски
+        statusToMove.Order = newOrder;
+
+        await statusRepository.UpdateRangeAsync(statuses.ToList());
+        await statusRepository.UpdateAsync(statusToMove);
+
     }
 }

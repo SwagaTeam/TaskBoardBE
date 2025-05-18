@@ -13,12 +13,15 @@ public class DocumentManager : IDocumentManager
     private readonly IDocumentRepository documentRepository;
     private readonly IAuth auth;
     private readonly IUserProjectRepository userProjectRepository;
+    private readonly IValidatorManager _validatorManager;
 
-    public DocumentManager(IDocumentRepository repository, IAuth auth, IUserProjectRepository userProjectRepository)
+    public DocumentManager(IDocumentRepository repository, IAuth auth, IUserProjectRepository userProjectRepository,
+        IValidatorManager validatorManager)
     {
         documentRepository = repository;
         this.userProjectRepository = userProjectRepository;
         this.auth = auth;
+        this._validatorManager = validatorManager;
     }
 
     public async Task<IEnumerable<DocumentModel>> GetByProjectIdAsync(int projectId)
@@ -29,10 +32,9 @@ public class DocumentManager : IDocumentManager
             userId == -1)
             throw new NotAuthorizedException();
 
-        if (await userProjectRepository.IsUserInProject((int)userId, projectId))
-            return documentRepository.GetByProjectId(projectId).Select(DocumentMapper.ToModel);
 
-        throw new NotAuthorizedException("Пользователь не состоит в проекте, к которому прикреплён документ");
+        await _validatorManager.ValidateUserInProjectAsync(projectId);
+        return documentRepository.GetByProjectId(projectId).Select(DocumentMapper.ToModel);
     }
 
     public async Task AttachDocument(IFormFile file, int projectId)
@@ -42,8 +44,7 @@ public class DocumentManager : IDocumentManager
         if (userId is null || userId == -1)
             throw new NotAuthorizedException();
 
-        if (!await userProjectRepository.IsUserInProject((int)userId, projectId))
-            throw new NotAuthorizedException("Пользователь не находится в этом проекте");
+        await _validatorManager.ValidateUserInProjectAsync(projectId);
 
         var docPath = Environment.GetEnvironmentVariable("DOCUMENT_STORAGE_PATH");
 
@@ -87,10 +88,8 @@ public class DocumentManager : IDocumentManager
 
         if (existingDoc is null)
             throw new DocumentNotFoundException();
+        await _validatorManager.ValidateUserInProjectAsync(existingDoc.ProjectId);
 
-        if (await userProjectRepository.IsUserInProject((int)userId, existingDoc.ProjectId))
-            await documentRepository.DeleteDocumentAsync(documentId);
-        else
-            throw new NotAuthorizedException("Пользователь не состоит в проекте, к которому прикреплён документ");
+        await documentRepository.DeleteDocumentAsync(documentId);
     }
 }

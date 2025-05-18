@@ -7,19 +7,12 @@ using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class BoardManager(
-    IBoardRepository boardRepository,
-    IAuth auth,
-    IUserProjectManager userProjectManager,
-    IProjectManager projectManager)
-    : IBoardManager
+public class BoardManager(IBoardRepository boardRepository, IAuth auth, IUserProjectManager userProjectManager,
+    IProjectManager projectManager, IValidatorManager validatorManager) : IBoardManager
 {
     public async Task<int> CreateAsync(BoardModel board)
     {
-        var userId = auth.GetCurrentUserId();
-
-        if (!await userProjectManager.IsUserAdminAsync((int)userId!, board.ProjectId))
-            throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+        await validatorManager.ValidateUserAdminAsync(board.ProjectId);
 
         var boardEntity = BoardMapper.ToEntity(board);
 
@@ -64,29 +57,16 @@ public class BoardManager(
 
     public async Task<ICollection<BoardModel>> GetByProjectIdAsync(int projectId)
     {
-        var userId = auth.GetCurrentUserId();
-
-        if (await userProjectManager.IsUserCanViewAsync((int)userId!, projectId))
-        {
-            var boardsEntities = await boardRepository.GetByProjectIdAsync(projectId);
-
-            return boardsEntities.Select(BoardMapper.ToModel).ToList();
-        }
-
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+        await validatorManager.ValidateUserCanViewAsync(projectId);
+        var boardsEntities = await boardRepository.GetByProjectIdAsync(projectId);
+        return boardsEntities.AsEnumerable().Select(BoardMapper.ToModel).ToList();
     }
 
     public async Task<int> DeleteAsync(int id)
     {
-        var userId = auth.GetCurrentUserId();
-
-        if (await userProjectManager.IsUserAdminAsync((int)userId!, id))
-        {
-            await boardRepository.DeleteAsync(id);
-            return id;
-        }
-
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+        await validatorManager.ValidateUserAdminAsync(id);
+        await boardRepository.DeleteAsync(id);
+        return id;
     }
 
     public async Task<BoardModel?> GetByIdAsync(int id)
@@ -95,24 +75,17 @@ public class BoardManager(
         var board = await boardRepository.GetByIdAsync(id);
         if (board is null) throw new Exception($"Доски с id {id} не существует");
         var userProject = await projectManager.GetByBoardIdAsync(id);
-        if (userProject is not null && await userProjectManager.IsUserCanViewAsync((int)userId, userProject.Id))
-            return BoardMapper.ToModel(board);
-
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет доступа к проекту");
+        await validatorManager.ValidateUserCanViewAsync(userProject.Id);
+        return BoardMapper.ToModel(board);
     }
 
 
     public async Task<int> UpdateAsync(BoardModel board)
     {
         var userId = auth.GetCurrentUserId();
-
-        if (await userProjectManager.IsUserAdminAsync((int)userId!, board.ProjectId))
-        {
-            await boardRepository.UpdateAsync(BoardMapper.ToEntity(board));
-            return board.Id;
-        }
-
-        throw new ProjectNotFoundException("Проект не найден либо текущий пользователь не имеет полномочий");
+        await validatorManager.ValidateUserAdminAsync(board.ProjectId);
+        await boardRepository.UpdateAsync(BoardMapper.ToEntity(board));
+        return board.Id;
     }
 
     public async Task<ICollection<BoardModel>> GetByUserIdAsync(int userId)
@@ -122,10 +95,8 @@ public class BoardManager(
 
         foreach (var board in boards)
         {
-            if (await userProjectManager.IsUserCanViewAsync(userId, board.ProjectId))
-            {
-                result.Add(BoardMapper.ToModel(board));
-            }
+            await validatorManager.ValidateUserCanViewAsync(board.ProjectId, userId);
+            result.Add(BoardMapper.ToModel(board));
         }
 
         return result;
@@ -135,9 +106,7 @@ public class BoardManager(
     {
         var userId = auth.GetCurrentUserId();
         if (userId is null || userId == -1) throw new NotAuthorizedException();
-
         var result = await GetByUserIdAsync((int)userId);
-
         return result;
     }
 }

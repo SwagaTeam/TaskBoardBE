@@ -6,7 +6,6 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-//TODO: Вынести валидацию
 public class SprintManager : ISprintManager
 {
     private readonly ISprintRepository sprintRepository;
@@ -14,17 +13,17 @@ public class SprintManager : ISprintManager
     private readonly IUserProjectRepository userProjectRepository;
     private readonly IItemRepository itemRepository;
     private readonly IAuth auth;
-    private readonly IValidateItemManager validateItemManager;
+    private readonly IValidatorManager _validatorManager;
 
     public SprintManager(ISprintRepository sprintRepository, IAuth auth, IUserProjectRepository userProjectRepository,
-        IBoardRepository boardRepository, IItemRepository itemRepository, IValidateItemManager validateItemManager)
+        IBoardRepository boardRepository, IItemRepository itemRepository, IValidatorManager validatorManager)
     {
         this.sprintRepository = sprintRepository;
         this.auth = auth;
         this.userProjectRepository = userProjectRepository;
         this.boardRepository = boardRepository;
         this.itemRepository = itemRepository;
-        this.validateItemManager = validateItemManager;
+        this._validatorManager = validatorManager;
     }
 
     public async Task AddItem(int sprintId, int itemId)
@@ -41,8 +40,7 @@ public class SprintManager : ISprintManager
 
         if (existingItem.ProjectId != existingSprint.Board.ProjectId)
             throw new DifferentAreaException();
-        
-        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
         await sprintRepository.AddItem(sprintId, itemId);
     }
@@ -54,7 +52,7 @@ public class SprintManager : ISprintManager
         if (existingBoard is null)
             throw new BoardNotFoundException();
 
-        await validateItemManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
         var sprintEntity = SprintMapper.ToEntity(statusModel);
 
@@ -70,7 +68,7 @@ public class SprintManager : ISprintManager
         if (existingSprint is null)
             throw new SprintNotFoundException();
         
-        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
         
         await sprintRepository.DeleteAsync(id);
     }
@@ -82,7 +80,7 @@ public class SprintManager : ISprintManager
         if (existingBoard is null)
             throw new BoardNotFoundException();
         
-        await validateItemManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
         var entities = await sprintRepository.GetByBoardId(boardId);
 
@@ -96,7 +94,7 @@ public class SprintManager : ISprintManager
         if (existingSprint is null)
             throw new SprintNotFoundException();
 
-        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
 
         var sprint = await sprintRepository.GetByIdAsync(id);
@@ -111,7 +109,7 @@ public class SprintManager : ISprintManager
         if (existingSprint is null)
             throw new SprintNotFoundException();
 
-        await validateItemManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
+        await _validatorManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
         var entity = SprintMapper.ToEntity(statusModel);
 

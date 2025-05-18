@@ -12,14 +12,13 @@ public class CreateItemValidator
 {
     private readonly IBoardManager boardManager;
     
-    public CreateItemValidator(IBoardManager boardManager, IProjectManager projectManager, IAuth authManager, 
-        IItemRepository itemRepository, IStatusManager statusManager, IItemTypeManager itemTypeManager, 
-        IUserProjectManager userProjectManager)
+    public CreateItemValidator(IBoardManager boardManager, IItemRepository itemRepository, IStatusManager statusManager, 
+        IItemTypeManager itemTypeManager, IUserProjectManager userProjectManager, int? userId)
     {
         this.boardManager = boardManager;
         
         RuleFor(x => x.Item)
-            .SetValidator(new ItemModelValidator(statusManager, itemTypeManager, userProjectManager, authManager, itemRepository));
+            .SetValidator(new ItemModelValidator(statusManager, itemTypeManager, userProjectManager, itemRepository, userId));
 
         RuleFor(x => x)
             .MustAsync(BeValidBoard)

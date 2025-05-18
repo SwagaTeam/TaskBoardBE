@@ -6,7 +6,7 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ValidateItemManager(
+public class ValidatorManager(
     IProjectManager projectManager,
     IBoardManager boardManager,
     IAuth authManager,
@@ -14,12 +14,12 @@ public class ValidateItemManager(
     IStatusManager statusManager,
     IItemTypeManager itemTypeManager,
     IUserProjectManager userProjectManager)
-    : IValidateItemManager
+    : IValidatorManager
 {
     public async Task ValidateCreateAsync(CreateItemModel createItemModel)
     {
-        var validator = new CreateItemValidator(boardManager, projectManager, authManager, itemRepository,
-            statusManager, itemTypeManager, userProjectManager);
+        var userId = authManager.GetCurrentUserId();
+        var validator = new CreateItemValidator(boardManager, itemRepository, statusManager, itemTypeManager, userProjectManager, userId);
         var result = await validator.ValidateAsync(createItemModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
@@ -27,7 +27,8 @@ public class ValidateItemManager(
 
     public async Task ValidateItemModelAsync(ItemModel itemModel)
     {
-        var validator = new ItemModelValidator(statusManager, itemTypeManager, userProjectManager, authManager, itemRepository);
+        var userId = authManager.GetCurrentUserId();
+        var validator = new ItemModelValidator(statusManager, itemTypeManager, userProjectManager, itemRepository, userId);
         var result = await validator.ValidateAsync(itemModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
@@ -53,6 +54,23 @@ public class ValidateItemManager(
     {
         var userId = authManager.GetCurrentUserId();
         var validator = new UserInProjectValidator(userProjectManager, userId, projectId);
+        var result = await validator.ValidateAsync("");
+        if (!result.IsValid)
+            throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    public async Task ValidateUserAdminAsync(int? projectId)
+    {
+        var userId = authManager.GetCurrentUserId();
+        var validator = new UserAdminValidator(userProjectManager, userId, projectId);
+        var result = await validator.ValidateAsync("");
+        if (!result.IsValid)
+            throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+    
+    public async Task ValidateUserCanViewAsync(int? projectId, int? userId = null)
+    {
+        var validator = new UserMemberValidator(userProjectManager, userId ?? authManager.GetCurrentUserId(), projectId);
         var result = await validator.ValidateAsync("");
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));

@@ -16,7 +16,7 @@ public class ItemModelValidator : AbstractValidator<ItemModel>
 
 
     public ItemModelValidator(IStatusManager statusManager, IItemTypeManager itemTypeManager, 
-        IUserProjectManager userProjectManager, IAuth authManager, IItemRepository itemRepository)
+        IUserProjectManager userProjectManager, IItemRepository itemRepository, int?  userId)
     {
         this.statusManager = statusManager;
         this.itemTypeManager = itemTypeManager;
@@ -32,7 +32,7 @@ public class ItemModelValidator : AbstractValidator<ItemModel>
         
         RuleFor(x => x)
             .MustAsync((model, cancellation) =>
-                UserInProjectService.IsUserMember(userProjectManager, authManager, model.ProjectId, cancellation))
+                UserInProjectService.IsUserCanViewAsync(userProjectManager, userId, model.ProjectId, cancellation))
             .WithMessage("Текущий пользователь не находится в нужном проекте");
         
         RuleFor(x => x)
