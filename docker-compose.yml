@@ -7,7 +7,7 @@ include:
 networks:
   swaga-network:
     driver: bridge
-    external: false
+    name: swaga-network
 
 services:
   db_init:
