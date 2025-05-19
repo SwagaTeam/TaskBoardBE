@@ -38,7 +38,6 @@ internal class Program
                 c.SwaggerEndpoint(Environment.GetEnvironmentVariable("PROJECT_API") + "/swagger/v1/swagger.json", "Project Service");
                 c.SwaggerEndpoint(Environment.GetEnvironmentVariable("ANALYTICS_API") + "/swagger/v1/swagger.json", "Analytics Service");
                 c.SwaggerEndpoint(Environment.GetEnvironmentVariable("USER_API") + "/swagger/v1/swagger.json", "User Service");
-                c.SwaggerEndpoint(Environment.GetEnvironmentVariable("CONTRIBUTORS_API") + "/swagger/v1/swagger.json", "Contributors Service");
             });
         }
 
@@ -160,7 +159,6 @@ internal class Program
             options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("PROJECT_API"), Description = "Project Service" });
             options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("ANALYTICS_API"), Description = "Analytics Service" });
             options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("USER_API"), Description = "User Service" });
-            options.AddServer(new OpenApiServer { Url = Environment.GetEnvironmentVariable("CONTRIBUTORS_API"), Description = "Contributors Service" });
         });
     }
 }
