@@ -5,7 +5,7 @@ public class BoardModel
 {
     public int Id { get; set; }
     public int ProjectId { get; set; }
-    public string ProjectName { get; private set; }
+    public string ProjectName { get; private set; } = "";
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
