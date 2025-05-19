@@ -34,7 +34,7 @@ public class ItemMapper
         if (item is null)
             return null;
 
-        return new ItemModel
+        var model = new ItemModel
         {
             Id = item.Id,
             BusinessId = item.BusinessId,
@@ -53,5 +53,14 @@ public class ItemMapper
             IsArchived = item.IsArchived,
             Status = StatusMapper.ToModel(item.Status)
         };
+
+        if(item.ItemsBoards.Count > 0)
+        {
+            var boardId = item.ItemsBoards.FirstOrDefault(x => x.ItemId == model.Id).BoardId;
+
+            model.SetBoardId(boardId);
+        }
+
+        return model;
     }
 }

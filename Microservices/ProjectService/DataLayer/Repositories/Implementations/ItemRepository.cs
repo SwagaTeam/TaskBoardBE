@@ -94,6 +94,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         var items = await context.Items
             .Include(i => i.Status)
             .Include(i => i.UserItems)
+            .Include(i=>i.ItemsBoards)
             .Where(i => i.UserItems.Any(x => x.UserId == userId))
             .ToListAsync();
 

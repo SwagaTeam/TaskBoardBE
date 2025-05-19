@@ -8,6 +8,7 @@ public class ItemModel
     [DefaultValue(null)]
     public int? ParentId { get; set; }
     public int? ProjectId { get; set; }
+    public int? BoardId { get; private set; }
     public int? ProjectItemNumber { get; set; }
     public string BusinessId { get; set; }
     public string Title { get; set; }
@@ -21,6 +22,10 @@ public class ItemModel
     public int? ItemTypeId { get; set; }
     public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
+    public void SetBoardId(int? boardId)
+    {
+        BoardId = boardId;
+    }
 
     [JsonIgnore]
     public ItemModel? Parent { get; set; } = null;
