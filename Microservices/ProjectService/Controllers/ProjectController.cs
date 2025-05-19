@@ -157,6 +157,26 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
+    /// Получение проекта по ID, если есть доступ.
+    /// </summary>
+    /// <returns>Модель Проекта.</returns>
+    [ProducesResponseType<ProjectModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpGet("get/{projectId}")]
+    public async Task<IActionResult> GetAll(int projectId)
+    {
+        try
+        {
+            var project = await _projectManager.GetByIdAsync(projectId);
+            return Ok(project);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Получение проекта по ID.
     /// </summary>
     /// <param name="id">ID проекта.</param>
@@ -181,6 +201,15 @@ public class ProjectController : ControllerBase
     /// <summary>
     /// Создание нового проекта.
     /// </summary>
+    /// <remarks>
+    ///     <br /><br />
+    ///     <b>Статусы (Priority):</b>
+    ///     <ul>
+    ///         <li>0 – Не активен</li>
+    ///         <li>1 – В работе</li>
+    ///         <li>2 – Завершён</li>
+    ///     </ul>
+    /// </remarks>
     /// <param name="model">Модель проекта с необходимыми данными.</param>
     /// <returns>ID созданного проекта.</returns>
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
@@ -252,7 +281,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpDelete("get/{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
 
     {
@@ -268,31 +297,29 @@ public class ProjectController : ControllerBase
     }
     
     /// <summary>
-    ///     Изменение Приоритета проекта.
+    ///     Изменение статуса проекта.
     /// </summary>
     /// ///
     /// <remarks>
     ///     <br /><br />
-    ///     <b>Уровни приоритета (priority):</b>
+    ///     <b>Статусы:</b>
     ///     <ul>
-    ///         <li>0 – Очень низкий</li>
-    ///         <li>1 – Низкий</li>
-    ///         <li>2 – Средний</li>
-    ///         <li>3 – Высокий</li>
-    ///         <li>4 – Критический</li>
+    ///         <li>0 – Не активен</li>
+    ///         <li>1 – В работе</li>
+    ///         <li>2 – Завершён</li>
     ///     </ul>
     /// </remarks>
-    /// <param name="priority">Новый приоритет</param>
-    /// <param name="projectId">ID задачи</param>
-    [SwaggerOperation("Изменение типа задачи")]
-    [HttpPost("change-priority/{projectId}")]
-    public async Task<IActionResult> ChangePriority([FromBody] int priority, int projectId,
+    /// <param name="status">Новый статус</param>
+    /// <param name="projectId">ID проекта</param>
+    [SwaggerOperation("Изменение статуса проекта ")]
+    [HttpPost("change-status/{projectId}")]
+    public async Task<IActionResult> ChangePriority([FromBody] int status, int projectId,
         CancellationToken cancellationToken)
     {
         try
         {
             var projectModel = await _projectManager.GetByIdAsync(projectId);
-            projectModel.Priority = priority;
+            projectModel.Priority = status;
             var newItemModel = await _projectManager.UpdateAsync(projectModel);
             return Ok(newItemModel);
         }

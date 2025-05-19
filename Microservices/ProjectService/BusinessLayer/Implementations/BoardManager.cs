@@ -58,9 +58,16 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
     public async Task<ICollection<BoardModel>> GetByProjectIdAsync(int projectId)
     {
         await validatorManager.ValidateUserCanViewAsync(projectId);
+
         var boardsEntities = await boardRepository.GetByProjectIdAsync(projectId);
-        return boardsEntities.AsEnumerable().Select(BoardMapper.ToModel).ToList();
+
+        var boardModels = await Task.WhenAll(
+            boardsEntities.Select(b => BoardMapper.ToModel(b))
+        );
+
+        return boardModels.ToList();
     }
+
 
     public async Task<int> DeleteAsync(int id)
     {
@@ -76,7 +83,7 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
         if (board is null) throw new Exception($"Доски с id {id} не существует");
         var userProject = await projectManager.GetByBoardIdAsync(id);
         await validatorManager.ValidateUserCanViewAsync(userProject.Id);
-        return BoardMapper.ToModel(board);
+        return await BoardMapper.ToModel(board);
     }
 
 
@@ -96,7 +103,7 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
         foreach (var board in boards)
         {
             await validatorManager.ValidateUserCanViewAsync(board.ProjectId, userId);
-            result.Add(BoardMapper.ToModel(board));
+            result.Add(await BoardMapper.ToModel(board));
         }
 
         return result;

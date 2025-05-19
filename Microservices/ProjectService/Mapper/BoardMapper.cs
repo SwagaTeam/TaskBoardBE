@@ -16,7 +16,7 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static BoardModel ToModel(BoardEntity entity)
+        public static async Task<BoardModel> ToModel(BoardEntity entity)
         {
             var model = new BoardModel
             {
@@ -25,12 +25,13 @@ namespace ProjectService.Mapper
                 Description = entity.Description,
                 CreatedAt = entity.CreatedAt,
                 ProjectId = entity.ProjectId,
-                Project = entity.Project is null ? null : ProjectMapper.ToModel(entity.Project),
+                Project = entity.Project is null ? null : await ProjectMapper.ToModel(entity.Project),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
                 Statuses = entity.Statuses.Select(StatusMapper.ToModel).ToList()
             };
 
             model.SetItemsCount(entity.ItemsBoards.Count);
+            model.SetProjectName(entity.Project.Name);
 
             return model;
         }

@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ProjectService.Controllers;
 
 [ApiController]
+[Route("item")]
 public class ItemController(IItemManager itemManager) : ControllerBase
 {
     /// <summary>

@@ -10,5 +10,5 @@ public interface IProjectRepository
     Task Create(ProjectEntity project);
     Task Update(ProjectEntity project);
     Task Delete(int id);
-    IQueryable<ProjectEntity?> GetByUserIdAsync(int? currentUserId);
+    IQueryable<ProjectEntity?> GetByUserId(int? currentUserId);
 }

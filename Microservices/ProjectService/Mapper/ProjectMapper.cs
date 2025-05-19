@@ -1,4 +1,6 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using SharedLibrary.Constants;
+using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.Mapper
@@ -20,9 +22,9 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static ProjectModel ToModel(ProjectEntity projectModel)
+        public static async Task<ProjectModel> ToModel(ProjectEntity projectModel)
         {
-            return new ProjectModel()
+            var project = new ProjectModel()
             {
                 Id = projectModel.Id,
                 Name = projectModel.Name,
@@ -32,8 +34,15 @@ namespace ProjectService.Mapper
                 IsPrivate = projectModel.IsPrivate,
                 Priority = projectModel.Priority,
                 StartDate = projectModel.StartDate,
-                UpdateDate = projectModel.UpdatedAt
+                UpdateDate = projectModel.UpdatedAt,
             };
+
+            var headId = projectModel.UserProjects.Where(x => x.RoleId == DefaultRoles.CREATOR).FirstOrDefault().UserId;
+            var user = await UserRepository.GetUser(headId);
+
+            project.SetHead(user.Username);
+
+            return project;
         }
     }
 }

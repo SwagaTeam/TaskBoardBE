@@ -13,13 +13,13 @@ public class ProjectLinkMapper
         };
     }
     
-    public static ProjectLinkModel ToModel(ProjectLinkEntity model)
+    public static async Task<ProjectLinkModel> ToModel(ProjectLinkEntity model)
     {
         return new ProjectLinkModel
         {
             Id = model.Id,
             ProjectId = model.ProjectId,
-            Project = ProjectMapper.ToModel(model.Project),
+            Project = await ProjectMapper.ToModel(model.Project),
             Url = model.Url,
         };
     }

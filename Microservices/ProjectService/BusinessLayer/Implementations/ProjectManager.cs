@@ -56,7 +56,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
             var project = await projectRepository.GetByIdAsync(id);
             if (project == null)
                 throw new ProjectNotFoundException();
-            return ProjectMapper.ToModel(project);
+            return await ProjectMapper.ToModel(project);
         }
 
         throw new NotAuthorizedException("У пользователя нет доступа к проекту");
@@ -131,15 +131,21 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
     public async Task<ProjectModel?> GetByBoardIdAsync(int id)
     {
         var project = await projectRepository.GetByBoardIdAsync(id);
-        return ProjectMapper.ToModel(project!);
+        return await ProjectMapper.ToModel(project!);
     }
 
     public async Task<ICollection<ProjectModel?>> Get()
     {
         var currentUserId = auth.GetCurrentUserId();
-        var projects = projectRepository.GetByUserIdAsync(currentUserId);
-        return projects.AsEnumerable().Select(ProjectMapper.ToModel!).ToList()!;
+        var projects = projectRepository.GetByUserId(currentUserId);
+
+        var projectModels = await Task.WhenAll(
+            projects.Select(p => ProjectMapper.ToModel(p))
+        );
+
+        return projectModels;
     }
+
 
     public async Task<int> SetUserRoleAsync(int userId, int projectId, RoleModel role)
     {

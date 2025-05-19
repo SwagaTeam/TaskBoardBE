@@ -39,7 +39,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
             return project;
         }
 
-        public IQueryable<ProjectEntity?> GetByUserIdAsync(int? currentUserId)
+        public IQueryable<ProjectEntity?> GetByUserId(int? currentUserId)
         {
             var projects = projectDbContext.Projects
                 .Include(x => x.UserProjects)

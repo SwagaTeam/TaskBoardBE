@@ -28,11 +28,11 @@ public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IP
 
     public async Task<ProjectLinkModel?> GetByIdAsync(int id)
     {
-        return ProjectLinkMapper.ToModel(await projectLinkRepository.GetByIdAsync(id));
+        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByIdAsync(id));
     }
 
     public async Task<ProjectLinkModel?> GetByLinkAsync(string link)
     {
-        return ProjectLinkMapper.ToModel(await projectLinkRepository.GetByLinkAsync(link));
+        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByLinkAsync(link));
     }
 }
