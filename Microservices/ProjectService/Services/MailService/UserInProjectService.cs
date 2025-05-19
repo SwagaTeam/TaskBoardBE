@@ -20,7 +20,7 @@ public class UserInProjectService
         if (userId is null) return false;
         if (projectId is null) return false;
         
-        return !await userProjectManager.IsUserCanViewAsync((int)userId, (int)projectId);
+        return await userProjectManager.IsUserCanViewAsync((int)userId, (int)projectId);
     }
 
     public static async Task<bool> IsUserAdmin(IUserProjectManager userProjectManager, int? userId, int? projectId, 

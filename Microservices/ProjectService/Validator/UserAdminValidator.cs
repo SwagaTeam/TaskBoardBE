@@ -12,6 +12,6 @@ public class UserAdminValidator : AbstractValidator<string>
         RuleFor(x => x)
             .MustAsync((model, cancellation) =>
                 UserInProjectService.IsUserAdmin(userProjectManager, userId, projectId, cancellation))
-            .WithMessage("Текущий пользователь не находится в нужном проекте");
+            .WithMessage("У пользователя недостаточно прав");
     }
 }
