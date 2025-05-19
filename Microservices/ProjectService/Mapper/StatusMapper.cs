@@ -30,6 +30,7 @@ namespace ProjectService.Mapper
             {
                 Id = (int)statusEntity.Id,
                 Order = statusEntity.Order,
+                BoardId = statusEntity.BoardId,
                 //Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),
                 IsDone = statusEntity.IsDone,
                 IsRejected = statusEntity.IsRejected,

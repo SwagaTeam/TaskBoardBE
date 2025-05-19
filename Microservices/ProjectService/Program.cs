@@ -101,7 +101,7 @@ internal class Program
         services.AddScoped<IUserProjectRepository, UserProjectRepository>();
         services.AddScoped<IItemTypeManager, ItemTypeManager>();
         services.AddScoped<IItemTypeRepository, ItemTypeRepository>();
-        services.AddScoped <IStatusRepository, StatusRepository>();
+        services.AddScoped<IStatusRepository, StatusRepository>();
         services.AddScoped<IStatusManager, StatusManager>();
         services.AddScoped<IItemBoardsRepository, ItemBoardsRepository>();
         services.AddScoped<ISprintManager, SprintManager>();

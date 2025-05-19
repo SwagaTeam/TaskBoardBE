@@ -26,14 +26,14 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
         if (statusModel is null) throw new NullReferenceException("Нельзя создать пустую модель");
         var entity = StatusMapper.ToEntity(statusModel);
         
-        var project = await projectRepository.GetByBoardIdAsync((int)statusModel.Id);
+        var project = await projectRepository.GetByBoardIdAsync((int)statusModel.BoardId);
         await validatorManager.ValidateUserInProjectAsync(project.Id);
 
         var statuses = await statusRepository.GetByBoardIdAsync(statusModel.BoardId);
 
         var lastOrder = statuses.Any() ? statuses.Max(x => x.Order) : 0;
 
-        entity.Order = lastOrder;
+        entity.Order = lastOrder + 1;
 
         await statusRepository.CreateAsync(entity);
 

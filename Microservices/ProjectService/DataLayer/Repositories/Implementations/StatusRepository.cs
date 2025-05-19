@@ -18,9 +18,7 @@ public class StatusRepository(ProjectDbContext context) : IStatusRepository
     public async Task<IQueryable<StatusEntity>> GetByBoardIdAsync(int boardId)
     {
         var statuses = context.Statuses
-                                   .Include(x => x.Board)
-                                   .Include(x => x.ItemsBoards)
-                                   .Where(x=>x.ItemsBoards.Any(x=>x.BoardId == boardId));
+                                   .Where(x=>x.BoardId == boardId);
         return statuses;
     }
 

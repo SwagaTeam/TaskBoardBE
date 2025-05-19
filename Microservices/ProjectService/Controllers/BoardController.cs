@@ -12,9 +12,10 @@ public class BoardController : ControllerBase
     private readonly IBoardManager _boardManager;
     private readonly IStatusManager _statusManager;
 
-    public BoardController(IBoardManager boardManager)
+    public BoardController(IBoardManager boardManager, IStatusManager statusManager)
     {
         _boardManager = boardManager;
+        _statusManager = statusManager;
     }
 
     /// <summary>
