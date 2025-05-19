@@ -124,6 +124,26 @@ public class BoardController : ControllerBase
     }
 
     /// <summary>
+    /// Получение колонок доски по ID доски.
+    /// </summary>
+    /// <remarks>
+    /// Возвращает колонки доски.
+    /// </remarks>
+    /// <param name="id">ID доски.</param>
+    [HttpGet("get-statuses/{id}")]
+    public async Task<IActionResult> GetStatusesById(int id)
+    {
+        try
+        {
+            return Ok(await _statusManager.GetByBoardIdAsync(id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Получение доски по ID.
     /// </summary>
     /// <remarks>

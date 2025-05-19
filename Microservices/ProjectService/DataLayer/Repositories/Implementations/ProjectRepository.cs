@@ -33,6 +33,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         public async Task<ProjectEntity?> GetByBoardIdAsync(int id)
         {
             var project = await projectDbContext.Projects
+                .Include(x => x.UserProjects)
                 .Include(x => x.Boards)
                 .FirstOrDefaultAsync(x => x.Boards.Any(x => x.Id == id));
 

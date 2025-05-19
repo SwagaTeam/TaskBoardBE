@@ -84,4 +84,10 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
         await statusRepository.UpdateAsync(statusToMove);
 
     }
+
+    public async Task<IEnumerable<StatusModel>> GetByBoardIdAsync(int id)
+    {
+        var statuses = await statusRepository.GetByBoardIdAsync(id);
+        return statuses.Select(StatusMapper.ToModel);
+    }
 }
