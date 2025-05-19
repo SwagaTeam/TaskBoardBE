@@ -40,7 +40,8 @@ public class ItemManager(
             new ItemBoardEntity
             {
                 ItemId = entity.Id,
-                BoardId = createItemModel.BoardId
+                BoardId = createItemModel.BoardId,
+                StatusId = (int)entity.StatusId
             }
         );
 
