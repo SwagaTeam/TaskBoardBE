@@ -29,8 +29,8 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     ///         <li>3 – Высокий</li>
     ///         <li>4 – Критический</li>
     ///     </ul>
-    ///     Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается отдельно, внутри модели
-    ///     <c>Item</c> указывать его не нужно.
+    ///     Также необходимо указать <c>boardId</c> и <c>statusId</c> — <c>statusId</c> передается внутри модели
+    ///     <c>Item</c>, остальные параметры модели указывать не нужно.
     /// </remarks>
     /// <param name="item">Модель создания задачи</param>
     [SwaggerOperation("Добавление новой задачи/эпика/бага")]

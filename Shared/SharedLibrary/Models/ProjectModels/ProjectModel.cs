@@ -19,7 +19,7 @@ namespace SharedLibrary.ProjectModels
         public DateTime StartDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }
-        public string Head { get; private set; }
+        public string Head { get; private set; } = "";
 
         public void SetHead(string head)
         {
