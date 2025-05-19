@@ -36,6 +36,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
     public async Task<BoardEntity?> GetByNameAsync(string name)
     {
         var board = await context.Boards
+            .Include(x => x.ItemsBoards)
             .FirstOrDefaultAsync(x => x.Name == name);
 
 
@@ -45,6 +46,7 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
     public async Task<IQueryable<BoardEntity>> GetByProjectIdAsync(int projectId)
     {
         var boards = context.Boards
+            .Include(x => x.ItemsBoards)
             .Include(x => x.Statuses)
             .Where(x => x.ProjectId == projectId);
 
