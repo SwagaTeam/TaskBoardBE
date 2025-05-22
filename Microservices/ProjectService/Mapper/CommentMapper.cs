@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper
 {
@@ -18,12 +19,12 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static CommentModel? ToModel(CommentEntity? entity)
+        public async static Task<CommentModel?> ToModel(CommentEntity? entity)
         {
             if (entity is null)
                 return null;
 
-            return new CommentModel
+            var model = new CommentModel
             {
                 Id = entity.Id,
                 AuthorId = entity.AuthorId,
@@ -32,6 +33,15 @@ namespace ProjectService.Mapper
                 CreatedAt = entity.CreatedAt,
                 Attachments = entity.Attachments.Select(AttachmentMapper.ToModel).ToList()
             };
+
+            if(entity.AuthorId != null)
+            {
+                var user = await UserRepository.GetUser(entity.AuthorId);
+
+                model.SetName(user.Username);
+            }
+            
+            return model;
         }
     }
 }

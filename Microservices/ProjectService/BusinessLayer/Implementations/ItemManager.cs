@@ -195,6 +195,10 @@ public class ItemManager(
 
         var comments = commentRepository.GetByItemId(itemId);
 
-        return comments.Select(CommentMapper.ToModel).ToList();
+        var commentsModels = await Task.WhenAll(
+            comments.Select(c => CommentMapper.ToModel(c))
+        );
+
+        return commentsModels.ToList();
     }
 }
