@@ -79,8 +79,9 @@ public class SprintManager : ISprintManager
         await _validatorManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
         var entities = await sprintRepository.GetByBoardId(boardId);
+        var models = await Task.WhenAll(entities.Select(SprintMapper.ToModel));
 
-        return entities.Select(SprintMapper.ToModel);
+        return models;
     }
 
     public async Task<SprintModel> GetByIdAsync(int id)
@@ -95,7 +96,7 @@ public class SprintManager : ISprintManager
 
         var sprint = await sprintRepository.GetByIdAsync(id);
 
-        return SprintMapper.ToModel(sprint);
+        return await SprintMapper.ToModel(sprint);
     }
 
     public async Task<int?> UpdateAsync(SprintModel statusModel)

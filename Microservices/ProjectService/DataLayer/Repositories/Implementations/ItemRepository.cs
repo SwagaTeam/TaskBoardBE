@@ -10,7 +10,9 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task<ItemEntity> GetByIdAsync(int id)
     {
         var item = await context.Items
+            .Include(x => x.ItemsBoards)
             .Include(x => x.ItemType)
+            .Include(x => x.UserItems)
             .FirstOrDefaultAsync(x => x.Id == id);
         return item;
     }
@@ -54,7 +56,10 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
 
     public async Task<ICollection<ItemEntity>> GetItemsAsync()
     {
-        return await context.Items.ToListAsync();
+        return await context.Items
+            .Include(x=>x.ItemsBoards)
+            .Include(x=>x.UserItems)
+            .ToListAsync();
     }
 
     public async Task<ItemEntity> GetByNameAsync(string title)
@@ -76,6 +81,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task<ICollection<ItemEntity>> GetItemsByBoardIdAsync(int boardId)
     {
         var items = await context.Items
+            .Include(x => x.UserItems)
             .Include(i => i.Status)
             .Where(i => i.ItemsBoards.Any(ib => ib.BoardId == boardId))
             .ToListAsync();
@@ -105,6 +111,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
     public async Task<ICollection<ItemEntity>> GetItemsByProjectIdAsync(int projectId)
     {
         var items = await context.Items
+            .Include(x => x.UserItems)
             .Include(i => i.Status)
             .Where(i => i.ProjectId == projectId)
             .ToListAsync();

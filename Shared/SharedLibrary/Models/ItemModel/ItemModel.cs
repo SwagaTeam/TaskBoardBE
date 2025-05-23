@@ -22,6 +22,14 @@ public class ItemModel
     public int? ItemTypeId { get; set; }
     public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
+    public string Contributor { get; private set; } = "";
+
+
+    //добавить автора
+    public void SetContributor(string contributor)
+    {
+        Contributor = contributor;
+    }
     public void SetBoardId(int? boardId)
     {
         BoardId = boardId;
@@ -38,6 +46,9 @@ public class ItemModel
 
     [JsonIgnore]
     public ItemTypeModel? ItemType { get; set; } = null;
+
+    [JsonIgnore]
+    public ICollection<UserItemModel>? UserItems { get; set; }
 
     public StatusModel? Status { get; set; } = null;
 

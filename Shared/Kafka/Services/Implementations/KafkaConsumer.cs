@@ -40,6 +40,9 @@ namespace Kafka.Messaging.Services.Implementations
 
         private async Task? ConsumeAsync(CancellationToken stoppingToken)
         {
+
+            Trace.TraceInformation("Subscribed to Kafka topic: " + topic);
+
             consumer.Subscribe(topic);
 
             try
@@ -47,6 +50,9 @@ namespace Kafka.Messaging.Services.Implementations
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     var result = consumer.Consume(stoppingToken);
+                    Console.WriteLine("GOT MESSAGE!");
+
+                    Trace.TraceInformation("Message received: " + result?.Message?.Value?.ToString());
                     await messageHandler.HandleAsync(result.Message.Value, stoppingToken);
                 }
             }

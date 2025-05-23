@@ -1,4 +1,5 @@
 ﻿using SharedLibrary.Constants;
+using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper;
@@ -29,7 +30,7 @@ public class ItemMapper
         };
     }
 
-    public static ItemModel? ToModel(ItemEntity item)
+    public static async Task<ItemModel?> ToModel(ItemEntity item)
     {
         if (item is null)
             return null;
@@ -51,7 +52,8 @@ public class ItemMapper
             ItemTypeId = item.ItemTypeId,
             StatusId = item.StatusId,
             IsArchived = item.IsArchived,
-            Status = StatusMapper.ToModel(item.Status)
+            Status = StatusMapper.ToModel(item.Status),
+            UserItems = item.UserItems.Select(UserItemMapper.ToModel).ToList()
         };
 
         if(item.ItemsBoards.Count > 0)
@@ -60,6 +62,14 @@ public class ItemMapper
 
             model.SetBoardId(boardId);
         }
+
+        if(item.UserItems != null && item.UserItems.Count > 0)
+        {
+            var user = await UserRepository.GetUser(item.UserItems.First().UserId);
+
+            model.SetContributor(user.Username);
+        }
+            
 
         return model;
     }

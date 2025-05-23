@@ -71,14 +71,13 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// <summary>
     ///     Получение задач пользователя в проекте.
     /// </summary>
-    /// <param name="projectId">ID проекта</param>
-    /// <param name="userId">ID пользователя</param>
-    [HttpGet("get-user-item/{userId}")]
-    public async Task<IActionResult> GetUserItem([FromBody] int projectId, int userId)
+    /// <param name="model">ID пользователя и ID проекта</param>
+    [HttpGet("get-user-item")]
+    public async Task<IActionResult> GetUserItem([FromBody] GetUserItemModel model)
     {
         try
         {
-            var items = await itemManager.GetItemsByUserId(userId, projectId);
+            var items = await itemManager.GetItemsByUserId(model.UserId, model.ProjectId);
             return Ok(items);
         }
         catch (Exception ex)
@@ -93,11 +92,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     /// <param name="newUserId">ID пользователя</param>
     /// <param name="itemId">ID задачи</param>
     [HttpPost("add-user-to-item/{itemId}")]
-    public async Task<IActionResult> AddUserInItem([FromBody] int newUserId, int itemId)
+    public async Task<IActionResult> AddUserInItem([FromBody] int newUserId, int itemId, CancellationToken token)
     {
         try
         {
-            await itemManager.AddUserToItemAsync(newUserId, itemId);
+            await itemManager.AddUserToItemAsync(newUserId, itemId, token);
             return Ok($"Пользователь {newUserId} присоединен к задаче {itemId}");
         }
         catch (Exception ex)

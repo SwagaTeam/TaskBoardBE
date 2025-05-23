@@ -1,4 +1,6 @@
 ﻿using Confluent.Kafka;
+using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace Kafka.Messaging.Settings
@@ -7,7 +9,17 @@ namespace Kafka.Messaging.Settings
     {
         public TMessage Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
         {
-            return JsonSerializer.Deserialize<TMessage>(data)!;
+            try
+            {
+                var json = Encoding.UTF8.GetString(data);
+                return JsonSerializer.Deserialize<TMessage>(json)!;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Kafka deserialization error: {ex.Message}");
+                throw;
+            }
         }
+
     }
 }

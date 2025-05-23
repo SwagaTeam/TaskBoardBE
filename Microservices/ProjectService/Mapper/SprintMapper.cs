@@ -18,10 +18,13 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static SprintModel? ToModel(SprintEntity model)
+        public static async Task<SprintModel?> ToModel(SprintEntity model)
         {
             if (model is null)
                 return null;
+
+            var itemModels =  await Task.WhenAll(model.Items.Select(ItemMapper.ToModel));
+
 
             return new SprintModel
             {
@@ -30,7 +33,7 @@ namespace ProjectService.Mapper
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 BoardId = model.BoardId,
-                Items = model.Items.Select(ItemMapper.ToModel).ToList()!
+                Items = itemModels
             };
         }
     }
