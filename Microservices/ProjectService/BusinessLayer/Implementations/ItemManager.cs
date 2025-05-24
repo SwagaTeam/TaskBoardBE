@@ -81,7 +81,7 @@ public class ItemManager(
         return models;
     }
 
-    public async Task<int> UpdateAsync(ItemModel item, CancellationToken token)
+    public async Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, TaskEventType eventType = TaskEventType.Updated)
     {
         await validatorManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
@@ -90,8 +90,9 @@ public class ItemManager(
         await itemRepository.UpdateAsync(entity);
         await kafkaProducer.ProduceAsync(new TaskEventMessage
         {
-            EventType = TaskEventType.Created,
-            UserItems = item.UserItems
+            EventType = eventType,
+            UserItems = item.UserItems,
+            Message = message,
         }, token);
         return entity.Id;
     }
@@ -108,7 +109,7 @@ public class ItemManager(
 
         await itemRepository.AddUserToItemAsync(itemUserEntity);
         item.UserItems.Add(UserItemMapper.ToModel(itemUserEntity));
-        await UpdateAsync(item, cancellationToken);
+        await UpdateAsync(item, cancellationToken, $"В {item.Title} добавлен пользователь с айди {newUserId}", TaskEventType.AddedUser);
         return itemUserEntity.Id;
     }
 

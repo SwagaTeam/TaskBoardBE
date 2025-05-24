@@ -129,7 +129,8 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.ItemTypeId = itemTypeId;
-            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
+                $"У задачи {itemModel.Title} поменяли тип на {itemTypeId}");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -156,7 +157,8 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.StatusId = statusId;
-            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
+                $"У задачи {itemModel.Title} поменяли статус на {statusId}");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -191,7 +193,8 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.Priority = priority;
-            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken,
+                $"У задачи {itemModel.Title} поменяли приоритет на {priority}");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -212,7 +215,8 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     {
         try
         {
-            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken,
+                $"У задачи {itemModel.Title} поменяли параметры");
             return Ok(newItemModel);
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using ProjectService.Models;
+using SharedLibrary.Constants;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Abstractions;
@@ -11,7 +12,7 @@ public interface IItemManager
     public Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId);
     public Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId);
     public Task<ICollection<ItemModel>> GetCurrentUserItems();
-    public Task<int> UpdateAsync(ItemModel item, CancellationToken token);
+    public Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, TaskEventType taskEventType = TaskEventType.Updated);
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);
     public Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken);
