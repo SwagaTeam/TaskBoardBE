@@ -81,7 +81,7 @@ internal class Program
     {
         services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
         services.Configure<KafkaSettings>(configuration.GetSection("KafkaSettings"));
-
+        
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IBoardManager, BoardManager>();

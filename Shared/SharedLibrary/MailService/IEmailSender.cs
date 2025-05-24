@@ -1,4 +1,4 @@
 ﻿public interface IEmailSender
 {
-    Task<bool> SendEmailAsync(string email, string subject, string message);
+    Task<bool> SendEmailAsync(string subject, string message, params string[] to);
 }

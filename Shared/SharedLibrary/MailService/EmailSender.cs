@@ -7,10 +7,10 @@
         this.mailService = mailService;
     }
 
-    public async Task<bool> SendEmailAsync(string email, string subject, string message)
+    public async Task<bool> SendEmailAsync(string subject, string message, params string[] email)
     {
         var mailData = new MailData(
-            to: new List<string> { email },
+            to: email,
             subject: subject,
             body: message,
             from: "TestMessagesService@yandex.ru",
