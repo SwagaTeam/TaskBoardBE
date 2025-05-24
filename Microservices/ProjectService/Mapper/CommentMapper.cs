@@ -1,4 +1,6 @@
-﻿using SharedLibrary.Dapper.DapperRepositories;
+﻿using ProjectService.DataLayer.Repositories.Abstractions;
+using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper
@@ -19,7 +21,7 @@ namespace ProjectService.Mapper
             };
         }
 
-        public async static Task<CommentModel?> ToModel(CommentEntity? entity)
+        public static async Task<CommentModel?> ToModel(CommentEntity? entity, IUserRepository userRepository)
         {
             if (entity is null)
                 return null;
@@ -34,13 +36,12 @@ namespace ProjectService.Mapper
                 Attachments = entity.Attachments.Select(AttachmentMapper.ToModel).ToList()
             };
 
-            if(entity.AuthorId != null)
+            if (entity.AuthorId != null)
             {
-                var user = await UserRepository.GetUser(entity.AuthorId);
-
+                var user = await userRepository.GetUserAsync(entity.AuthorId);
                 model.SetName(user.Username);
             }
-            
+
             return model;
         }
     }

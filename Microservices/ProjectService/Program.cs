@@ -1,22 +1,27 @@
-using SharedLibrary.ProjectModels;
-using Kafka.Messaging;
-using Kafka.Messaging.Services.Implementations;
-using SharedLibrary.Middleware;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
+
+
+
 using System.Security.Claims;
-using ProjectService.Initializers;
-using ProjectService.DataLayer;
-using ProjectService.Services.MailService;
+using System.Text;
+using DotNetEnv;
+using Kafka.Messaging.Services.Abstractions;
+using Kafka.Messaging.Services.Implementations;
+using Kafka.Messaging.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.BusinessLayer.Implementations;
+using ProjectService.DataLayer;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.DataLayer.Repositories.Implementations;
+using ProjectService.Initializers;
 using SharedLibrary.Auth;
-using DotNetEnv;
-using Microsoft.Extensions.FileProviders;
+using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Middleware;
+using SharedLibrary.Models.KafkaModel;
 
 internal class Program
 {
@@ -74,12 +79,11 @@ internal class Program
 
     private static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)
     {
-        services.Configure<MailSettings>(
-           configuration.GetSection(nameof(MailSettings))
-        );
+        services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+        services.Configure<KafkaSettings>(configuration.GetSection("KafkaSettings"));
 
-        services.AddTransient<IMailService, MailService>();
         services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<IMailService, MailService>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
@@ -110,10 +114,12 @@ internal class Program
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
-
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddSingleton<IHostedService, KafkaConsumer<TaskEventMessage>>();
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<IMessageHandler<TaskEventMessage>, TaskEventMessageHandler>();
 
         services.AddCors(options =>
         {
@@ -159,8 +165,8 @@ internal class Program
             options.IncludeXmlComments(xmlPath);
         });
 
-        services.AddProducer<ItemModel>(configuration.GetSection("Kafka:NotificationTask"));
-        services.AddConsumer<ItemModel, TaskCreatedMessageHandler>(configuration.GetSection("Kafka:NotificationTask"));
+        services.AddSingleton<IKafkaProducer<TaskEventMessage>, KafkaProducer<TaskEventMessage>>();
+
 
         var host = Environment.GetEnvironmentVariable("HOST");
         var port = Environment.GetEnvironmentVariable("PORT");

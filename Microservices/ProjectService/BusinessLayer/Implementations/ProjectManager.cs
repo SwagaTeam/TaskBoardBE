@@ -5,11 +5,12 @@ using ProjectService.Mapper;
 using SharedLibrary.Auth;
 using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth)
+public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, IUserRepository userRepository)
     : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
@@ -56,7 +57,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
             var project = await projectRepository.GetByIdAsync(id);
             if (project == null)
                 throw new ProjectNotFoundException();
-            return await ProjectMapper.ToModel(project);
+            return await ProjectMapper.ToModel(project, userRepository);
         }
 
         throw new NotAuthorizedException("У пользователя нет доступа к проекту");
@@ -64,7 +65,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
 
     public async Task<bool> IsUserInProjectAsync(int userId, int projectId)
     {
-        var user = await UserRepository.GetUser(userId);
+        var user = await userRepository.GetUserAsync(userId);
         var project = await GetByIdAsync(projectId);
 
         if (user is null || project is null)
@@ -75,7 +76,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
 
     public async Task<bool> IsUserViewerAsync(int userId, int projectId)
     {
-        var user = await UserRepository.GetUser(userId);
+        var user = await userRepository.GetUserAsync(userId);
         var project = await GetByIdAsync(projectId);
         if (user is null || project is null)
             throw new ProjectNotFoundException("Пользователь или проект не найден");
@@ -84,7 +85,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
 
     public async Task<bool> IsUserAdminAsync(int userId, int projectId)
     {
-        var user = await UserRepository.GetUser(userId);
+        var user = await userRepository.GetUserAsync(userId);
         var project = await GetByIdAsync(projectId);
 
         if (user is null || project is null)
@@ -102,7 +103,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
     //Подумать над логикой
     public async Task<int> AddUserInProjectAsync(int userId, int projectId)
     {
-        var user = await UserRepository.GetUser(userId);
+        var user = await userRepository.GetUserAsync(userId);
 
         var project = await projectRepository.GetByIdAsync(projectId);
 
@@ -131,7 +132,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
     public async Task<ProjectModel?> GetByBoardIdAsync(int id)
     {
         var project = await projectRepository.GetByBoardIdAsync(id);
-        return await ProjectMapper.ToModel(project!);
+        return await ProjectMapper.ToModel(project!, userRepository);
     }
 
     public async Task<ICollection<ProjectModel?>> Get()
@@ -140,7 +141,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         var projects = projectRepository.GetByUserId(currentUserId);
 
         var projectModels = await Task.WhenAll(
-            projects.Select(p => ProjectMapper.ToModel(p))
+            projects.Select(p => ProjectMapper.ToModel(p, userRepository))
         );
 
         return projectModels;

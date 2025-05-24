@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper
 {
@@ -18,12 +19,12 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static async Task<SprintModel?> ToModel(SprintEntity model)
+        public static async Task<SprintModel?> ToModel(SprintEntity model, IUserRepository userRepository)
         {
             if (model is null)
                 return null;
 
-            var itemModels =  await Task.WhenAll(model.Items.Select(ItemMapper.ToModel));
+            var itemModels =  await Task.WhenAll(model.Items.Select(x=> ItemMapper.ToModel(x, userRepository)));
 
 
             return new SprintModel

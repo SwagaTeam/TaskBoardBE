@@ -3,12 +3,13 @@ using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Auth;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProjectManager projectManager, 
-    IValidateBoardManager validatorManager) : IBoardManager
+    IValidateBoardManager validatorManager, IUserRepository userRepository) : IBoardManager
 {
     public async Task<int> CreateAsync(BoardModel board)
     {
@@ -62,7 +63,7 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
         var boardsEntities = await boardRepository.GetByProjectIdAsync(projectId);
 
         var boardModels = await Task.WhenAll(
-            boardsEntities.Select(b => BoardMapper.ToModel(b))
+            boardsEntities.Select(b => BoardMapper.ToModel(b, userRepository))
         );
 
         return boardModels.ToList();
@@ -83,7 +84,7 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
         if (board is null) throw new Exception($"Доски с id {id} не существует");
         var userProject = await projectManager.GetByBoardIdAsync(id);
         await validatorManager.ValidateUserCanViewAsync(userProject.Id);
-        return await BoardMapper.ToModel(board);
+        return await BoardMapper.ToModel(board, userRepository);
     }
 
 
@@ -103,7 +104,7 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
         foreach (var board in boards)
         {
             await validatorManager.ValidateUserCanViewAsync(board.ProjectId, userId);
-            result.Add(await BoardMapper.ToModel(board));
+            result.Add(await BoardMapper.ToModel(board, userRepository));
         }
 
         return result;

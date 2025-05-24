@@ -129,7 +129,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.ItemTypeId = itemTypeId;
-            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -156,7 +156,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.StatusId = statusId;
-            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -191,7 +191,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
             itemModel.Priority = priority;
-            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -212,7 +212,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     {
         try
         {
-            var newItemModel = await itemManager.UpdateAsync(itemModel);
+            var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken);
             return Ok(newItemModel);
         }
         catch (Exception ex)

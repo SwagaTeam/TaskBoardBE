@@ -1,21 +1,24 @@
-﻿using SharedLibrary.UserModels;
+﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.UserModels;
 
 namespace SharedLibrary.Dapper.DapperRepositories
 {
-    public static class UserRepository
+    public class UserRepository : IUserRepository
     {
-        public static async Task<UserModel> GetUser(int id)
+        public async Task<UserModel?> GetUserAsync(int id)
         {
-            var result = await DapperOperations
-                .QueryAsync<UserModel>($"select * from \"Users\" u where \"Id\" = {id}", new { Id = id });
-            return result.FirstOrDefault() ?? new UserModel();
+            var query = "SELECT * FROM \"Users\" WHERE \"Id\" = @Id";
+            var result = await DapperOperations.QueryAsync<UserModel>(query, new { Id = id });
+            return result.FirstOrDefault();
         }
 
-        public static async Task<UserModel> GetUserByEmail(string email)
+        public async Task<UserModel?> GetUserByEmailAsync(string email)
         {
-            var result = await DapperOperations
-                .QueryAsync<UserModel>($"select * from \"Users\" u where \"Email\" = \'{email}\'", new { Email = email });
-            return result.FirstOrDefault() ?? new UserModel();
+            var query = "SELECT * FROM \"Users\" WHERE \"Email\" = @Email";
+            var result = await DapperOperations.QueryAsync<UserModel>(query, new { Email = email });
+            return result.FirstOrDefault();
         }
     }
+
+    
 }

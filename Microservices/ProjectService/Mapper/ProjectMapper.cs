@@ -1,5 +1,6 @@
 ﻿using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
@@ -22,7 +23,7 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static async Task<ProjectModel> ToModel(ProjectEntity projectModel)
+        public static async Task<ProjectModel> ToModel(ProjectEntity projectModel, IUserRepository userRepository)
         {
             var project = new ProjectModel()
             {
@@ -38,7 +39,7 @@ namespace ProjectService.Mapper
             };
 
             var headId = projectModel.UserProjects.Where(x => x.RoleId == DefaultRoles.CREATOR).FirstOrDefault().UserId;
-            var user = await UserRepository.GetUser(headId);
+            var user = await userRepository.GetUserAsync(headId);
 
             project.SetHead(user.Username);
 

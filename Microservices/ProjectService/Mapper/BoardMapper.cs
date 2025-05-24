@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.Mapper
@@ -16,7 +17,7 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static async Task<BoardModel> ToModel(BoardEntity entity)
+        public static async Task<BoardModel> ToModel(BoardEntity entity, IUserRepository userRepository)
         {
             var model = new BoardModel
             {
@@ -25,7 +26,7 @@ namespace ProjectService.Mapper
                 Description = entity.Description,
                 CreatedAt = entity.CreatedAt,
                 ProjectId = entity.ProjectId,
-                Project = entity.Project is null ? null : await ProjectMapper.ToModel(entity.Project),
+                Project = entity.Project is null ? null : await ProjectMapper.ToModel(entity.Project, userRepository),
                 //Sprints = SprintsMapper.ToModel(model.Sprints),
                 Statuses = entity.Statuses.Select(StatusMapper.ToModel).ToList()
             };

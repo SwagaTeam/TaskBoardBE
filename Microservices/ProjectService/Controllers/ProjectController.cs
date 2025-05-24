@@ -4,6 +4,7 @@ using ProjectService.Models;
 using ProjectService.Services.MailService;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper.DapperRepositories;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Models.DocumentModel;
 using SharedLibrary.ProjectModels;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,15 +20,17 @@ public class ProjectController : ControllerBase
     private readonly IEmailSender _emailSender;
     private readonly IAuth _auth;
     private readonly IDocumentManager _documentManager;
+    private readonly IUserRepository userRepository;
 
     public ProjectController(IProjectManager projectManager, IProjectLinkManager projectLinkManager,
-        IEmailSender emailSender, IAuth auth, IDocumentManager documentManager)
+        IEmailSender emailSender, IAuth auth, IDocumentManager documentManager, IUserRepository userRepository)
     {
         _projectLinkManager = projectLinkManager;
         _projectManager = projectManager;
         _emailSender = emailSender;
         _auth = auth;
         _documentManager = documentManager;
+        this.userRepository = userRepository;
     }
 
     /// <summary>
@@ -73,7 +76,7 @@ public class ProjectController : ControllerBase
 
             var project = await _projectManager.GetByIdAsync(request.ProjectId);
 
-            var user = await UserRepository.GetUserByEmail(request.Email);
+            var user = await userRepository.GetUserByEmailAsync(request.Email);
 
             if (user is null || project is null)
                 return BadRequest("������������ ��� ������� �� ����������");

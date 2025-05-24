@@ -3,6 +3,7 @@ using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Auth;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
@@ -12,14 +13,16 @@ public class SprintManager : ISprintManager
     private readonly IBoardRepository boardRepository;
     private readonly IItemRepository itemRepository;
     private readonly IValidateSprintManager _validatorManager;
+    private readonly IUserRepository userRepository;
 
     public SprintManager(ISprintRepository sprintRepository, IBoardRepository boardRepository,
-        IItemRepository itemRepository, IValidateSprintManager validatorManager)
+        IItemRepository itemRepository, IValidateSprintManager validatorManager, IUserRepository userRepository)
     {
         this.sprintRepository = sprintRepository;
         this.boardRepository = boardRepository;
         this.itemRepository = itemRepository;
         this._validatorManager = validatorManager;
+        this.userRepository = userRepository;
     }
 
     public async Task AddItem(int sprintId, int itemId)
@@ -79,7 +82,7 @@ public class SprintManager : ISprintManager
         await _validatorManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
         var entities = await sprintRepository.GetByBoardId(boardId);
-        var models = await Task.WhenAll(entities.Select(SprintMapper.ToModel));
+        var models = await Task.WhenAll(entities.Select(x=>SprintMapper.ToModel(x, userRepository)));
 
         return models;
     }
@@ -96,7 +99,7 @@ public class SprintManager : ISprintManager
 
         var sprint = await sprintRepository.GetByIdAsync(id);
 
-        return await SprintMapper.ToModel(sprint);
+        return await SprintMapper.ToModel(sprint, userRepository);
     }
 
     public async Task<int?> UpdateAsync(SprintModel statusModel)

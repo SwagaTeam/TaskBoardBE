@@ -8,19 +8,21 @@ using ProjectService.Models;
 using SharedLibrary.Auth;
 using SharedLibrary.Entities.ProjectService;
 using System.Threading;
+using SharedLibrary.Constants;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Models.KafkaModel;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
     IItemRepository itemRepository,
     IValidateItemManager validatorManager,
-    IKafkaProducer<ItemModel> kafkaProducer,
+    IKafkaProducer<TaskEventMessage> kafkaProducer,
     IItemBoardsRepository itemBoardsRepository,
-    IStatusRepository statusRepository,
     IProjectRepository projectRepository,
-    IUserProjectManager userProjectManager,
     ICommentRepository commentRepository,
     IAttachmentRepository attachmentRepository,
+    IUserRepository userRepository,
     IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
@@ -47,9 +49,6 @@ public class ItemManager(
         );
 
         entity = await itemRepository.GetByIdAsync(entity.Id);
-
-        await kafkaProducer.ProduceAsync(await ItemMapper.ToModel(entity), token);
-
         return entity.Id;
     }
 
@@ -62,7 +61,7 @@ public class ItemManager(
     {
         var items = await itemRepository.GetItemsAsync();
 
-        var models = await Task.WhenAll(items.Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Select(x=>ItemMapper.ToModel(x, userRepository)));
 
         return models;
     }
@@ -71,38 +70,49 @@ public class ItemManager(
     public async Task<ItemModel> GetByIdAsync(int? id)
     {
         if (id is null) throw new ArgumentNullException(nameof(id));
-        var model = await ItemMapper.ToModel(await itemRepository.GetByIdAsync((int)id));
+        var model = await ItemMapper.ToModel(await itemRepository.GetByIdAsync((int)id), userRepository);
         return model;
     }
 
     public async Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId)
     {
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
-        var models = await Task.WhenAll(items.Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Select(x=>ItemMapper.ToModel(x, userRepository)));
         return models;
     }
 
-    public async Task<int> UpdateAsync(ItemModel item)
+    public async Task<int> UpdateAsync(ItemModel item, CancellationToken token)
     {
         await validatorManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
         entity.Id = item.Id;
         entity.UpdatedAt = DateTime.UtcNow;
         await itemRepository.UpdateAsync(entity);
+        await kafkaProducer.ProduceAsync(new TaskEventMessage
+        {
+            EventType = TaskEventType.Created,
+            UserItems = item.UserItems
+        }, token);
         return entity.Id;
     }
 
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken)
     {
         var item = await GetByIdAsync(itemId);
-        await UpdateAsync(item); // назначили человека на задачу, обновляем UpdatedAt
+        await UpdateAsync(item, cancellationToken); // назначили человека на задачу, обновляем UpdatedAt
         await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
         var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
             UserId = newUserId
         };
+        
         await itemRepository.AddUserToItemAsync(itemUserEntity);
+        await kafkaProducer.ProduceAsync(new TaskEventMessage
+        {
+            EventType = TaskEventType.Created,
+            UserItems = item.UserItems
+        }, cancellationToken);
 
         return itemUserEntity.Id;
     }
@@ -111,7 +121,7 @@ public class ItemManager(
     {
         await validatorManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
-        var models = await Task.WhenAll(items.Where(x=>x.IsArchived).Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Where(x=>x.IsArchived).Select(x=>ItemMapper.ToModel(x, userRepository)));
 
         return models;
     }
@@ -121,14 +131,14 @@ public class ItemManager(
         var projectId = (await projectRepository.GetByBoardIdAsync(boardId)).Id;
         await validatorManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
-        var models = await Task.WhenAll(items.Where(x => x.IsArchived).Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Where(x => x.IsArchived).Select(x=> ItemMapper.ToModel(x, userRepository)));
 
         return models;
     }
 
     public async Task<ItemModel> GetByTitle(string title)
     {
-        return await ItemMapper.ToModel(await itemRepository.GetByNameAsync(title));
+        return await ItemMapper.ToModel(await itemRepository.GetByNameAsync(title), userRepository);
     }
 
 
@@ -137,7 +147,7 @@ public class ItemManager(
         var userId = auth.GetCurrentUserId();
         if (userId is null || userId == -1) throw new NotAuthorizedException();
         var items = await itemRepository.GetCurrentUserItemsAsync((int)userId);
-        var models = await Task.WhenAll(items.Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Select(x=> ItemMapper.ToModel(x, userRepository)));
 
         return models;
     }
@@ -146,7 +156,7 @@ public class ItemManager(
     {
         await validatorManager.ValidateAddUserToItemAsync(projectId, userId);
         var items = await itemRepository.GetItemsByUserIdAsync(userId, projectId);
-        var models = await Task.WhenAll(items.Select(ItemMapper.ToModel));
+        var models = await Task.WhenAll(items.Select(x=> ItemMapper.ToModel(x, userRepository)));
 
         return models;
     }
@@ -213,7 +223,7 @@ public class ItemManager(
         var comments = commentRepository.GetByItemId(itemId);
 
         var commentsModels = await Task.WhenAll(
-            comments.Select(c => CommentMapper.ToModel(c))
+            comments.Select(c => CommentMapper.ToModel(c, userRepository))
         );
 
         return commentsModels.ToList();

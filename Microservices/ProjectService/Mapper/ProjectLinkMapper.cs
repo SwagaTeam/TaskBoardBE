@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.Mapper;
 
@@ -13,13 +14,13 @@ public class ProjectLinkMapper
         };
     }
     
-    public static async Task<ProjectLinkModel> ToModel(ProjectLinkEntity model)
+    public static async Task<ProjectLinkModel> ToModel(ProjectLinkEntity model, IUserRepository userRepository)
     {
         return new ProjectLinkModel
         {
             Id = model.Id,
             ProjectId = model.ProjectId,
-            Project = await ProjectMapper.ToModel(model.Project),
+            Project = await ProjectMapper.ToModel(model.Project, userRepository),
             Url = model.Url,
         };
     }

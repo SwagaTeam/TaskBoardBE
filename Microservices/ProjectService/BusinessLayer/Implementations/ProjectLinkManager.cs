@@ -2,11 +2,12 @@
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository)
+public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository, IUserRepository userRepository)
     : IProjectLinkManager
 {
     public async Task<string> CreateAsync(int projectId)
@@ -28,11 +29,11 @@ public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IP
 
     public async Task<ProjectLinkModel?> GetByIdAsync(int id)
     {
-        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByIdAsync(id));
+        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByIdAsync(id), userRepository);
     }
 
     public async Task<ProjectLinkModel?> GetByLinkAsync(string link)
     {
-        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByLinkAsync(link));
+        return await ProjectLinkMapper.ToModel(await projectLinkRepository.GetByLinkAsync(link), userRepository);
     }
 }
