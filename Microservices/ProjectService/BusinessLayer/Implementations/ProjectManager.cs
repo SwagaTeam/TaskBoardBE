@@ -66,7 +66,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
     public async Task<bool> IsUserInProjectAsync(int userId, int projectId)
     {
         var user = await userRepository.GetUserAsync(userId);
-        var project = await GetByIdAsync(projectId);
+        var project = await projectRepository.GetByIdAsync(projectId);
 
         if (user is null || project is null)
             throw new ProjectNotFoundException("Пользователь или проект не найден");
@@ -114,7 +114,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         {
             ProjectId = projectId,
             UserId = userId,
-            Privilege = Privilege.MEMBER
+            Privilege = Privilege.MEMBER,
         };
         await userProjectManager.CreateAsync(entity);
         return entity.Id;

@@ -99,21 +99,16 @@ public class ItemManager(
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken)
     {
         var item = await GetByIdAsync(itemId);
-        await UpdateAsync(item, cancellationToken); // назначили человека на задачу, обновляем UpdatedAt
         await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
         var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
             UserId = newUserId
         };
-        
-        await itemRepository.AddUserToItemAsync(itemUserEntity);
-        await kafkaProducer.ProduceAsync(new TaskEventMessage
-        {
-            EventType = TaskEventType.Created,
-            UserItems = item.UserItems
-        }, cancellationToken);
 
+        await itemRepository.AddUserToItemAsync(itemUserEntity);
+        item.UserItems.Add(UserItemMapper.ToModel(itemUserEntity));
+        await UpdateAsync(item, cancellationToken);
         return itemUserEntity.Id;
     }
 

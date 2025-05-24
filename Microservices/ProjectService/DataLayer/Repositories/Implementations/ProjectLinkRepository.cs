@@ -18,6 +18,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         {
             var projectLink = await context.VisibilityLinks
                 .Include(x => x.Project)
+                .ThenInclude(x=>x.UserProjects)
                 .FirstOrDefaultAsync(x => x.Id == id);
             return projectLink;
         }
@@ -26,6 +27,7 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         {
             var projectLink = await context.VisibilityLinks
                 .Include(x => x.Project)
+                .ThenInclude(x=>x.UserProjects)
                 .FirstOrDefaultAsync(x => x.Url == link);
             return projectLink;
         }

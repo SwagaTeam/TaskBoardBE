@@ -37,7 +37,7 @@ namespace ProjectService.Mapper
                 StartDate = projectModel.StartDate,
                 UpdateDate = projectModel.UpdatedAt,
             };
-
+            
             var headId = projectModel.UserProjects.Where(x => x.RoleId == DefaultRoles.CREATOR).FirstOrDefault().UserId;
             var user = await userRepository.GetUserAsync(headId);
 
