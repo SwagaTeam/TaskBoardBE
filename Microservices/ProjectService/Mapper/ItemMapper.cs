@@ -28,7 +28,9 @@ public class ItemMapper
             ItemTypeId = item.ItemTypeId,
             StatusId = (int)item.StatusId,
             IsArchived = item.IsArchived,
-            UserItems = item.UserItems.Select(UserItemMapper.ToEntity).ToList()
+            UserItems = item.UserItems != null 
+                ? item.UserItems.Select(UserItemMapper.ToEntity).ToList() 
+                : new List<UserItemEntity>()
         };
     }
 
