@@ -72,7 +72,8 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
 
     public async Task<int> DeleteAsync(int id)
     {
-        await validatorManager.ValidateUserAdminAsync(id);
+        var projectId = await projectManager.GetByBoardIdAsync(id);
+        await validatorManager.ValidateUserAdminAsync(projectId.Id);
         await boardRepository.DeleteAsync(id);
         return id;
     }
