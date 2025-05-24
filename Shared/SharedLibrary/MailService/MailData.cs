@@ -1,7 +1,7 @@
 ﻿public class MailData
 {
     // Receiver
-    public List<string> To { get; }
+    public string[] To { get; }
     public List<string> Bcc { get; }
 
     public List<string> Cc { get; }
@@ -21,7 +21,7 @@
     public string? Body { get; }
 
     public MailData(
-        List<string> to,
+        string[] to,
         string subject,
         string? body = null,
         string? from = null,

@@ -72,6 +72,7 @@ public class MailService : IMailService
             {
                 try
                 {
+                    client.CheckCertificateRevocation = false;     // отключаем проверку отзыва сертификата
                     await client.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.Auto);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.Authenticate(_settings.UserName, _settings.Password);

@@ -26,7 +26,7 @@ namespace Kafka.Messaging.Services.Implementations
 
             var userIds = item.Select(x => x.UserId).Distinct();
             var tasks = new List<Task>();
-
+            var toList = new List<string>();
             foreach (var id in userIds)
             {
                 logger.LogInformation($"Processing user with ID: {id}");
@@ -36,26 +36,21 @@ namespace Kafka.Messaging.Services.Implementations
                     logger.LogWarning($"User with ID {id} not found.");
                     continue;
                 }
-
-                var subject = GetSubject(message.EventType);
-                var body = $"Task update:\n{string.Join("\n", item)}";
-
-                logger.LogInformation($"Sending email to {user.Email} with subject: {subject}");
-                tasks.Add(mailService.SendEmailAsync(user.Email, subject, body));
+                toList.Add(user.Email);
             }
-
+            
+            var subject = GetSubject(message.EventType);
+            var body = $"Task update:\n{string.Join("\n", message.Message)}";
+            tasks.Add(mailService.SendEmailAsync(subject, body, toList.ToArray()));
+            
             await Task.WhenAll(tasks);
         }
 
 
         private static string GetSubject(TaskEventType type) => type switch
         {
-            TaskEventType.Created => "Создана новая задача!",
-            TaskEventType.Assigned => "Вам назначена задача",
-            TaskEventType.StatusChanged => "Обновлен статус задачи",
-            TaskEventType.CommentAdded => "Новый комментарий к задаче",
-            TaskEventType.DocumentAttached => "К задаче прикреплен документ",
-            _ => "Обновление по задаче"
+            TaskEventType.Updated => "Задача изменена!",
+            TaskEventType.AddedUser => "Добавлен новый пользователь в задачу!"
         };
     }
 }
