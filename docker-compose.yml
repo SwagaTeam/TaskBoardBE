@@ -1,63 +1,29 @@
-services:
-  user-service:
-    image: ghcr.io/swagateam/user-service:1.0.2
-    platform: linux/amd64
-    ports:
-      - 5003:5003
-    env_file: ./docker/user-service/.env
-    networks:
-      - swaga-network
-    restart: always
-
-  project-service:
-    image: ghcr.io/swagateam/project-service:1.0.2
-    platform: linux/amd64
-    ports:
-      - 5004:5004
-    env_file: ./docker/project-service/.env
-    networks:
-      - swaga-network
-    restart: always
-
-  analytics-service:
-    image: ghcr.io/swagateam/analytics-service:1.0.2
-    platform: linux/amd64
-    ports:
-      - 5005:5005
-    env_file: ./docker/analytics-service/.env
-    networks:
-      - swaga-network
-    restart: always
-
-  gateway-service:
-    image: ghcr.io/swagateam/gateway-service:1.0.4
-    platform: linux/amd64
-    ports:
-      - 5000:5000
-    env_file: ./docker/gateway-service/.env
-    networks:
-      - swaga-network
-    depends_on:
-      - user-service
-      - project-service
-      - analytics-service
-    restart: always
-
-  db_init:
-    image: postgres:15
-    environment:
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - ./migrations:/docker-entrypoint-initdb.d
-    networks:
-      - swaga-network
-
-volumes:
-  user-data:
-  project-data:
-  analytics-data:
+include:
+  - docker/user-service/docker-compose.yml
+  - docker/project-service/docker-compose.yml
+  - docker/analytics-service/docker-compose.yml
+  - docker/gateway-service/docker-compose.yml
+  - docker/kafka/docker-compose.yml
 
 networks:
   swaga-network:
-    name: swaga-network
     driver: bridge
+    name: swaga-network
+
+services:
+  db_init:
+    image: postgres:15
+    depends_on:
+      user-db:
+        condition: service_healthy
+      project-db:
+        condition: service_healthy
+      analytics-db:
+        condition: service_healthy
+    environment:
+      - POSTGRES_PASSWORD=password"
+    volumes:
+      - ./migrations/init-fdw.sh:/docker-entrypoint-initdb.d/init-fdw.sh
+    networks:
+      - swaga-network
+    entrypoint: ["docker-entrypoint.sh", "postgres"]

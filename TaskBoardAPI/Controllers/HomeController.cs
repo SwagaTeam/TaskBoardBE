@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TaskBoardAPI.Controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("home")]
     public class HomeController : ControllerBase
     {
 

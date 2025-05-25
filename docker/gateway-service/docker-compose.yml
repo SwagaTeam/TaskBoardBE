@@ -1,5 +1,6 @@
 services:
   gateway-service:
+    image: ghcr.io/swagateam/gateway-service:1.0.4
     container_name: taskboard-gateway-serv
     env_file:
       - ./.env

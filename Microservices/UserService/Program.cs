@@ -35,11 +35,11 @@ internal class Program
 
         app.UseCors("AllowApiGateway");
 
-        if (app.Environment.IsDevelopment())
-        {
+        //if (app.Environment.IsDevelopment())
+        //{
             app.UseSwagger();
             app.UseSwaggerUI();
-        }
+        //}
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
 

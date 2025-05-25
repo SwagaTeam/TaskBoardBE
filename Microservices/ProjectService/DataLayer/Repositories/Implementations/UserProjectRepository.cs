@@ -13,7 +13,7 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
         await context.SaveChangesAsync();
     }
     
-    public async Task<bool> IsUserAdmin(int userId, int projectId)
+    public async Task<bool> IsUserAdminAsync(int userId, int projectId)
     {
         var userProject = await context.UserProjects
             .FirstOrDefaultAsync(x => x.ProjectId == projectId 
@@ -23,7 +23,7 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
         return userProject is not null;
     }
 
-    public async Task<bool> IsUserCanView(int userId, int projectId)
+    public async Task<bool> IsUserCanViewAsync(int userId, int projectId)
     {
         var userProject = await context.UserProjects
             .Include(x=>x.Project)
@@ -35,7 +35,7 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
         return userProject is not null;
     }
 
-    public async Task<bool> IsUserInProject(int userId, int projectId)
+    public async Task<bool> IsUserInProjectAsync(int userId, int projectId)
     {
         var userProject = await context.UserProjects
             .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == userId);
@@ -43,9 +43,9 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
         return userProject is not null;
     }
 
-    public async Task<bool> IsUserViewer(int userId, int projectId)
+    public async Task<bool> IsUserViewerAsync(int userId, int projectId)
     {
-        var userInProject = await IsUserInProject(userId, projectId);
+        var userInProject = await IsUserInProjectAsync(userId, projectId);
         if (!userInProject) return true;
         var userIsViewer = await context.UserProjects
             .FirstOrDefaultAsync(x => x.ProjectId == projectId && x.UserId == userId 
