@@ -35,9 +35,24 @@ internal class Program
 
         app.UseCors("AllowApiGateway");
 
+        // Diagnostics‐эндпоинт, который вернёт все маршруты
+        app.MapGet("/__routes", (EndpointDataSource dataSource) =>
+        {
+            var routes = dataSource.Endpoints
+                .OfType<RouteEndpoint>()
+                .Select(e => new {
+                    Pattern = e.RoutePattern.RawText,
+                    Methods = e.Metadata
+                               .OfType<HttpMethodMetadata>()
+                               .FirstOrDefault()
+                               ?.HttpMethods
+                });
+            return Results.Json(routes);
+        });
+
         //if (app.Environment.IsDevelopment())
         //{
-            app.UseSwagger();
+        app.UseSwagger();
             app.UseSwaggerUI();
         //}
 
@@ -65,7 +80,7 @@ internal class Program
         {
             options.AddPolicy("AllowApiGateway", policy =>
             {
-                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!) // ����� ��������� ����� ApiGateway
+                policy.WithOrigins(Environment.GetEnvironmentVariable("GATEWAY")!)
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
