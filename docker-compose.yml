@@ -1,6 +1,6 @@
 services:
   user-service:
-    image: ghcr.io/swagateam/user-service:1.0.0
+    image: ghcr.io/swagateam/user-service:1.0.2
     platform: linux/amd64
     ports:
       - 5003:5003
@@ -10,7 +10,7 @@ services:
     restart: always
 
   project-service:
-    image: ghcr.io/swagateam/project-service:1.0.0
+    image: ghcr.io/swagateam/project-service:1.0.2
     platform: linux/amd64
     ports:
       - 5004:5004
@@ -20,7 +20,7 @@ services:
     restart: always
 
   analytics-service:
-    image: ghcr.io/swagateam/analytics-service:1.0.0
+    image: ghcr.io/swagateam/analytics-service:1.0.2
     platform: linux/amd64
     ports:
       - 5005:5005
@@ -30,7 +30,7 @@ services:
     restart: always
 
   gateway-service:
-    image: ghcr.io/swagateam/gateway-service:1.0.0
+    image: ghcr.io/swagateam/gateway-service:1.0.4
     platform: linux/amd64
     ports:
       - 5000:5000
@@ -61,4 +61,3 @@ networks:
   swaga-network:
     name: swaga-network
     driver: bridge
-    external: true

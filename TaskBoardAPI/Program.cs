@@ -29,8 +29,8 @@ internal class Program
 
         app.UseCors("AllowAll");
 
-        if (app.Environment.IsDevelopment())
-        {
+        //if (app.Environment.IsDevelopment())
+        //{
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -39,7 +39,7 @@ internal class Program
                 c.SwaggerEndpoint(Environment.GetEnvironmentVariable("ANALYTICS_API") + "/swagger/v1/swagger.json", "Analytics Service");
                 c.SwaggerEndpoint(Environment.GetEnvironmentVariable("USER_API") + "/swagger/v1/swagger.json", "User Service");
             });
-        }
+        //}
 
         app.MapReverseProxy();
 
