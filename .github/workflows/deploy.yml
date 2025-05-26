@@ -52,7 +52,7 @@ jobs:
             echo "${{ secrets.HOST_FINGERPRINT }}" > ~/.ssh/known_hosts
         - name: docker compose update
           run: |
-            rsync -avz -e "ssh -i ~/.ssh/id_rsa" docker-compose.yaml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }}
+            rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }}
         - name: connect and pull
           run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && docker compose pull && docker compose up -d && exit"
         - name: cleanup
