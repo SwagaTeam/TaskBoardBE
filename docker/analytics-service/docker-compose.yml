@@ -1,6 +1,6 @@
 services:
-    analytics-service:
-    image: ghcr.io/swagateam/analytics-service:1.0.2
+  analytics-service:
+    image: ghcr.io/swagateam/analytics-service:1.0.3
     container_name: taskboard-analytics-serv
     env_file:
       - ./.env
