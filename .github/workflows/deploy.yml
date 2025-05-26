@@ -1,0 +1,47 @@
+name: deploy
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+    publish:
+        name: publish images
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v3
+        - name: Login
+          run: |
+            echo ${{ secrets.PAT }} | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+        - name: Load .env
+          run: |
+            make env 
+            cat .env >> $GITHUB_ENV
+        - name: Build and Publish
+          run: |
+            docker compose -f docker-compose.yaml build
+            docker compose -f docker-compose.yaml push
+
+    deploy:
+        needs: publish
+        name: deploy app
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v3
+        - name: install ssh keys
+          run: |
+            install -m 600 -D /dev/null ~/.ssh/id_rsa
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            echo "${{ secrets.HOST_FINGERPRINT }}" > ~/.ssh/known_hosts
+        - name: docker compose update
+          run: |
+            rsync -avz -e "ssh -i ~/.ssh/id_rsa" docker-compose.yaml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }}
+        - name: connect and pull
+          run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && docker compose pull && docker compose up -d && exit"
+        - name: cleanup
+          run: rm -rf ~/.ssh
