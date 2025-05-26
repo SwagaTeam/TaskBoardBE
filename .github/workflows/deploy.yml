@@ -13,6 +13,12 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+        - name: Setup env file
+          run: | 
+            cp docker/user-service/example.env docker/user-service/.env
+            cp docker/gateway-service/example.env docker/gateway-service/.env
+            cp docker/project-service/example.env docker/project-service/.env
+            cp docker/analytics-service/example.env docker/analytics-service/.env
         - uses: actions/checkout@v3
         - name: Login
           run: |
