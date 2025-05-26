@@ -1,6 +1,6 @@
 ENV_FILE = .env
 
-ENV_VARS = CERT_PATH=/etc/letsencrypt/live/alfatelekom.ru/
+ENV_VARS = CERT_PATH=/etc/letsencrypt/live/boardly.ru/
 
 .DEFAULT:
 	@echo "Выполняется перед любой целью"
