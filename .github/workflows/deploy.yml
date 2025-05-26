@@ -18,25 +18,25 @@ jobs:
     - name: Login to registry
       run: echo ${{ secrets.PAT }} | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
 
-    - name: Build and push user-service image
+    - name: Build and push user-service
       run: |
-        docker compose -f docker/user-service/docker-compose.yml build
-        docker compose -f docker/user-service/docker-compose.yml push
-
-    - name: Build and push gateway-service image
+        docker build -t ghcr.io/swagateam/user-service:1.0.3 -f ./docker/user-service/Dockerfile .
+        docker push ghcr.io/swagateam/user-service:1.0.4
+    
+    - name: Build and push gateway-service
       run: |
-        docker compose -f docker/gateway-service/docker-compose.yml build
-        docker compose -f docker/gateway-service/docker-compose.yml push
-
-    - name: Build and push project-service image
+        docker build -t ghcr.io/swagateam/gateway-service:1.0.5 -f ./docker/gateway-service/Dockerfile .
+        docker push ghcr.io/swagateam/gateway-service:1.0.5
+    
+    - name: Build and push project-service
       run: |
-        docker compose -f docker/project-service/docker-compose.yml build
-        docker compose -f docker/project-service/docker-compose.yml push
-
-    - name: Build and push analytics-service image
+        docker build -t ghcr.io/swagateam/project-service:1.0.4 -f ./docker/project-service/Dockerfile .
+        docker push ghcr.io/swagateam/project-service:1.0.4
+    
+    - name: Build and push analytics-service
       run: |
-        docker compose -f docker/analytics-service/docker-compose.yml build
-        docker compose -f docker/analytics-service/docker-compose.yml push
+        docker build -t ghcr.io/swagateam/analytics-service:1.0.3 -f ./docker/analytics-service/Dockerfile .
+        docker push ghcr.io/swagateam/analytics-service:1.0.3
 
   deploy:
         needs: publish
