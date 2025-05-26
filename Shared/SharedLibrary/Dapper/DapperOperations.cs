@@ -5,7 +5,7 @@ namespace SharedLibrary.Dapper
 {
     public static class DapperOperations
     {
-        public static string connString = "Host=localhost;Port=5433;Database=users_db;Username=postgres;Password=postgres";
+        public static string connString = "Host=user-db;Port=5432;Database=users_db;Username=postgres;Password=postgres";
         public static async Task ExecuteAsync(string sql, object model)
         {
             using (var connection = new NpgsqlConnection(connString))

@@ -27,7 +27,23 @@ namespace SharedLibrary.ProjectModels
         }
 
         public int Priority { get; set; }
-        public string Status => Constants.ProjectStatuses.Names[Priority];
+        public string Status
+        {
+            get
+            {
+                var status = Constants.ProjectStatuses.Names[Priority];
+
+                if (status is not null)
+                {
+                    return status;
+                }
+                else
+                {
+                    return "Без статуса";
+                }
+            }
+        }
+
         [JsonIgnore]
         public virtual ICollection<UserProjectModel> UserProjects { get; set; } = new List<UserProjectModel>();
     }

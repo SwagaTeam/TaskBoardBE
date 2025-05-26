@@ -21,7 +21,7 @@ services:
       analytics-db:
         condition: service_healthy
     environment:
-      - POSTGRES_PASSWORD=password"
+      - POSTGRES_PASSWORD=password
     volumes:
       - ./migrations/init-fdw.sh:/docker-entrypoint-initdb.d/init-fdw.sh
     networks:
