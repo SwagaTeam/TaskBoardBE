@@ -21,7 +21,7 @@ jobs:
     - name: Build and push user-service
       run: |
         docker build -t ghcr.io/swagateam/user-service:1.0.3 -f ./docker/user-service/Dockerfile .
-        docker push ghcr.io/swagateam/user-service:1.0.4
+        docker push ghcr.io/swagateam/user-service:1.0.3
     
     - name: Build and push gateway-service
       run: |
