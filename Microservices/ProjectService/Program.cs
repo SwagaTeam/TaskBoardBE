@@ -8,6 +8,7 @@ using Kafka.Messaging.Services.Abstractions;
 using Kafka.Messaging.Services.Implementations;
 using Kafka.Messaging.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -80,7 +81,7 @@ internal class Program
     private static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)
     {
         services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
-        services.Configure<KafkaSettings>(configuration.GetSection("KafkaSettings"));
+        services.Configure<KafkaSettings>(configuration.GetSection("Kafka:NotificationTask"));
         
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IMailService, MailService>();
@@ -114,7 +115,6 @@ internal class Program
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddSingleton<IHostedService, KafkaConsumer<TaskEventMessage>>();
         services.AddScoped<IAuth, Auth>();
         services.AddSingleton<IBlackListService, BlackListService>();
@@ -175,6 +175,12 @@ internal class Program
         var pass = Environment.GetEnvironmentVariable("PASSWORD");
 
         var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
+
+        var user_database = Environment.GetEnvironmentVariable("POSTGRES_USER_DB");
+
+        var userConnection = $"Host={host};Port={port};Database={user_database};Username={user};Password={pass}";
+
+        services.AddScoped<IUserRepository>(provider => new UserRepository(userConnection));
 
         DbContextInitializer.Initialize(services, conn);
 

@@ -134,6 +134,7 @@ internal class Program
 
         var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
 
+
         DbContextInitializer.Initialize(services, conn);
     }
 

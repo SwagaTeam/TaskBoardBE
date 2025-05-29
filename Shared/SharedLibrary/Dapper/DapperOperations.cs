@@ -5,19 +5,18 @@ namespace SharedLibrary.Dapper
 {
     public static class DapperOperations
     {
-        public static string connString = "Host=user-db;Port=5432;Database=users_db;Username=postgres;Password=postgres";
-        public static async Task ExecuteAsync(string sql, object model)
+        public static async Task ExecuteAsync(string sql, object model, string conn)
         {
-            using (var connection = new NpgsqlConnection(connString))
+            using (var connection = new NpgsqlConnection(conn))
             {
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(sql, model);
             }
         }
 
-        public static async Task<T?> QueryScalarAsync<T>(string sql, object model)
+        public static async Task<T?> QueryScalarAsync<T>(string sql, object model, string conn)
         {
-            using (var connection = new NpgsqlConnection(connString))
+            using (var connection = new NpgsqlConnection(conn))
             {
                 await connection.OpenAsync();
 
@@ -25,9 +24,9 @@ namespace SharedLibrary.Dapper
             }
         }
 
-        public static async Task<IEnumerable<T>> QueryAsync<T>(string sql, object model)
+        public static async Task<IEnumerable<T>> QueryAsync<T>(string sql, object model, string conn)
         {
-            using (var connection = new NpgsqlConnection(connString))
+            using (var connection = new NpgsqlConnection(conn))
             {
                 await connection.OpenAsync();
 
