@@ -1,6 +1,3 @@
-
-
-
 using System.Security.Claims;
 using System.Text;
 using DotNetEnv;
@@ -177,8 +174,9 @@ internal class Program
         var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
 
         var user_database = Environment.GetEnvironmentVariable("POSTGRES_USER_DB");
+        var user_host = Environment.GetEnvironmentVariable("USER_HOST");
 
-        var userConnection = $"Host={host};Port={port};Database={user_database};Username={user};Password={pass}";
+        var userConnection = $"Host={user_host};Port={port};Database={user_database};Username={user};Password={pass}";
 
         services.AddScoped<IUserRepository>(provider => new UserRepository(userConnection));
 
