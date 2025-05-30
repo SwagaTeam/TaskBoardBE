@@ -103,6 +103,7 @@ public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHisto
         return total;
     }
     
+    //TODO проверить на норм значениях итема с норм стартдатой
     public async Task<IDictionary<string, TimeSpan>> GetAverageTimeInStatusesAsync(int taskId)
     {
         var item = await httpClient.GetFromJsonAsync<ItemModel>($"{taskId}");
@@ -116,47 +117,49 @@ public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHisto
             .OrderBy(h => h.ChangedAt)
             .ToList();
 
+        // Начальный статус
+        var currentStatus = history.FirstOrDefault()?.OldValue ?? "Unknown";
+
         foreach (var entry in history)
         {
-            var oldStatus = entry.OldValue;
-
             var duration = entry.ChangedAt - start;
 
-            if (timeSpent.TryAdd(oldStatus, duration))
+            if (timeSpent.TryAdd(currentStatus, duration))
             {
-                count[oldStatus] = 1;
+                count[currentStatus] = 1;
             }
             else
             {
-                timeSpent[oldStatus] += duration;
-                count[oldStatus]++;
+                timeSpent[currentStatus] += duration;
+                count[currentStatus]++;
             }
 
+            // Переход к следующему статусу
+            currentStatus = entry.NewValue;
             start = entry.ChangedAt;
         }
 
-        var lastStatus = history.LastOrDefault()?.NewValue ?? "Unknown";
-        var endTime = item.ExpectedEndDate;
-        var lastDuration = endTime - start;
+        // Учитываем последний статус до ожидаемого конца
+        var lastDuration = item.ExpectedEndDate - start;
 
-        if (timeSpent.TryAdd(lastStatus, lastDuration))
+        if (timeSpent.TryAdd(currentStatus, lastDuration))
         {
-            count[lastStatus] = 1;
+            count[currentStatus] = 1;
         }
         else
         {
-            timeSpent[lastStatus] += lastDuration;
-            count[lastStatus]++;
+            timeSpent[currentStatus] += lastDuration;
+            count[currentStatus]++;
         }
-        
+
+        // Вычисляем среднее время
         var result = new Dictionary<string, TimeSpan>();
-        
         foreach (var status in timeSpent.Keys)
         {
             var average = timeSpent[status] / count[status];
             result.Add(status, average);
         }
-        
+
         return result;
     }
 
