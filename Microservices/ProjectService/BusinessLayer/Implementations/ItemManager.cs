@@ -132,6 +132,14 @@ public class ItemManager(
         return models;
     }
 
+    public async Task<ICollection<ItemModel>> GetByProjectIdAsync(int projectId)
+    {
+        await validatorManager.ValidateUserInProjectAsync(projectId);
+        var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
+        var models = await Task.WhenAll(items.Where(x => x.IsArchived).Select(x=> ItemMapper.ToModel(x, userRepository)));
+        return models;
+    }
+
     public async Task<ItemModel> GetByTitle(string title)
     {
         return await ItemMapper.ToModel(await itemRepository.GetByNameAsync(title), userRepository);

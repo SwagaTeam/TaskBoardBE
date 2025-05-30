@@ -203,6 +203,26 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         }
     }
 
+    
+    /// <summary>
+    ///     Получение всех задач по projectId
+    /// </summary>
+    ///
+    /// <param name="projectOd">id проекта</param>
+    [HttpGet("get-items-by/{projectId}")]
+    public async Task<IActionResult> GetItemsByProjectId(int projectId)
+    {
+        try
+        {
+            var items = await itemManager.GetByProjectIdAsync(projectId);
+            return Ok(items);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     /// <summary>
     ///     Изменение параметров задачи.
     /// </summary>
