@@ -5,5 +5,6 @@ namespace AnalyticsService.DataLayer.Abstractions;
 public interface ITaskHistoryRepository
 {
     public Task<IEnumerable<TaskHistoryEntity>> GetHistoryByTaskIdAsync(int taskId);
+    public Task CreateAsync(TaskHistoryEntity entity);
 
 }

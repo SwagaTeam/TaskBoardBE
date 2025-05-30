@@ -84,6 +84,7 @@ internal class Program
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
+        services.AddHttpClient<IItemManager, ItemManager>(client => client.BaseAddress = new Uri("http://localhost:5002/analytics/"));
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();
         services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
@@ -92,7 +93,6 @@ internal class Program
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
         services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IItemRepository, ItemRepository>();
-        services.AddScoped<IItemManager, ItemManager>();
         services.AddScoped<IContributorsRepository, ContributorsRepository>();
         services.AddScoped<IContributorsManager, ContributorsManager>();
         services.AddScoped<IBoardRepository, BoardRepository>();

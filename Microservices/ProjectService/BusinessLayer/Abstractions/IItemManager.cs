@@ -12,7 +12,10 @@ public interface IItemManager
     public Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId);
     public Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId);
     public Task<ICollection<ItemModel>> GetCurrentUserItems();
-    public Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, TaskEventType taskEventType = TaskEventType.Updated);
+
+    public Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, string oldValue, string newValue,
+        string fieldName,
+        TaskEventType eventType = TaskEventType.Updated);
     public Task<ItemModel> GetByTitle(string title);
     public Task Delete(int id);
     public Task<ICollection<ItemModel>> GetByProjectIdAsync(int projectId);

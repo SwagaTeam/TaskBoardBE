@@ -128,9 +128,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         try
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
+            var oldValue = itemModel.ItemTypeId;
             itemModel.ItemTypeId = itemTypeId;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
-                $"У задачи {itemModel.Title} поменяли тип на {itemTypeId}");
+                $"У задачи {itemModel.Title} поменяли тип на {itemTypeId}", oldValue.ToString(), 
+                itemTypeId.ToString(), "ItemTypeId");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -156,9 +158,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         try
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
+            var oldValue = itemModel.StatusId;
             itemModel.StatusId = statusId;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
-                $"У задачи {itemModel.Title} поменяли статус на {statusId}");
+                $"У задачи {itemModel.Title} поменяли статус на {statusId}", oldValue.ToString(), 
+                statusId.ToString(), "StatusId");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -192,9 +196,11 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         try
         {
             var itemModel = await itemManager.GetByIdAsync(itemId);
+            var oldValue = itemModel.Priority;
             itemModel.Priority = priority;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken,
-                $"У задачи {itemModel.Title} поменяли приоритет на {priority}");
+                $"У задачи {itemModel.Title} поменяли приоритет на {priority}", oldValue.ToString(), 
+                priority.ToString(), "Priority");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -235,8 +241,10 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     {
         try
         {
+            var oldItemModel = await itemManager.GetByIdAsync(itemModel.Id);
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken,
-                $"У задачи {itemModel.Title} поменяли параметры");
+                $"У задачи {itemModel.Title} поменяли параметры", oldItemModel.ToString(), 
+                itemModel.ToString(), "Item"); //TODO аналогично придумать как правильно передавать стрингу
             return Ok(newItemModel);
         }
         catch (Exception ex)

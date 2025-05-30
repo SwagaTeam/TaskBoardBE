@@ -1,15 +1,14 @@
 ﻿using Kafka.Messaging.Services.Abstractions;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
-using ProjectService.DataLayer.Repositories.Implementations;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
 using SharedLibrary.Auth;
 using SharedLibrary.Entities.ProjectService;
-using System.Threading;
 using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Models.AnalyticModels;
 using SharedLibrary.Models.KafkaModel;
 
 namespace ProjectService.BusinessLayer.Implementations;
@@ -23,6 +22,7 @@ public class ItemManager(
     ICommentRepository commentRepository,
     IAttachmentRepository attachmentRepository,
     IUserRepository userRepository,
+    HttpClient httpClient,
     IAuth auth) : IItemManager
 {
     public async Task<int> CreateAsync(CreateItemModel createItemModel, CancellationToken token)
@@ -47,7 +47,7 @@ public class ItemManager(
                 StatusId = (int)entity.StatusId
             }
         );
-
+        
         entity = await itemRepository.GetByIdAsync(entity.Id);
         return entity.Id;
     }
@@ -81,19 +81,31 @@ public class ItemManager(
         return models;
     }
 
-    public async Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, TaskEventType eventType = TaskEventType.Updated)
+    public async Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, string oldValue, string newValue, string fieldName,
+        TaskEventType eventType = TaskEventType.Updated)
     {
         await validatorManager.ValidateItemModelAsync(item);
         var entity = ItemMapper.ItemToEntity(item);
         entity.Id = item.Id;
-        entity.UpdatedAt = DateTime.UtcNow;
+        var updatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = updatedAt;
         await itemRepository.UpdateAsync(entity);
-        await kafkaProducer.ProduceAsync(new TaskEventMessage
+        /*await kafkaProducer.ProduceAsync(new TaskEventMessage
         {
             EventType = eventType,
             UserItems = item.UserItems,
             Message = message,
-        }, token);
+        }, token);*/
+        var model = new TaskHistoryModel
+        {
+            FieldName = fieldName,
+            OldValue = oldValue,
+            NewValue = newValue,
+            ItemId = item.Id,
+            UserId = (int)auth.GetCurrentUserId(),
+            ChangedAt = updatedAt
+        };
+        var response = await httpClient.PostAsJsonAsync("create", model, cancellationToken: token);
         return entity.Id;
     }
 
@@ -107,9 +119,13 @@ public class ItemManager(
             UserId = newUserId
         };
 
+        var oldValue = new List<UserItemModel>(item.UserItems);
         await itemRepository.AddUserToItemAsync(itemUserEntity);
         item.UserItems.Add(UserItemMapper.ToModel(itemUserEntity));
-        await UpdateAsync(item, cancellationToken, $"В {item.Title} добавлен пользователь с айди {newUserId}", TaskEventType.AddedUser);
+        await UpdateAsync(item, cancellationToken, 
+            $"В {item.Title} добавлен пользователь с айди {newUserId}", oldValue.ToString(), item.UserItems.ToString(), 
+            "UserItems", TaskEventType.AddedUser); //пока оставил список юзеров через тустринг, потому решу как правильно передавать старое и новое значение
+        //TODO ПРИДУМАТЬ!!!
         return itemUserEntity.Id;
     }
 

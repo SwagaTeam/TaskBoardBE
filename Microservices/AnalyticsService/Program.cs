@@ -6,6 +6,10 @@ using Microsoft.OpenApi.Models;
 using SharedLibrary.Middleware;
 using System.Security.Claims;
 using System.Text;
+using AnalyticsService.BusinessLayer.Abstractions;
+using AnalyticsService.BusinessLayer.Implementations;
+using AnalyticsService.DataLayer.Abstractions;
+using AnalyticsService.DataLayer.Implementations;
 
 internal class Program
 {
@@ -51,6 +55,9 @@ internal class Program
 
         AddAuthentication(services, configuration);
 
+        services.AddScoped<ITaskManager, TaskManager>();
+        services.AddScoped<ITaskHistoryRepository, TaskHistoryRepository>();
+        services.AddHttpClient<ITaskManager, TaskManager>(client => client.BaseAddress = new Uri("http://localhost:5001/item/"));
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
