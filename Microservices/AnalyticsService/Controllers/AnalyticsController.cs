@@ -1,3 +1,4 @@
+using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.BusinessLayer.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Models.AnalyticModels;
@@ -6,7 +7,7 @@ namespace AnalyticsService.Controllers
 {
     [ApiController]
     [Route("analytics")]
-    public class AnalyticsController(ITaskManager taskManager) : ControllerBase
+    public class AnalyticsController(ITaskManager taskManager, IProjectManager projectManager) : ControllerBase
     {
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync([FromBody] TaskHistoryModel entity)
@@ -22,38 +23,27 @@ namespace AnalyticsService.Controllers
             }
             
         }
-        
-        [ProducesResponseType<TimeSpan>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("time")]
-        public async Task<IActionResult> GetAvgTime()
+
+
+        /// <summary>
+        /// Получение данных для диаграммы сгорания задач по проекту
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        [HttpGet("burndown/{projectId}")]
+        public async Task<IActionResult> GetBurnDownChart(int projectId)
         {
-            TimeSpan time = new TimeSpan(1000);
-            return Ok(time);
+            try
+            {
+                var result = await projectManager.GetBurndown(projectId);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("speed")]
-        public async Task<IActionResult> GetTeamSpeed()
-        {
-            int tasksCount = 40;
-            int daysCount = 7;
-            string speed = $"{tasksCount} tasks per {daysCount} days";
-            return Ok(speed);
-        }
-
-        [ProducesResponseType<int>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("ratio")]
-        public async Task<IActionResult> GetSprintRatio()
-        {
-            int completedSprints = 10;
-            int allSprints = 15;
-            int ratio = completedSprints / allSprints;
-            return Ok(ratio);
-        }
-        
         /// <summary>
         /// Получение завершенных задач за промежуток времени
         /// </summary>

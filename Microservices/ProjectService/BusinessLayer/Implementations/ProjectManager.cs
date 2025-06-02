@@ -125,7 +125,11 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         if (project.Priority is > 5 or < 0)
             throw new ArgumentException("Приоритет задачи не может быть отрицательным или больше 5");
         project.UpdateDate = DateTime.UtcNow;
-        await projectRepository.Update(ProjectMapper.ToEntity(project));
+
+        var entity = ProjectMapper.ToEntity(project);
+        entity.Id = project.Id;
+
+        await projectRepository.Update(entity);
         return project;
     }
 

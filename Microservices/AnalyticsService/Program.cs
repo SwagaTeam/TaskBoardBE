@@ -10,6 +10,8 @@ using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.BusinessLayer.Implementations;
 using AnalyticsService.DataLayer.Abstractions;
 using AnalyticsService.DataLayer.Implementations;
+using Microsoft.Extensions.DependencyInjection;
+using AnalyticsService.BusinessLayer;
 
 internal class Program
 {
@@ -55,11 +57,19 @@ internal class Program
 
         AddAuthentication(services, configuration);
 
+        services.AddHttpContextAccessor();
+        services.AddTransient<ForwardAccessTokenHandler>();
         services.AddScoped<ITaskManager, TaskManager>();
         services.AddScoped<ITaskHistoryRepository, TaskHistoryRepository>();
-        services.AddHttpClient<ITaskManager, TaskManager>(client => client.BaseAddress = new Uri("http://localhost:5001/item/"));
+        services
+            .AddHttpClient<ITaskManager, TaskManager>(client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("PROJECT_SERVICE") + "/item/"))
+            .AddHttpMessageHandler<ForwardAccessTokenHandler>();
+        services
+            .AddHttpClient<IProjectManager, ProjectManager>(client =>client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("PROJECT_SERVICE")!))
+            .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
+
         services.AddSwaggerGen(options =>
         {
 

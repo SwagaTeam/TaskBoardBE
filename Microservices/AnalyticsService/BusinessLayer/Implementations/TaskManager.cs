@@ -170,6 +170,6 @@ public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHisto
 
     private bool IsTaskBetweenDates(ItemModel itemModel, DateTime startDate, DateTime endDate)
     {
-        return itemModel.ExpectedEndDate >= startDate && itemModel.ExpectedEndDate <= endDate;
+        return itemModel.StartDate >= startDate && itemModel.ExpectedEndDate <= endDate;
     }
 }

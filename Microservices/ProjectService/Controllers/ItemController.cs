@@ -214,7 +214,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
     ///     Получение всех задач по projectId
     /// </summary>
     ///
-    /// <param name="projectOd">id проекта</param>
+    /// <param name="projectId">id проекта</param>
     [HttpGet("get-items-by/{projectId}")]
     public async Task<IActionResult> GetItemsByProjectId(int projectId)
     {
