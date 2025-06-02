@@ -22,14 +22,12 @@ public class ItemModel
     public int? ItemTypeId { get; set; }
     public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
-    public string Contributor { get; private set; } = "";
+    public List<string> Contributors { get; private set; } = new List<string>();
     public string Author { get; private set; } = "";
 
-
-    //добавить автора
-    public void SetContributor(string contributor)
+    public void AddContributor(string contributor)
     {
-        Contributor = contributor;
+        Contributors.Add(contributor);
     }
 
     public void SetAuthor(string author) 

@@ -73,7 +73,7 @@ public class ItemMapper
             foreach (var userItem in item.UserItems)
             {
                 var user = await userRepository.GetUserAsync(userItem.UserId);
-                model.SetContributor(user.Username);
+                model.AddContributor(user.Username);
             }
         }
 
