@@ -29,6 +29,8 @@ public class ItemManager(
     {
         await validatorManager.ValidateCreateAsync(createItemModel);
 
+        var currentUserId = auth.GetCurrentUserId();
+
         var project = await projectRepository.GetByBoardIdAsync(createItemModel.BoardId);
 
         var item = createItemModel.Item;
@@ -38,6 +40,7 @@ public class ItemManager(
         await itemRepository.CreateAsync(entity);
 
         entity.BusinessId = $"{project.Key}-ITEM-{entity.Id}";
+        entity.AuthorId = currentUserId;
 
         await itemBoardsRepository.Create(
             new ItemBoardEntity
@@ -111,7 +114,7 @@ public class ItemManager(
 
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken)
     {
-        var item = await GetByIdAsync(itemId);
+        var item = await itemRepository.GetByIdAsync(itemId);
         await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
         var itemUserEntity = new UserItemEntity
         {
@@ -119,10 +122,10 @@ public class ItemManager(
             UserId = newUserId
         };
 
-        var oldValue = new List<UserItemModel>(item.UserItems);
+        var oldValue = new List<UserItemEntity>(item.UserItems);
         await itemRepository.AddUserToItemAsync(itemUserEntity);
-        item.UserItems.Add(UserItemMapper.ToModel(itemUserEntity));
-        await UpdateAsync(item, cancellationToken, 
+        item.UserItems.Add(itemUserEntity);
+        await UpdateAsync(await ItemMapper.ToModel(item, userRepository), cancellationToken, 
             $"В {item.Title} добавлен пользователь с айди {newUserId}", oldValue.ToString(), item.UserItems.ToString(), 
             "UserItems", TaskEventType.AddedUser); //пока оставил список юзеров через тустринг, потому решу как правильно передавать старое и новое значение
         //TODO ПРИДУМАТЬ!!!

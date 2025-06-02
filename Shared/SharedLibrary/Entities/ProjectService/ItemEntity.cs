@@ -12,6 +12,7 @@ namespace SharedLibrary.Entities.ProjectService
         public int Id { get; set; }
         public int? ParentId { get; set; }
         public int? ProjectId { get; set; }
+        public int? AuthorId { get; set; } = -1;
         public int? ProjectItemNumber { get; set; }
         public string BusinessId { get; set; }
         public string Title { get; set; }

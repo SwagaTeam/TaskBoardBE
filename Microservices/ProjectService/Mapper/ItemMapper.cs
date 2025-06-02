@@ -2,6 +2,7 @@
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Entities.UserService;
 
 namespace ProjectService.Mapper;
 
@@ -69,11 +70,15 @@ public class ItemMapper
 
         if(item.UserItems != null && item.UserItems.Count > 0)
         {
-            var user = await userRepository.GetUserAsync(item.UserItems.First().UserId);
-
-            model.SetContributor(user.Username);
+            foreach (var userItem in item.UserItems)
+            {
+                var user = await userRepository.GetUserAsync(userItem.UserId);
+                model.SetContributor(user.Username);
+            }
         }
-            
+
+        var author = await userRepository.GetUserAsync((int)item.AuthorId);
+        model.SetAuthor(author.Username);
 
         return model;
     }

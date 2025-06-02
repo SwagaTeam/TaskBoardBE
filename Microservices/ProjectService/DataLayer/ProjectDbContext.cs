@@ -52,7 +52,7 @@ namespace ProjectService.DataLayer
                 .HasOne(up => up.Item)
                 .WithMany(i => i.UserItems)
                 .HasForeignKey(up => up.ItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<ItemBoardEntity>()
                 .HasKey(ib => new { ib.ItemId, ib.BoardId });

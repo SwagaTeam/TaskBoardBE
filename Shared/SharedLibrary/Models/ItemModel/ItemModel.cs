@@ -23,6 +23,7 @@ public class ItemModel
     public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
     public string Contributor { get; private set; } = "";
+    public string Author { get; private set; } = "";
 
 
     //добавить автора
@@ -30,6 +31,12 @@ public class ItemModel
     {
         Contributor = contributor;
     }
+
+    public void SetAuthor(string author) 
+    { 
+        Author = author; 
+    }
+
     public void SetBoardId(int? boardId)
     {
         BoardId = boardId;
