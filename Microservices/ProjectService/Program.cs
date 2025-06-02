@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProjectService.BusinessLayer;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.BusinessLayer.Implementations;
 using ProjectService.DataLayer;
@@ -79,12 +80,14 @@ internal class Program
     {
         services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
         services.Configure<KafkaSettings>(configuration.GetSection("Kafka:NotificationTask"));
-        
+        services.AddTransient<ForwardAccessTokenHandler>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
-        services.AddHttpClient<IItemManager, ItemManager>(client => client.BaseAddress = new Uri("http://localhost:5002/analytics/"));
+        services.AddHttpClient<IItemManager, ItemManager>
+            (client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("ANALYTICS_SERVICE")))
+            .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();
         services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
