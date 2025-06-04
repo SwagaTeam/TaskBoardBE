@@ -95,6 +95,10 @@ internal class Program
                     new string[] {}
                 }
             });
+
+            var xmlFile = $"{AppDomain.CurrentDomain.FriendlyName}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
         });
 
         var host = Environment.GetEnvironmentVariable("HOST");

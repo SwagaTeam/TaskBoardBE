@@ -1,5 +1,6 @@
 using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.BusinessLayer.Implementations;
+using AnalyticsService.Models;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Models.AnalyticModels;
 
@@ -28,14 +29,24 @@ namespace AnalyticsService.Controllers
         /// <summary>
         /// Получение данных для диаграммы сгорания задач по проекту
         /// </summary>
+        /// <remarks>
+        /// <b>Уровни приоритета (priority):</b>
+        ///     <ul>
+        ///         <li>0 – Очень низкий</li>
+        ///         <li>1 – Низкий</li>
+        ///         <li>2 – Средний</li>
+        ///         <li>3 – Высокий</li>
+        ///         <li>4 – Критический</li>
+        ///     </ul>
+        /// </remarks>
         /// <param name="projectId"></param>
         /// <returns></returns>
-        [HttpGet("burndown/{projectId}")]
-        public async Task<IActionResult> GetBurnDownChart(int projectId)
+        [HttpGet("burndown")]
+        public async Task<IActionResult> GetBurnDownChart([FromQuery]BurnDownChartRequest request)
         {
             try
             {
-                var result = await projectManager.GetBurndown(projectId);
+                var result = await projectManager.GetBurndown(request);
                 return Ok(result);
             }
             catch (Exception e)

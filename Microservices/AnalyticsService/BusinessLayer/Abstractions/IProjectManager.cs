@@ -4,6 +4,6 @@ namespace AnalyticsService.BusinessLayer.Abstractions
 {
     public interface IProjectManager
     {
-        public Task<BurndownChartModel> GetBurndown(int projectId);
+        public Task<BurndownChartModel> GetBurndown(BurnDownChartRequest request);
     }
 }
