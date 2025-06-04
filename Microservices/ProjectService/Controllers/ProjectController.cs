@@ -160,6 +160,25 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
+    /// Обзор состояния задач на странице проекта.
+    /// </summary>
+    [ProducesResponseType<TasksState>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpGet("get-tasks-state/{projectId}")]
+    public async Task<IActionResult> GetTasksState(int projectId)
+    {
+        try
+        {
+            var state = await _projectManager.GetTasksStateAsync(projectId);
+            return Ok(state);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Получение проекта по ID, если есть доступ.
     /// </summary>
     /// <returns>Модель Проекта.</returns>

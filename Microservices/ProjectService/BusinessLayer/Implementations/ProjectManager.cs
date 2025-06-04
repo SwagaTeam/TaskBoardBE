@@ -2,15 +2,17 @@
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Exceptions;
 using ProjectService.Mapper;
+using ProjectService.Models;
 using SharedLibrary.Auth;
 using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.ProjectModels;
+using System.Data;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, IUserRepository userRepository)
+public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, IUserRepository userRepository, IItemRepository itemRepository)
     : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
@@ -169,5 +171,36 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
             return await projectRepository.SetUserRoleAsync(userId, projectId, roleEntity);
 
         throw new NotAuthorizedException("Пользователь не админ проекта");
+    }
+
+    public async Task<TasksState> GetTasksStateAsync(int projectId)
+    {
+        var currentUserId = auth.GetCurrentUserId();
+
+        var project = await projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+            throw new ProjectNotFoundException();
+        var isCurrentUserInProject =
+            await userProjectManager.IsUserInProjectAsync((int)currentUserId, project.Id);
+
+        if (isCurrentUserInProject)
+        {
+            var tasks = await itemRepository.GetItemsByProjectIdAsync(projectId);
+            var statuses = tasks.Select(x => x.Status);
+
+            TasksState tasksState = new TasksState()
+            {
+                BoardsCount = project.Boards.Count,
+                NewTasks = tasks.Where(x=>x.Status.Order == 0).Count(),
+                InWork = tasks.Where(x=>x.Status.Order != 0 && x.Status.IsDone != true && x.Status.IsRejected  != true).Count(),
+                Completed = tasks.Where(x=>x.Status.IsDone).Count()
+            
+            };
+
+            return tasksState;
+        }
+
+        throw new NotAuthorizedException();
     }
 }

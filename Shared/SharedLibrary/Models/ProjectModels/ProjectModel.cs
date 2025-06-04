@@ -44,7 +44,6 @@ namespace SharedLibrary.ProjectModels
             }
         }
 
-        [JsonIgnore]
         public virtual ICollection<UserProjectModel> UserProjects { get; set; } = new List<UserProjectModel>();
     }
 }

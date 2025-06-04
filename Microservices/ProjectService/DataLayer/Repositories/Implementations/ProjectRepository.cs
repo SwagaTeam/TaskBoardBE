@@ -53,6 +53,8 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         {
             var project = await projectDbContext.Projects
                 .Include(x => x.UserProjects)
+                .ThenInclude(x=>x.Role)
+                .Include(x=>x.Boards)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return project;

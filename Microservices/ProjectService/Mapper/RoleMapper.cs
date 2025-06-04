@@ -12,8 +12,10 @@ namespace ProjectService.Mapper
             };
         }
 
-        public static RoleModel ToModel(RoleEntity roleEntity)
+        public static RoleModel? ToModel(RoleEntity? roleEntity)
         {
+            if(roleEntity == null)
+                return null;
             return new RoleModel()
             {
                 Id = roleEntity.Id,

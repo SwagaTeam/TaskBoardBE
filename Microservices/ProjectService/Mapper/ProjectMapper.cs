@@ -36,6 +36,7 @@ namespace ProjectService.Mapper
                 Priority = projectModel.Priority,
                 StartDate = projectModel.StartDate,
                 UpdateDate = projectModel.UpdatedAt,
+                UserProjects = projectModel.UserProjects.Select(UserProjectMapper.ToModel).ToList()
             };
             
             var headId = projectModel.UserProjects.Where(x => x.RoleId == DefaultRoles.CREATOR).FirstOrDefault().UserId;

@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Entities.ProjectService;
+﻿using ProjectService.Models;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Abstractions
@@ -17,5 +18,6 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<int> CreateAsync(ProjectModel project);
         Task<ProjectModel> UpdateAsync(ProjectModel project);
         Task DeleteAsync(int id);
+        Task<TasksState> GetTasksStateAsync(int projectId);
     }
 }

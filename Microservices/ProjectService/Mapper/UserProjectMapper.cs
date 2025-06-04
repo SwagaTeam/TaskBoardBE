@@ -24,6 +24,7 @@ public class UserProjectMapper
             Privilege = model.Privilege,
             RoleId = model.RoleId,
             UserId = model.UserId,
+            Role = RoleMapper.ToModel(model.Role),
         };
     }
 }
