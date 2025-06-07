@@ -86,7 +86,7 @@ internal class Program
         services.AddScoped<IBoardManager, BoardManager>();
         services.AddScoped<IProjectLinkManager, ProjectLinkManager>();
         services.AddHttpClient<IItemManager, ItemManager>
-            (client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("ANALYTICS_SERVICE")))
+            (client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("ANALYTICS_SERVICE") + "/analytics/"))
             .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();

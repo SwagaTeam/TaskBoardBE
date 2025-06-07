@@ -7,7 +7,7 @@ namespace AnalyticsService.BusinessLayer.Abstractions;
 
 public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHistoryRepository) : ITaskManager
 {
-    public async Task<int> CreateAsync(TaskHistoryModel model)
+    public async Task<int> CreateAsync(SharedLibrary.Models.AnalyticModels.TaskHistoryModel model)
     {
         var entity = new TaskHistoryEntity
         {

@@ -9,5 +9,5 @@ public interface ITaskManager
     public Task<IDictionary<string, TimeSpan>> GetAverageTimeInStatusesAsync(int taskId);
     public Task<TimeSpan> GetTotalTimeOutsideStatusAsync(int taskId, string excludedStatus);
     public Task<TimeSpan?> GetAverageTimeInStatusAsync(int taskId, string statusName);
-    public Task<int> CreateAsync(TaskHistoryModel model);
+    public Task<int> CreateAsync(SharedLibrary.Models.AnalyticModels.TaskHistoryModel model);
 }

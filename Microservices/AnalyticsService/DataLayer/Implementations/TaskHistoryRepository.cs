@@ -1,4 +1,4 @@
-using AnalyticsService.DataLayer.Abstractions;
+ using AnalyticsService.DataLayer.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Entities.AnalyticsService;
 
@@ -16,6 +16,13 @@ public class TaskHistoryRepository(AnalyticsDbContext context) : ITaskHistoryRep
         return await context.TaskHistories
             .Where(x => x.ItemId == taskId)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskHistoryEntity>> GetHistoryByManyTaskIds(HashSet<int> taskIds)
+    {
+        return await context.TaskHistories
+        .Where(x => taskIds.Contains(x.ItemId))
+        .ToListAsync();
     }
 
 }

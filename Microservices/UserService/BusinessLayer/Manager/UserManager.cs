@@ -76,11 +76,6 @@ namespace UserService.BusinessLayer.Manager
             return _userRepository.GetByEmail(email);
         }
 
-        public Task<int> Update(UserModel user)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<UserModel?> ValidateCredentials(string email, string password)
         {
             var user = await _userRepository.GetByEmail(email);
@@ -99,6 +94,14 @@ namespace UserService.BusinessLayer.Manager
             }
 
             return user;
+        }
+
+        public async Task ChangePassword(int userId, string newPassword)
+        {
+            var user = await _userRepository.GetById(userId);
+            user.Salt = Guid.NewGuid().ToString();
+            user.Password = _encrypt.HashPassword(newPassword, user.Salt);
+            await _userRepository.Update(user);
         }
     }
 }

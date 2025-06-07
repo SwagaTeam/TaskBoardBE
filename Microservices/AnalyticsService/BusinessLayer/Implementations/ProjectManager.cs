@@ -1,14 +1,17 @@
 ﻿using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.DataLayer.Abstractions;
+using AnalyticsService.Mapper;
 using AnalyticsService.Models;
 using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SharedLibrary.Constants;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.ProjectModels;
 using System.Net.Http.Headers;
 
 namespace AnalyticsService.BusinessLayer.Implementations
 {
-    public class ProjectManager(HttpClient httpClient, ITaskHistoryRepository taskHistoryRepository) : IProjectManager
+    public class ProjectManager(HttpClient httpClient, ITaskHistoryRepository taskHistoryRepository, IUserRepository userRepository) : IProjectManager
     {
         public async Task<BurndownChartModel> GetBurndown(BurnDownChartRequest request)
         {
@@ -46,5 +49,18 @@ namespace AnalyticsService.BusinessLayer.Implementations
             return result;
         }
 
+        public async Task<ICollection<TaskHistoryModel>> GetProjectHistory(int projectId)
+        {
+            var items = await httpClient.GetFromJsonAsync<IEnumerable<ItemModel>>($"item/get-items-by/{projectId}");
+
+            var itemIds = items.Select(x => x.Id).ToHashSet();
+
+            var itemHistory = await taskHistoryRepository.GetHistoryByManyTaskIds(itemIds);
+
+            var historyModels = await Task.WhenAll(
+                                itemHistory.Select(i => TaskHistoryMapper.ToModel(i, userRepository)));
+
+            return historyModels.OrderByDescending(x => x.ChangedAt).ToList();
+        }
     }
 }

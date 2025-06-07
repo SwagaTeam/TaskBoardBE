@@ -52,6 +52,19 @@ public class ItemManager(
         );
         
         entity = await itemRepository.GetByIdAsync(entity.Id);
+
+        var model = new SharedLibrary.Models.AnalyticModels.TaskHistoryModel
+        {
+            FieldName = "Новое задание",
+            OldValue = "",
+            NewValue = item.Title,
+            ItemId = item.Id,
+            UserId = (int)auth.GetCurrentUserId(),
+            ChangedAt = DateTime.UtcNow
+        };
+
+        var response = await httpClient.PostAsJsonAsync("create", model);
+
         return entity.Id;
     }
 
@@ -99,7 +112,7 @@ public class ItemManager(
             UserItems = item.UserItems,
             Message = message,
         }, token);*/
-        var model = new TaskHistoryModel
+        var model = new SharedLibrary.Models.AnalyticModels.TaskHistoryModel
         {
             FieldName = fieldName,
             OldValue = oldValue,
@@ -155,7 +168,7 @@ public class ItemManager(
     {
         await validatorManager.ValidateUserInProjectAsync(projectId);
         var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
-        var models = await Task.WhenAll(items.Where(x => x.IsArchived).Select(x=> ItemMapper.ToModel(x, userRepository)));
+        var models = await Task.WhenAll(items.Select(x=> ItemMapper.ToModel(x, userRepository)));
         return models;
     }
 
@@ -228,7 +241,20 @@ public class ItemManager(
             };
 
             await attachmentRepository.CreateAsync(attachmentEntity);
+
+           
         }
+
+        var model = new SharedLibrary.Models.AnalyticModels.TaskHistoryModel
+        {
+            FieldName = "Комментарий",
+            OldValue = "",
+            NewValue = commentModel.Text,
+            ItemId = item.Id,
+            UserId = (int)auth.GetCurrentUserId(),
+            ChangedAt = DateTime.UtcNow
+        };
+        var response = await httpClient.PostAsJsonAsync("create", model);
 
         return commentEntity.Id;
     }

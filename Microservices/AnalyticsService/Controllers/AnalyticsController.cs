@@ -11,7 +11,7 @@ namespace AnalyticsService.Controllers
     public class AnalyticsController(ITaskManager taskManager, IProjectManager projectManager) : ControllerBase
     {
         [HttpPost("create")]
-        public async Task<IActionResult> CreateAsync([FromBody] TaskHistoryModel entity)
+        public async Task<IActionResult> CreateAsync([FromBody] SharedLibrary.Models.AnalyticModels.TaskHistoryModel entity)
         {
             try
             {
@@ -23,6 +23,21 @@ namespace AnalyticsService.Controllers
                 return BadRequest(ex.Message);
             }
             
+        }
+
+        [HttpGet("history/{projectId}")]
+        public async Task<IActionResult> CreateAsync(int projectId)
+        {
+            try
+            {
+                var history = await projectManager.GetProjectHistory(projectId);
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
 

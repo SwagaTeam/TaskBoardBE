@@ -12,10 +12,13 @@ using AnalyticsService.DataLayer.Abstractions;
 using AnalyticsService.DataLayer.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using AnalyticsService.BusinessLayer;
+using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Dapper.DapperRepositories;
+using AnalyticsService.DataLayer;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,10 @@ internal class Program
         ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
+
+        using var scope = app.Services.CreateScope();
+        using var appDbContext = scope.ServiceProvider.GetRequiredService<AnalyticsDbContext>();
+        await DbContextInitializer.Migrate(appDbContext);
 
         app.UseCors("AllowApiGateway");
 
@@ -108,6 +115,13 @@ internal class Program
         var pass = Environment.GetEnvironmentVariable("PASSWORD");
 
         var conn = $"Host={host};Port={port};Database={database};Username={user};Password={pass}";
+
+        var user_database = Environment.GetEnvironmentVariable("POSTGRES_USER_DB");
+        var user_host = Environment.GetEnvironmentVariable("USER_HOST");
+
+        var userConnection = $"Host={user_host};Port={port};Database={user_database};Username={user};Password={pass}";
+
+        services.AddScoped<IUserRepository>(provider => new UserRepository(userConnection));
 
         DbContextInitializer.Initialize(services, conn);
     }

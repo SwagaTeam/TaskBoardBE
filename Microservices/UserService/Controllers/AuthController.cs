@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Validations;
 using SharedLibrary.Auth;
 using SharedLibrary.ProjectModels;
 using SharedLibrary.UserModels;
@@ -81,6 +82,38 @@ namespace UserService.Controllers
                     return Unauthorized("Неверный номер/пароль");
                 var token = auth.GenerateJwtToken(user);
                 logger.LogInformation($"LOGIN: User with id \"{user.Id}\" has been authorized.");
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"LOGIN FAILED: Failed subscriber login.");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [ProducesResponseType<JsonProperty>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> СhangePassword([FromBody] ChangePasswordModel changePasswordModel)
+        {
+            try
+            {
+                var userId = auth.GetCurrentUserId();
+                if (userId == -1)
+                    throw new Exception($"Вы не авторизованы");
+
+                var user = await userManager.GetById((int)userId);
+
+                var validatedUser = await userManager.ValidateCredentials(user.Email, changePasswordModel.LastPassword);
+                if (validatedUser == null)
+                    return Unauthorized("Неверный пароль");
+
+                await userManager.ChangePassword((int)userId, changePasswordModel.NewPassword);
+
+                var token = auth.GenerateJwtToken(user);
+
+                logger.LogInformation($"LOGIN: User with id \"{user.Id}\" has been authorized.");
+
                 return Ok(new { token });
             }
             catch (Exception ex)

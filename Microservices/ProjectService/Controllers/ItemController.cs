@@ -132,7 +132,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             itemModel.ItemTypeId = itemTypeId;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
                 $"У задачи {itemModel.Title} поменяли тип на {itemTypeId}", oldValue.ToString(), 
-                itemTypeId.ToString(), "ItemTypeId");
+                itemTypeId.ToString(), "Тип задачи");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -162,7 +162,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             itemModel.StatusId = statusId;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken, 
                 $"У задачи {itemModel.Title} поменяли статус на {statusId}", oldValue.ToString(), 
-                statusId.ToString(), "StatusId");
+                statusId.ToString(), "Статус");
             return Ok(newItemModel);
         }
         catch (Exception ex)
@@ -200,7 +200,7 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             itemModel.Priority = priority;
             var newItemModel = await itemManager.UpdateAsync(itemModel, cancellationToken,
                 $"У задачи {itemModel.Title} поменяли приоритет на {priority}", oldValue.ToString(), 
-                priority.ToString(), "Priority");
+                priority.ToString(), "Приоритет");
             return Ok(newItemModel);
         }
         catch (Exception ex)
