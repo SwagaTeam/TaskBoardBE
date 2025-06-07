@@ -16,7 +16,7 @@ namespace UserService.Initializers
         {
             await context.Database.MigrateAsync();
 
-            if (!context.Users.Any())
+            if (!await context.Users.AnyAsync())
                 context.Users.Add(new UserEntity() 
                 { 
                     Username = "Sample User",

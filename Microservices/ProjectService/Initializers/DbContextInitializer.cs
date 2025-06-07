@@ -43,7 +43,7 @@ namespace ProjectService.Initializers
         private static async Task InitItemType(ProjectDbContext context)
         {
             var type = context.ItemTypes;
-            if (type.Count() < 3)
+            if (await type.CountAsync() < 3)
             {
                 await context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"ItemTypes\" RESTART IDENTITY CASCADE");
                 for (var i = 0; i < 3; i++)

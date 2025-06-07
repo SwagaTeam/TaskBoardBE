@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using SharedLibrary.ProjectModels;
 
+namespace SharedLibrary.Models;
 public class BoardModel
 {
     public int Id { get; set; }

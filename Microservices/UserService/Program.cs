@@ -35,26 +35,12 @@ internal class Program
 
         app.UseCors("AllowApiGateway");
 
-        // Diagnostics‐эндпоинт, который вернёт все маршруты
-        app.MapGet("/__routes", (EndpointDataSource dataSource) =>
+        
+        if (app.Environment.IsDevelopment())
         {
-            var routes = dataSource.Endpoints
-                .OfType<RouteEndpoint>()
-                .Select(e => new {
-                    Pattern = e.RoutePattern.RawText,
-                    Methods = e.Metadata
-                               .OfType<HttpMethodMetadata>()
-                               .FirstOrDefault()
-                               ?.HttpMethods
-                });
-            return Results.Json(routes);
-        });
-
-        //if (app.Environment.IsDevelopment())
-        //{
-        app.UseSwagger();
+            app.UseSwagger();
             app.UseSwaggerUI();
-        //}
+        }
 
         app.UseMiddleware<JwtBlacklistMiddleware>();
 

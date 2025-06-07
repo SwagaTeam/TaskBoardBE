@@ -4,6 +4,7 @@ using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using ProjectService.Models;
 using SharedLibrary.Auth;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
@@ -23,10 +24,10 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
 
     public async Task<int?> CreateAsync(StatusModel statusModel)
     {
-        if (statusModel is null) throw new NullReferenceException("Нельзя создать пустую модель");
+        if (statusModel is null) throw new ArgumentNullException("Нельзя создать пустую модель");
         var entity = StatusMapper.ToEntity(statusModel);
         
-        var project = await projectRepository.GetByBoardIdAsync((int)statusModel.BoardId);
+        var project = await projectRepository.GetByBoardIdAsync(statusModel.BoardId);
         await validatorManager.ValidateUserInProjectAsync(project.Id);
 
         var statuses = await statusRepository.GetByBoardIdAsync(statusModel.BoardId);
@@ -43,7 +44,7 @@ public class StatusManager(IStatusRepository statusRepository, IAuth auth, IProj
 
     public async Task<int?> UpdateAsync(StatusModel statusModel)
     {
-        if (statusModel is null) throw new NullReferenceException("Нельзя создать пустую модель");
+        if (statusModel is null) throw new ArgumentNullException("Нельзя создать пустую модель");
         var entity = StatusMapper.ToEntity(statusModel);
 
         await statusRepository.UpdateAsync(entity);

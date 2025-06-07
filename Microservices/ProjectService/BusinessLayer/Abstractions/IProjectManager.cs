@@ -1,5 +1,6 @@
 ﻿using ProjectService.Models;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Abstractions

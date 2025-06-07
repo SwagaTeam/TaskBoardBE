@@ -39,7 +39,8 @@ namespace ProjectService.Mapper
                 UserProjects = projectModel.UserProjects.Select(UserProjectMapper.ToModel).ToList()
             };
             
-            var headId = projectModel.UserProjects.Where(x => x.RoleId == DefaultRoles.CREATOR).FirstOrDefault().UserId;
+            var headId = projectModel.UserProjects.FirstOrDefault(x => x.RoleId == DefaultRoles.CREATOR).UserId;
+
             var user = await userRepository.GetUserAsync(headId);
 
             project.SetHead(user.Username);

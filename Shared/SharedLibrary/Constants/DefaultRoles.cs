@@ -2,6 +2,6 @@
 {
     public static class DefaultRoles
     {
-        public static int CREATOR = 1;
+        public const int CREATOR = 1;
     }
 }

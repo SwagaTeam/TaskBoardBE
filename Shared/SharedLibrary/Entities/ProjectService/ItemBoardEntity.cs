@@ -1,5 +1,6 @@
 ﻿using SharedLibrary.Entities.ProjectService;
 
+namespace SharedLibrary.Entities;
 public class ItemBoardEntity
 {
     public int Id { get; set; }

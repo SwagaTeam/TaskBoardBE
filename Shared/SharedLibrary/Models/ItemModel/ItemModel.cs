@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
 using SharedLibrary.ProjectModels;
+namespace SharedLibrary.Models;
 
 public class ItemModel
 {
@@ -10,9 +11,9 @@ public class ItemModel
     public int? ProjectId { get; set; }
     public int? BoardId { get; private set; }
     public int? ProjectItemNumber { get; set; }
-    public string BusinessId { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string BusinessId { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime StartDate { get; set; }

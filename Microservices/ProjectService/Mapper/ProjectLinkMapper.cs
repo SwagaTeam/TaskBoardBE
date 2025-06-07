@@ -1,9 +1,10 @@
 ﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 
 namespace ProjectService.Mapper;
 
-public class ProjectLinkMapper
+public static class ProjectLinkMapper
 {
     public static ProjectLinkEntity ToEntity(ProjectLinkModel model)
     {

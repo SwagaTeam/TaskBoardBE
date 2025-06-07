@@ -1,6 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using SharedLibrary.Entities.ProjectService;
 
+namespace SharedLibrary.Models;
+
 public class SprintModel
 {
     public int Id { get; set; }

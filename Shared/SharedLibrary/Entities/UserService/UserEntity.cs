@@ -15,6 +15,5 @@ namespace SharedLibrary.Entities.UserService
         public string ImagePath { get; set; } = string.Empty;
         public string Salt { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        //public ICollection<UserProjectEntity> UserProjects { get; set; } = new List<UserProjectEntity>();
     }
 }

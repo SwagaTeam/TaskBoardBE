@@ -1,5 +1,6 @@
 ﻿using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 
 namespace ProjectService.Mapper
 {

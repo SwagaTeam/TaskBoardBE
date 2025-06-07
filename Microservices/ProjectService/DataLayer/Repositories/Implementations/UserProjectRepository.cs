@@ -30,7 +30,7 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
             .FirstOrDefaultAsync(x => x.ProjectId == projectId
                                       && x.UserId == userId
                                       && (Enumerable.Range(0, 3).Contains(x.Privilege)
-                                          || x.Project.IsPrivate == false));
+                                          || !x.Project.IsPrivate));
 
         return userProject is not null;
     }

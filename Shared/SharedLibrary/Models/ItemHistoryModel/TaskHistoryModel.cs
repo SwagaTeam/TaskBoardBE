@@ -1,4 +1,5 @@
-﻿public class TaskHistoryModel
+﻿namespace SharedLibrary.Models;
+public class TaskHistoryModel
 {
     public int Id { get; set; }
     public int UserId { get; set; }

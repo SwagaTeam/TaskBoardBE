@@ -3,10 +3,11 @@ using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.Entities.UserService;
+using SharedLibrary.Models;
 
 namespace ProjectService.Mapper;
 
-public class ItemMapper
+public static class ItemMapper
 {
     public static ItemEntity? ItemToEntity(ItemModel item)
     {
@@ -27,7 +28,7 @@ public class ItemMapper
             ExpectedEndDate = item.ExpectedEndDate,
             Priority = item.Priority,
             ItemTypeId = item.ItemTypeId,
-            StatusId = (int)item.StatusId,
+            StatusId = (int)item.StatusId!,
             IsArchived = item.IsArchived,
             UserItems = item.UserItems != null 
                 ? item.UserItems.Select(UserItemMapper.ToEntity).ToList() 
@@ -35,7 +36,7 @@ public class ItemMapper
         };
     }
 
-    public static async Task<ItemModel?> ToModel(ItemEntity item, IUserRepository userRepository)
+    public static async Task<ItemModel?> ToModel(ItemEntity? item, IUserRepository userRepository)
     {
         if (item is null)
             return null;
@@ -63,7 +64,7 @@ public class ItemMapper
 
         if(item.ItemsBoards.Count > 0)
         {
-            var boardId = item.ItemsBoards.FirstOrDefault(x => x.ItemId == model.Id).BoardId;
+            var boardId = item.ItemsBoards.First(x => x.ItemId == model.Id).BoardId;
 
             model.SetBoardId(boardId);
         }
@@ -77,8 +78,8 @@ public class ItemMapper
             }
         }
 
-        var author = await userRepository.GetUserAsync((int)item.AuthorId);
-        model.SetAuthor(author.Username);
+        var author = await userRepository.GetUserAsync((int)item.AuthorId!);
+        model.SetAuthor(author!.Username);
 
         return model;
     }

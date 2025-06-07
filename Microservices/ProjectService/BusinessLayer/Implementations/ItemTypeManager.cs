@@ -1,6 +1,7 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
@@ -20,7 +21,7 @@ public class ItemTypeManager(IItemTypeRepository itemTypeRepository) : IItemType
     public async Task<int?> CreateAsync(ItemTypeModel itemTypeModel)
     {
         var entity = ItemTypeMapper.ToEntity(itemTypeModel);
-        if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
+        if (entity is null) throw new ArgumentNullException("Нельзя создать пустую модель");
 
         await itemTypeRepository.CreateAsync(entity);
         return itemTypeModel.Id;
@@ -29,7 +30,7 @@ public class ItemTypeManager(IItemTypeRepository itemTypeRepository) : IItemType
     public async Task<int?> UpdateAsync(ItemTypeModel itemTypeModel)
     {
         var entity = ItemTypeMapper.ToEntity(itemTypeModel);
-        if (entity is null) throw new NullReferenceException("Нельзя создать пустую модель");
+        if (entity is null) throw new ArgumentNullException("Нельзя создать пустую модель");
         await itemTypeRepository.UpdateAsync(entity);
         return itemTypeModel.Id;
     }

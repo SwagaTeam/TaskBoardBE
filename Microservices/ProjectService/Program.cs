@@ -19,6 +19,7 @@ using ProjectService.Initializers;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.MailService;
 using SharedLibrary.Middleware;
 using SharedLibrary.Models.KafkaModel;
 
@@ -72,7 +73,7 @@ internal class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 
 

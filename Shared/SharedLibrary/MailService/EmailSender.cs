@@ -1,4 +1,6 @@
-﻿public class EmailSender : IEmailSender
+﻿namespace SharedLibrary.MailService;
+
+public class EmailSender : IEmailSender
 {
     private readonly IMailService mailService;
 

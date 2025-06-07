@@ -1,4 +1,5 @@
-﻿public class ItemTypeModel
+﻿namespace SharedLibrary.Models;
+public class ItemTypeModel
 {
     public int Id { get; set; }
     public string Level { get; set; }

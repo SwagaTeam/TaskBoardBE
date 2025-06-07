@@ -1,4 +1,5 @@
-﻿public class MailSettings
+﻿namespace SharedLibrary.MailService;
+public class MailSettings
 {
     public string? DisplayName { get; set; }
     public string? From { get; set; }

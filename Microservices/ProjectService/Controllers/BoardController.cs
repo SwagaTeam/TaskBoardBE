@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.Models;
+using SharedLibrary.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProjectService.Controllers;

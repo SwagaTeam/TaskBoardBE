@@ -10,18 +10,20 @@ using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Models.AnalyticModels;
 using SharedLibrary.Models.KafkaModel;
+using SharedLibrary.Models;
+using SharedLibrary.Entities;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ItemManager(
     IItemRepository itemRepository,
     IValidateItemManager validatorManager,
-    IKafkaProducer<TaskEventMessage> kafkaProducer,
     IItemBoardsRepository itemBoardsRepository,
     IProjectRepository projectRepository,
     ICommentRepository commentRepository,
     IAttachmentRepository attachmentRepository,
     IUserRepository userRepository,
+    IKafkaProducer<TaskEventMessage> kafkaProducer,
     HttpClient httpClient,
     IAuth auth) : IItemManager
 {
@@ -47,7 +49,7 @@ public class ItemManager(
             {
                 ItemId = entity.Id,
                 BoardId = createItemModel.BoardId,
-                StatusId = (int)entity.StatusId
+                StatusId = (int)entity.StatusId!
             }
         );
         
@@ -59,11 +61,11 @@ public class ItemManager(
             OldValue = "",
             NewValue = item.Title,
             ItemId = item.Id,
-            UserId = (int)auth.GetCurrentUserId(),
+            UserId = (int)auth.GetCurrentUserId()!,
             ChangedAt = DateTime.UtcNow
         };
 
-        var response = await httpClient.PostAsJsonAsync("create", model);
+        await httpClient.PostAsJsonAsync("create", model);
 
         return entity.Id;
     }
@@ -106,29 +108,29 @@ public class ItemManager(
         var updatedAt = DateTime.UtcNow;
         entity.UpdatedAt = updatedAt;
         await itemRepository.UpdateAsync(entity);
-        /*await kafkaProducer.ProduceAsync(new TaskEventMessage
+        await kafkaProducer.ProduceAsync(new TaskEventMessage
         {
             EventType = eventType,
             UserItems = item.UserItems,
             Message = message,
-        }, token);*/
+        }, token);
         var model = new SharedLibrary.Models.AnalyticModels.TaskHistoryModel
         {
             FieldName = fieldName,
             OldValue = oldValue,
             NewValue = newValue,
             ItemId = item.Id,
-            UserId = (int)auth.GetCurrentUserId(),
+            UserId = (int)auth.GetCurrentUserId()!,
             ChangedAt = updatedAt
         };
-        var response = await httpClient.PostAsJsonAsync("create", model, cancellationToken: token);
+        await httpClient.PostAsJsonAsync("create", model, cancellationToken: token);
         return entity.Id;
     }
 
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken)
     {
         var item = await itemRepository.GetByIdAsync(itemId);
-        await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId, newUserId);
+        await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId!, newUserId);
         var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,
@@ -217,7 +219,7 @@ public class ItemManager(
             var docPath = Environment.GetEnvironmentVariable("ATTACHMENT_STORAGE_PATH");
 
             if (string.IsNullOrEmpty(docPath))
-                throw new Exception("Переменная окружения ATTACHMENT_STORAGE_PATH не задана");
+                throw new ArgumentNullException("Переменная окружения ATTACHMENT_STORAGE_PATH не задана");
 
             Directory.CreateDirectory(docPath);
 
@@ -251,10 +253,11 @@ public class ItemManager(
             OldValue = "",
             NewValue = commentModel.Text,
             ItemId = item.Id,
-            UserId = (int)auth.GetCurrentUserId(),
+            UserId = (int)auth.GetCurrentUserId()!,
             ChangedAt = DateTime.UtcNow
         };
-        var response = await httpClient.PostAsJsonAsync("create", model);
+
+        await httpClient.PostAsJsonAsync("create", model);
 
         return commentEntity.Id;
     }

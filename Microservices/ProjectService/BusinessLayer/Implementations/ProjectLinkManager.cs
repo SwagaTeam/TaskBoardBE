@@ -4,6 +4,7 @@ using ProjectService.Exceptions;
 using ProjectService.Mapper;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 

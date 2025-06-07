@@ -3,6 +3,7 @@ using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Models;
 using ProjectService.Validator;
 using SharedLibrary.Auth;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 

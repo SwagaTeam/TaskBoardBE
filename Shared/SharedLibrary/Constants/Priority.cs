@@ -1,4 +1,6 @@
-﻿namespace SharedLibrary.Constants
+﻿using System.Collections.ObjectModel;
+
+namespace SharedLibrary.Constants
 {
     public static class Priority
     {
@@ -8,13 +10,15 @@
         public const int LOW = 1;
         public const int VERY_LOW = 0;
 
-        public static Dictionary<int, string> Names = new()
-        {
-            { CRITICAL, "Критический" },
-            { HIGH, "Высокий" },
-            { MEDIUM, "Средний" },
-            { LOW, "Низкий" },
-            { VERY_LOW, "Очень низкий" }
-        };
+        public static ReadOnlyDictionary<int, string> Names { get; } =
+            new ReadOnlyDictionary<int, string>(new Dictionary<int, string>
+            {
+                { CRITICAL, "Критический" },
+                { HIGH, "Высокий" },
+                { MEDIUM, "Средний" },
+                { LOW, "Низкий" },
+                { VERY_LOW, "Очень низкий" }
+            });
+
     }
 }

@@ -1,3 +1,4 @@
+using SharedLibrary.Models;
 using SharedLibrary.Models.AnalyticModels;
 
 namespace AnalyticsService.BusinessLayer.Implementations;

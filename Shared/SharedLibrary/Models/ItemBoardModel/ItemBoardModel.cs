@@ -1,4 +1,5 @@
-﻿public class ItemBoardModel
+﻿namespace SharedLibrary.Models;
+public class ItemBoardModel
 {
     public int Id { get; set; }
     public int BoardId { get; set; }

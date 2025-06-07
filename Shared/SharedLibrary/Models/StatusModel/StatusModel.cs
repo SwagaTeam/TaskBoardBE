@@ -1,7 +1,5 @@
-﻿
-
-using System.Text.Json.Serialization;
-using SharedLibrary.ProjectModels;
+﻿using System.Text.Json.Serialization;
+namespace SharedLibrary.Models;
 
 public class StatusModel
 {

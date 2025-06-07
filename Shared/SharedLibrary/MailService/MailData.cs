@@ -1,4 +1,5 @@
-﻿public class MailData
+﻿namespace SharedLibrary.MailService;
+public class MailData
 {
     // Receiver
     public string[] To { get; }

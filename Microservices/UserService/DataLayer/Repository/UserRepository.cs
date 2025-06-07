@@ -36,7 +36,7 @@ namespace UserService.DataLayer.Repositories.Implementations
                 return existingUser.Id;
             }
 
-            throw new Exception($"User with id {id} not found");
+            throw new ArgumentNullException($"User with id {id} not found");
         }
 
         public async Task<IEnumerable<UserModel>> GetAll()
@@ -96,7 +96,7 @@ namespace UserService.DataLayer.Repositories.Implementations
                 return;
             }
 
-            throw new Exception("Пользователь не найден");
+            throw new ArgumentNullException("Пользователь не найден");
         }
     }
 }

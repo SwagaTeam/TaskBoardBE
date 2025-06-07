@@ -3,7 +3,7 @@ using SharedLibrary.Auth;
 
 namespace ProjectService.Services.MailService;
 
-public class UserInProjectService 
+public static class UserInProjectService 
 {
     public static async Task<bool> IsUserInProjectAsync(IUserProjectManager userProjectManager, int? userId,
         int? projectId, CancellationToken cancellation)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SharedLibrary.Entities;
 using SharedLibrary.Entities.ProjectService;
 using System.Collections.Generic;
 

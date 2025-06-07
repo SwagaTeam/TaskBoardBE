@@ -1,4 +1,5 @@
 ﻿using AnalyticsService.Models;
+using SharedLibrary.Models;
 
 namespace AnalyticsService.BusinessLayer.Abstractions
 {

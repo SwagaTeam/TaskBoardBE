@@ -1,4 +1,5 @@
-﻿using SharedLibrary.ProjectModels;
+﻿using SharedLibrary.Models;
+using SharedLibrary.ProjectModels;
 
 namespace ProjectService.BusinessLayer.Abstractions
 {

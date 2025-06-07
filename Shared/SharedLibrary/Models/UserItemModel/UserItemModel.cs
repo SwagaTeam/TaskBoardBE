@@ -1,4 +1,5 @@
-﻿public class UserItemModel
+﻿namespace SharedLibrary.Models;
+public class UserItemModel
 {
     public int Id { get; set; }
     public int ItemId { get; set; }

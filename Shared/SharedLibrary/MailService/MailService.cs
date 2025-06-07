@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 
+namespace SharedLibrary.MailService;
 
 public class MailService : IMailService
 {
@@ -75,7 +76,7 @@ public class MailService : IMailService
                     client.CheckCertificateRevocation = false;     // отключаем проверку отзыва сертификата
                     await client.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.Auto);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_settings.UserName, _settings.Password);
+                    await client.AuthenticateAsync(_settings.UserName, _settings.Password);
                     await client.SendAsync(mail);
                 }
                 catch (Exception e)
@@ -86,7 +87,6 @@ public class MailService : IMailService
                 finally
                 {
                     await client.DisconnectAsync(true);
-                    client.Dispose();
                 }
             }
 

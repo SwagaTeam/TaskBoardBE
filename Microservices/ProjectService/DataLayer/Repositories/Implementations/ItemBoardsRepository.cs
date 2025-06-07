@@ -1,4 +1,5 @@
 ﻿using ProjectService.DataLayer.Repositories.Abstractions;
+using SharedLibrary.Entities;
 
 namespace ProjectService.DataLayer.Repositories.Implementations;
 

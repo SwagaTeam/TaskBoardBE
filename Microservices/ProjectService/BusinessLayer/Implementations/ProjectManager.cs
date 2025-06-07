@@ -7,6 +7,7 @@ using SharedLibrary.Auth;
 using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 using System.Data;
 
@@ -31,7 +32,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         var userProject = new UserProjectModel
         {
             ProjectId = projectEntity.Id,
-            UserId = (int)currentUserId,
+            UserId = (int)currentUserId!,
             RoleId = DefaultRoles.CREATOR,
             Privilege = Privilege.ADMIN
         };
@@ -164,7 +165,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         if (project is null)
             throw new ProjectNotFoundException();
         var isCurrentUserAdminAndUserInProject =
-            await userProjectManager.IsUserAdminAsync((int)currentUserId, project.Id)
+            await userProjectManager.IsUserAdminAsync((int)currentUserId!, project.Id)
             && project.UserProjects.Any(x => x.UserId == userId && x.ProjectId == projectId);
 
         if (isCurrentUserAdminAndUserInProject)
@@ -182,19 +183,18 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         if (project is null)
             throw new ProjectNotFoundException();
         var isCurrentUserInProject =
-            await userProjectManager.IsUserInProjectAsync((int)currentUserId, project.Id);
+            await userProjectManager.IsUserInProjectAsync((int)currentUserId!, project.Id);
 
         if (isCurrentUserInProject)
         {
             var tasks = await itemRepository.GetItemsByProjectIdAsync(projectId);
-            var statuses = tasks.Select(x => x.Status);
 
             TasksState tasksState = new TasksState()
             {
                 BoardsCount = project.Boards.Count,
-                NewTasks = tasks.Where(x=>x.Status.Order == 0).Count(),
-                InWork = tasks.Where(x=>x.Status.Order != 0 && x.Status.IsDone != true && x.Status.IsRejected  != true).Count(),
-                Completed = tasks.Where(x=>x.Status.IsDone).Count()
+                NewTasks = tasks.Count(x => x.Status.Order == 0),
+                InWork = tasks.Count(x => x.Status.Order != 0 && !x.Status.IsDone && !x.Status.IsRejected),
+                Completed = tasks.Count(x => x.Status.IsDone)
             
             };
 

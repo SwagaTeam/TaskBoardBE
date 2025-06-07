@@ -1,4 +1,5 @@
-﻿public class ItemSprintModel
+﻿namespace SharedLibrary.Models;
+public class ItemSprintModel
 {
     public int Id { get; set; }
     public int ItemId { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectService.BusinessLayer.Abstractions;
+using SharedLibrary.Models;
 
 namespace ProjectService.Controllers;
 

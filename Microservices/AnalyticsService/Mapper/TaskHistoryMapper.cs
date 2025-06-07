@@ -2,6 +2,7 @@
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.AnalyticsService;
 using SharedLibrary.Entities.UserService;
+using SharedLibrary.Models;
 
 namespace AnalyticsService.Mapper
 {
@@ -24,10 +25,10 @@ namespace AnalyticsService.Mapper
                 UserId = entity.UserId
             };
 
-            if (entity.UserId != null && entity.UserId != -1)
+            if (entity.UserId != -1)
             {
                 var user = await userRepository.GetUserAsync(entity.UserId);
-                model.SetUserName(user.Username);
+                model.SetUserName(user!.Username);
             }
 
             return model;

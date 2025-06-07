@@ -1,4 +1,5 @@
 ﻿using SharedLibrary.ProjectModels;
+namespace SharedLibrary.Models;
 
 public class ProjectLinkModel
 {

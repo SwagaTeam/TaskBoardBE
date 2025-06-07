@@ -1,8 +1,9 @@
 ﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 
 namespace ProjectService.Mapper;
 
-public class UserProjectMapper
+public static class UserProjectMapper
 {
     public static UserProjectEntity ToEntity(UserProjectModel model)
     {

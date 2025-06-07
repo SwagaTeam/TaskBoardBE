@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using SharedLibrary.ProjectModels;
+namespace SharedLibrary.Models;
 
 public class UserProjectModel
 {
@@ -11,6 +12,6 @@ public class UserProjectModel
     [DefaultValue(null)]
     public int? RoleId { get; set; }
 
-    public ProjectModel Project { get; set; }
-    public RoleModel Role { get; set; }
+    public ProjectModel? Project { get; set; }
+    public RoleModel? Role { get; set; }
 }

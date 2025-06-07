@@ -5,6 +5,7 @@ using ProjectService.Services.MailService;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.MailService;
 using SharedLibrary.Models.DocumentModel;
 using SharedLibrary.ProjectModels;
 using Swashbuckle.AspNetCore.Annotations;

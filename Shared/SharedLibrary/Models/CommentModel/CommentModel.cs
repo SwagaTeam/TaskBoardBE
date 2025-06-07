@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+namespace SharedLibrary.Models;
 
 public class CommentModel
 {

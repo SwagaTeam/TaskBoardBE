@@ -5,6 +5,7 @@ using ProjectService.Models;
 using ProjectService.Services.MailService;
 using SharedLibrary.Auth;
 using SharedLibrary.Constants;
+using SharedLibrary.Models;
 
 namespace ProjectService.Validator;
 

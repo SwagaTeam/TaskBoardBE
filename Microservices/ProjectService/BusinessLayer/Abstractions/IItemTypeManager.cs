@@ -1,4 +1,6 @@
-﻿namespace ProjectService.BusinessLayer.Abstractions;
+﻿using SharedLibrary.Models;
+
+namespace ProjectService.BusinessLayer.Abstractions;
 
 public interface IItemTypeManager
 {

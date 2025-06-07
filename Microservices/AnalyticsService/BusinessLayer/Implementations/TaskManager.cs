@@ -1,6 +1,7 @@
 using AnalyticsService.BusinessLayer.Implementations;
 using AnalyticsService.DataLayer.Abstractions;
 using SharedLibrary.Entities.AnalyticsService;
+using SharedLibrary.Models;
 using SharedLibrary.Models.AnalyticModels;
 
 namespace AnalyticsService.BusinessLayer.Abstractions;
@@ -163,12 +164,12 @@ public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHisto
         return result;
     }
 
-    private bool IsTaskCompleted(ItemModel itemModel)
+    private static bool IsTaskCompleted(ItemModel itemModel)
     {
         return itemModel.Status is not null && itemModel.Status.Name.Equals("Готово");
     }
 
-    private bool IsTaskBetweenDates(ItemModel itemModel, DateTime startDate, DateTime endDate)
+    private static bool IsTaskBetweenDates(ItemModel itemModel, DateTime startDate, DateTime endDate)
     {
         return itemModel.StartDate >= startDate && itemModel.ExpectedEndDate <= endDate;
     }

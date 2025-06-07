@@ -1,4 +1,5 @@
 ﻿using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 
 namespace ProjectService.Mapper
@@ -29,7 +30,7 @@ namespace ProjectService.Mapper
 
             return new StatusEntity
             {
-                Id = (int)statusEntity.Id,
+                Id = (int)statusEntity.Id!,
                 Order = statusEntity.Order,
                 BoardId = statusEntity.BoardId,
                 //Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),

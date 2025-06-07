@@ -1,6 +1,7 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
 using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Mapper;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 

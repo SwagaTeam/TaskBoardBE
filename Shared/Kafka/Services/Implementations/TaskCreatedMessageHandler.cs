@@ -1,8 +1,8 @@
 ﻿using Kafka.Messaging.Services.Abstractions;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
+using SharedLibrary.MailService;
 using SharedLibrary.Models.KafkaModel;
 
 namespace Kafka.Messaging.Services.Implementations

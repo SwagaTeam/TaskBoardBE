@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace SharedLibrary.Models;
 public class AttachmentModel
 {
     public int Id { get; set; }

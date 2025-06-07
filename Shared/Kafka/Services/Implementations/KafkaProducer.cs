@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Kafka.Messaging.Services.Implementations
 {
-    public class KafkaProducer<TMessage> : IKafkaProducer<TMessage>, IDisposable
+    public class KafkaProducer<TMessage> : IKafkaProducer<TMessage>
     {
         private readonly IProducer<string, TMessage> producer;
         private readonly string topic;
@@ -34,10 +34,11 @@ namespace Kafka.Messaging.Services.Implementations
                 },
                 cancellationToken);
         }
-
         public void Dispose()
         {
             producer?.Dispose();
+            GC.SuppressFinalize(this);
         }
+
     }
 }

@@ -49,7 +49,7 @@ public class DocumentManager : IDocumentManager
         var docPath = Environment.GetEnvironmentVariable("DOCUMENT_STORAGE_PATH");
 
         if (string.IsNullOrEmpty(docPath))
-            throw new Exception("Переменная окружения DOCUMENT_STORAGE_PATH не задана");
+            throw new ArgumentNullException("Переменная окружения DOCUMENT_STORAGE_PATH не задана");
 
         Directory.CreateDirectory(docPath);
 

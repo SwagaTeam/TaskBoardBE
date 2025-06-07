@@ -39,7 +39,7 @@ namespace UserService.BusinessLayer.Manager
             var avatarPath = Environment.GetEnvironmentVariable("AVATAR_STORAGE_PATH");
 
             if (string.IsNullOrEmpty(avatarPath))
-                throw new Exception("Переменная окружения AVATAR_STORAGE_PATH не задана");
+                throw new ArgumentNullException("Переменная окружения AVATAR_STORAGE_PATH не задана");
 
             Directory.CreateDirectory(avatarPath);
 
@@ -82,7 +82,7 @@ namespace UserService.BusinessLayer.Manager
 
             if (user == null)
             {
-                throw new Exception("Почта пользователя не найдена");
+                throw new ArgumentNullException("Почта пользователя не найдена");
 
             }
 

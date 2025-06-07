@@ -47,7 +47,7 @@ internal class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 
     private static void ConfigureServices(IServiceCollection services, IConfigurationManager configuration)

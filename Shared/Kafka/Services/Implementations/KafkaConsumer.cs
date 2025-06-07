@@ -47,9 +47,13 @@ namespace Kafka.Messaging.Services.Implementations
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     var result = consumer.Consume(stoppingToken);
+
+                    if (result is null)
+                        throw new ArgumentNullException();
+
                     Console.WriteLine("GOT MESSAGE!");
 
-                    Trace.TraceInformation("Message received: " + result?.Message?.Value?.ToString());
+                    Trace.TraceInformation("Message received: " + result.Message.Value!.ToString());
 
                     // Создаем scope, чтобы получить scoped сервис IMessageHandler<TMessage>
                     using var scope = scopeFactory.CreateScope();

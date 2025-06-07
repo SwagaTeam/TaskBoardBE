@@ -5,6 +5,7 @@ using ProjectService.Mapper;
 using SharedLibrary.Auth;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
+using SharedLibrary.Models;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
@@ -80,9 +81,8 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
 
     public async Task<BoardModel?> GetByIdAsync(int id)
     {
-        var userId = auth.GetCurrentUserId();
         var board = await boardRepository.GetByIdAsync(id);
-        if (board is null) throw new Exception($"Доски с id {id} не существует");
+        if (board is null) throw new BoardNotFoundException($"Доски с id {id} не существует");
         var userProject = await projectManager.GetByBoardIdAsync(id);
         await validatorManager.ValidateUserCanViewAsync(userProject.Id);
         return await BoardMapper.ToModel(board, userRepository);
@@ -91,7 +91,6 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
 
     public async Task<int> UpdateAsync(BoardModel board)
     {
-        var userId = auth.GetCurrentUserId();
         await validatorManager.ValidateUserAdminAsync(board.ProjectId);
         await boardRepository.UpdateAsync(BoardMapper.ToEntity(board));
         return board.Id;

@@ -30,7 +30,7 @@ namespace UserService.Controllers
         [ProducesResponseType<UserModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("current")]
-        public async Task<IActionResult> GetCurrentUser()
+        public IActionResult GetCurrentUser()
         {
             try
             {
@@ -76,7 +76,7 @@ namespace UserService.Controllers
             try
             {
                 if (auth.GetCurrentUserId() != -1)
-                    throw new Exception($"Вы уже авторизованы");
+                    return Ok($"Вы уже авторизованы");
                 var user = await userManager.ValidateCredentials(loginModel.Email, loginModel.Password);
                 if (user == null)
                     return Unauthorized("Неверный номер/пароль");
@@ -100,9 +100,9 @@ namespace UserService.Controllers
             {
                 var userId = auth.GetCurrentUserId();
                 if (userId == -1)
-                    throw new Exception($"Вы не авторизованы");
+                    return Unauthorized($"Вы не авторизованы");
 
-                var user = await userManager.GetById((int)userId);
+                var user = await userManager.GetById((int)userId!);
 
                 var validatedUser = await userManager.ValidateCredentials(user.Email, changePasswordModel.LastPassword);
                 if (validatedUser == null)
@@ -112,13 +112,13 @@ namespace UserService.Controllers
 
                 var token = auth.GenerateJwtToken(user);
 
-                logger.LogInformation($"LOGIN: User with id \"{user.Id}\" has been authorized.");
+                logger.LogInformation("LOGIN: User with id {user.Id} has been authorized.", user.Id);
 
                 return Ok(new { token });
             }
             catch (Exception ex)
             {
-                logger.LogError($"LOGIN FAILED: Failed subscriber login.");
+                logger.LogError(ex, "LOGIN FAILED: Failed subscriber login.");
                 return BadRequest(ex.Message);
             }
         }
