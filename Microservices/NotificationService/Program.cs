@@ -2,9 +2,10 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SharedLibrary.Middleware;
 using System.Security.Claims;
 using System.Text;
+
+namespace NotificationService;
 
 internal class Program
 {
@@ -27,9 +28,6 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        // Убираем использование HTTPS редиректа
-        // app.UseHttpsRedirection();
 
         app.UseAuthorization();
 

@@ -5,7 +5,6 @@ using Kafka.Messaging.Services.Abstractions;
 using Kafka.Messaging.Services.Implementations;
 using Kafka.Messaging.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -23,6 +22,7 @@ using SharedLibrary.MailService;
 using SharedLibrary.Middleware;
 using SharedLibrary.Models.KafkaModel;
 
+namespace ProjectService;
 internal class Program
 {
     private static async Task Main(string[] args)

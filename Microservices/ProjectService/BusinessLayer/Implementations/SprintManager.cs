@@ -45,16 +45,16 @@ public class SprintManager : ISprintManager
         await sprintRepository.AddItem(sprintId, itemId);
     }
 
-    public async Task<int?> CreateAsync(SprintModel statusModel)
+    public async Task<int?> CreateAsync(SprintModel sprintModel)
     {
-        var existingBoard = await boardRepository.GetByIdAsync(statusModel.BoardId);
+        var existingBoard = await boardRepository.GetByIdAsync(sprintModel.BoardId);
 
         if (existingBoard is null)
             throw new BoardNotFoundException();
 
         await _validatorManager.ValidateUserInProjectAsync(existingBoard.ProjectId);
 
-        var sprintEntity = SprintMapper.ToEntity(statusModel);
+        var sprintEntity = SprintMapper.ToEntity(sprintModel);
 
         await sprintRepository.CreateAsync(sprintEntity);
 
@@ -103,16 +103,16 @@ public class SprintManager : ISprintManager
         return await SprintMapper.ToModel(sprint, userRepository);
     }
 
-    public async Task<int?> UpdateAsync(SprintModel statusModel)
+    public async Task<int?> UpdateAsync(SprintModel sprintModel)
     {
-        var existingSprint = await sprintRepository.GetByIdAsync(statusModel.Id);
+        var existingSprint = await sprintRepository.GetByIdAsync(sprintModel.Id);
 
         if (existingSprint is null)
             throw new SprintNotFoundException();
 
         await _validatorManager.ValidateUserInProjectAsync(existingSprint.Board.ProjectId);
 
-        var entity = SprintMapper.ToEntity(statusModel);
+        var entity = SprintMapper.ToEntity(sprintModel);
 
         await sprintRepository.UpdateAsync(entity);
 

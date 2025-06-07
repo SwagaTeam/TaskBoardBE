@@ -24,5 +24,5 @@ public interface IItemManager
     public Task<int> AddCommentToItemAsync(CommentModel commentModel, IFormFile? attachment);
     public Task<ICollection<CommentModel>> GetComments(int itemId);
     public Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId);
-    public Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int board);
+    public Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId);
 }

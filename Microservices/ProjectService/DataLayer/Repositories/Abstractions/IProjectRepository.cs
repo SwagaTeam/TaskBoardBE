@@ -7,8 +7,8 @@ public interface IProjectRepository
     Task<ProjectEntity?> GetByIdAsync(int id);
     Task<ProjectEntity?> GetByBoardIdAsync(int id);
     Task<int> SetUserRoleAsync(int userId, int projectId, RoleEntity role);
-    Task Create(ProjectEntity project);
-    Task Update(ProjectEntity project);
+    Task Create(ProjectEntity projectEntity);
+    Task Update(ProjectEntity projectEntity);
     Task Delete(int id);
     IQueryable<ProjectEntity?> GetByUserId(int? currentUserId);
 }

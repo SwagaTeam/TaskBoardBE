@@ -10,11 +10,12 @@ using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.BusinessLayer.Implementations;
 using AnalyticsService.DataLayer.Abstractions;
 using AnalyticsService.DataLayer.Implementations;
-using Microsoft.Extensions.DependencyInjection;
 using AnalyticsService.BusinessLayer;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Dapper.DapperRepositories;
 using AnalyticsService.DataLayer;
+
+namespace AnalyticsService;
 
 internal class Program
 {

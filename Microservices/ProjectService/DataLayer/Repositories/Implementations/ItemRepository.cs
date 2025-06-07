@@ -62,9 +62,9 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
             .ToListAsync();
     }
 
-    public async Task<ItemEntity> GetByNameAsync(string title)
+    public async Task<ItemEntity> GetByNameAsync(string name)
     {
-        return await context.Items.FirstOrDefaultAsync(item => item.Title == title);
+        return await context.Items.FirstOrDefaultAsync(item => item.Title == name);
     }
 
     public async Task<ICollection<ItemEntity>> GetItemsByUserIdAsync(int userId, int projectId)
@@ -89,9 +89,9 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         return items;
     }
 
-    public async Task AddUserToItemAsync(UserItemEntity userItemEntity)
+    public async Task AddUserToItemAsync(UserItemEntity itemUserEntity)
     {
-        await context.UserItems.AddAsync(userItemEntity);
+        await context.UserItems.AddAsync(itemUserEntity);
         await context.SaveChangesAsync();
     }
 

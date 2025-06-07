@@ -61,20 +61,20 @@ namespace ProjectService.DataLayer.Repositories.Implementations
         }
 
 
-        public async Task Update(ProjectEntity project)
+        public async Task Update(ProjectEntity projectEntity)
         {
-            var existing = await GetByIdAsync(project.Id);
+            var existing = await GetByIdAsync(projectEntity.Id);
             if (existing is null) throw new ProjectNotFoundException();
 
-            existing.Id = project.Id;
-            existing.Name = project.Name;
-            existing.Key = project.Key;
-            existing.Description = project.Description;
-            existing.IsPrivate = project.IsPrivate;
-            existing.CreatedAt = project.CreatedAt;
-            existing.UpdatedAt = project.UpdatedAt;
-            existing.ExpectedEndDate = project.ExpectedEndDate;
-            existing.Priority = project.Priority;
+            existing.Id = projectEntity.Id;
+            existing.Name = projectEntity.Name;
+            existing.Key = projectEntity.Key;
+            existing.Description = projectEntity.Description;
+            existing.IsPrivate = projectEntity.IsPrivate;
+            existing.CreatedAt = projectEntity.CreatedAt;
+            existing.UpdatedAt = projectEntity.UpdatedAt;
+            existing.ExpectedEndDate = projectEntity.ExpectedEndDate;
+            existing.Priority = projectEntity.Priority;
 
             await projectDbContext.SaveChangesAsync();
         }
