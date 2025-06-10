@@ -23,6 +23,8 @@ public class ItemModel
     public int? ItemTypeId { get; set; }
     public int? StatusId { get; set; }
     public bool IsArchived { get; set; }
+
+    [JsonInclude]
     public List<string> Contributors { get; private set; } = new List<string>();
     public string Author { get; private set; } = "";
 

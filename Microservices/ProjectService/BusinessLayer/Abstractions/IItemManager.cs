@@ -25,4 +25,6 @@ public interface IItemManager
     public Task<ICollection<CommentModel>> GetComments(int itemId);
     public Task<ICollection<ItemModel>> GetArchievedItemsInProject(int projectId);
     public Task<ICollection<ItemModel>> GetArchievedItemsInBoard(int boardId);
+    public Task<ICollection<ItemModel>> GetBugsItemsInBoard(int boardId);
+    public Task<ICollection<ItemModel>> GetBugsItemsInProject(int boardId);
 }

@@ -166,6 +166,25 @@ public class ItemManager(
         return models;
     }
 
+    public async Task<ICollection<ItemModel>> GetBugsItemsInProject(int projectId)
+    {
+        await validatorManager.ValidateUserInProjectAsync(projectId);
+        var items = await itemRepository.GetItemsByProjectIdAsync(projectId);
+        var models = await Task.WhenAll(items.Where(x => x.ItemTypeId == ItemType.BUG).Select(x => ItemMapper.ToModel(x, userRepository)));
+
+        return models;
+    }
+
+    public async Task<ICollection<ItemModel>> GetBugsItemsInBoard(int boardId)
+    {
+        var projectId = (await projectRepository.GetByBoardIdAsync(boardId)).Id;
+        await validatorManager.ValidateUserInProjectAsync(projectId);
+        var items = await itemRepository.GetItemsByBoardIdAsync(boardId);
+        var models = await Task.WhenAll(items.Where(x => x.ItemTypeId == ItemType.BUG).Select(x => ItemMapper.ToModel(x, userRepository)));
+
+        return models;
+    }
+
     public async Task<ICollection<ItemModel>> GetByProjectIdAsync(int projectId)
     {
         await validatorManager.ValidateUserInProjectAsync(projectId);

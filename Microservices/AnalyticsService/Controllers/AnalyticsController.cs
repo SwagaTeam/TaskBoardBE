@@ -2,6 +2,7 @@ using AnalyticsService.BusinessLayer.Abstractions;
 using AnalyticsService.BusinessLayer.Implementations;
 using AnalyticsService.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Models.AnalyticModels;
 
 namespace AnalyticsService.Controllers
@@ -10,6 +11,10 @@ namespace AnalyticsService.Controllers
     [Route("analytics")]
     public class AnalyticsController(ITaskManager taskManager, IProjectManager projectManager) : ControllerBase
     {
+        /// <summary>
+        /// Создание записи "истории"
+        /// </summary> 
+        /// <param name="entity"></param>
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync([FromBody] SharedLibrary.Models.AnalyticModels.TaskHistoryModel entity)
         {
@@ -25,6 +30,10 @@ namespace AnalyticsService.Controllers
             
         }
 
+        /// <summary>
+        /// Получение истории проекта
+        /// </summary> 
+        /// <param name="projectId"></param>
         [HttpGet("history/{projectId}")]
         public async Task<IActionResult> CreateAsync(int projectId)
         {
@@ -40,6 +49,101 @@ namespace AnalyticsService.Controllers
 
         }
 
+        /// <summary>
+        /// Получение агрегированных данных для построения кастомной диаграммы по задачам проекта.
+        /// </summary>
+        /// <remarks>
+        /// <b>Параметры запроса:</b>
+        /// <ul>
+        ///     <li><b>XAxis</b> – поле группировки данных по оси X (обязательный параметр):</li>
+        ///     <ul>
+        ///         <li><b>status</b> – группировка по статусам задач (например, "To Do", "In Progress").</li>
+        ///         <li><b>user</b> – группировка по исполнителям задач (по полю Contributors).</li>
+        ///         <li><b>date</b> – группировка по дате начала задачи (StartDate, формат yyyy-MM-dd).</li>
+        ///     </ul>
+        ///     <li><b>YAxis</b> – метрика по оси Y (необязательный, по умолчанию "count"):</li>
+        ///     <ul>
+        ///         <li><b>count</b> – количество задач в каждой группе.</li>
+        ///         <li><b>sum-priority</b> – сумма приоритетов задач в группе (используется поле Priority).</li>
+        ///         <li><b>avg-duration</b> – средняя длительность задач в днях (ExpectedEndDate - StartDate).</li>
+        ///     </ul>
+        ///     <li><b>Start</b> и <b>End</b> – временной диапазон для выборки задач по дате начала (StartDate).</li>
+        /// </ul>
+        /// </remarks>
+        /// <param name="query">Параметры запроса для построения диаграммы</param>
+        /// <returns>Список агрегированных точек данных для отображения диаграммы</returns>
+        [HttpGet("custom-chart")]
+        public async Task<IActionResult> GetCustomChart([FromQuery] ChartQueryModel query)
+        {
+            try
+            {
+                var data = await projectManager.GetCustomChart(query);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получение данных для Roadmap представления
+        /// </summary>
+        /// <remarks>
+        /// Отображает задачи проекта по датам начала и окончания в формате, пригодном для календарного отображения.
+        /// </remarks>
+        /// <param name="projectId">ID проекта</param>
+        /// <returns>Список задач с временными рамками</returns>
+        [HttpGet("roadmap/{projectId}")]
+        public async Task<IActionResult> GetRoadmap(int projectId)
+        {
+            try
+            {
+                var roadmapData = await projectManager.GetRoadmapDataAsync(projectId);
+                return Ok(roadmapData);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Ошибка при получении данных Roadmap: {ex.Message}");
+            }
+        }
+
+        [HttpGet("heatmap")]
+        public async Task<IActionResult> GetHeatmap([FromQuery] HeatmapQueryModel query)
+        {
+            try
+            {
+                var data = await projectManager.GetHeatmapData(query);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получение данных для диаграммы Ганта
+        /// </summary>
+        /// <remarks>
+        /// Возвращает список задач с временными рамками (StartDate, ExpectedEndDate) для визуализации в диаграмме Ганта.
+        /// </remarks>
+        /// <param name="projectId">ID проекта</param>
+        /// <returns>Список задач для диаграммы Ганта</returns>
+        [HttpGet("gantt-chart/{projectId}")]
+        public async Task<IActionResult> GetGanttChart(int projectId)
+        {
+            try
+            {
+                var ganttData = await projectManager.GetGanttChartDataAsync(projectId);
+                return Ok(ganttData);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Ошибка при получении диаграммы Ганта: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Получение данных для диаграммы сгорания задач по проекту
@@ -52,9 +156,10 @@ namespace AnalyticsService.Controllers
         ///         <li>2 – Средний</li>
         ///         <li>3 – Высокий</li>
         ///         <li>4 – Критический</li>
+        ///         <li>Любое другое число - любой приоритет</li>
         ///     </ul>
         /// </remarks>
-        /// <param name="projectId"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("burndown")]
         public async Task<IActionResult> GetBurnDownChart([FromQuery]BurnDownChartRequest request)

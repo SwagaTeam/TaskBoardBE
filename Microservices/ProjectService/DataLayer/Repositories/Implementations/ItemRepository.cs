@@ -72,7 +72,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         var items = await context.Items
             .Include(i => i.Status)
             .Include(i => i.UserItems)
-            .Where(i => i.UserItems.Any(x => x.UserId == userId && i.ProjectId == projectId))
+            .Where(i => i.UserItems.Any(x => x.UserId == userId && i.ProjectId == projectId) && !i.IsArchived)
             .ToListAsync();
 
         return items;
@@ -83,7 +83,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         var items = await context.Items
             .Include(x => x.UserItems)
             .Include(i => i.Status)
-            .Where(i => i.ItemsBoards.Any(ib => ib.BoardId == boardId))
+            .Where(i => i.ItemsBoards.Any(ib => ib.BoardId == boardId) && !i.IsArchived)
             .ToListAsync();
 
         return items;
@@ -101,7 +101,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
             .Include(i => i.Status)
             .Include(i => i.UserItems)
             .Include(i=>i.ItemsBoards)
-            .Where(i => i.UserItems.Any(x => x.UserId == userId))
+            .Where(i => i.UserItems.Any(x => x.UserId == userId) && !i.IsArchived)
             .ToListAsync();
 
         return items;
@@ -113,7 +113,7 @@ public class ItemRepository(ProjectDbContext context) : IItemRepository
         var items = await context.Items
             .Include(x => x.UserItems)
             .Include(i => i.Status)
-            .Where(i => i.ProjectId == projectId)
+            .Where(i => i.ProjectId == projectId && !i.IsArchived)
             .ToListAsync();
 
         return items;

@@ -399,4 +399,42 @@ public class ItemController(IItemManager itemManager) : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    /// <summary>
+    ///     Получение задач-багов доски.
+    /// </summary>
+    /// <param name="boardId">ID доски</param>
+    [HttpGet("bugs/board/{boardId}")]
+    [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetBugsItemsInBoard(int boardId)
+    {
+        try
+        {
+            return Ok(await itemManager.GetBugsItemsInBoard(boardId));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Получение задач-багов проекта.
+    /// </summary>
+    /// <param name="projectId">ID проекта</param>
+    [HttpGet("bugs/project/{projectId}")]
+    [ProducesResponseType<ItemModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetBugsItemsInProject(int projectId)
+    {
+        try
+        {
+            return Ok(await itemManager.GetBugsItemsInProject(projectId));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
