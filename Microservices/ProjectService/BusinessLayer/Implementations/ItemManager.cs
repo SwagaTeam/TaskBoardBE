@@ -130,7 +130,7 @@ public class ItemManager(
     public async Task<int> AddUserToItemAsync(int newUserId, int itemId, CancellationToken cancellationToken)
     {
         var item = await itemRepository.GetByIdAsync(itemId);
-        await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId!, newUserId);
+        await validatorManager.ValidateAddUserToItemAsync((int)item.ProjectId!, newUserId, itemId);
         var itemUserEntity = new UserItemEntity
         {
             ItemId = itemId,

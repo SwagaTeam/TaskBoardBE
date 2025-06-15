@@ -29,4 +29,12 @@ public static class UserInProjectService
         if (userId is null || userId == -1 || projectId is null || projectId == -1) return false;
         return await userProjectManager.IsUserAdminAsync((int)userId, (int)projectId);
     }
+
+    public static async Task<bool> IsUserInItem(IItemManager itemManager, int? userId, int? itemId)
+    {
+        if (userId is null or -1) return false;
+        if (itemId is null or -1) return true;
+        var item = await itemManager.GetByIdAsync(itemId.Value);
+        return item.UserItems.All(x=>x.UserId != (int)userId);
+    }
 }

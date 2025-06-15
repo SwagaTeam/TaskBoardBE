@@ -7,11 +7,9 @@ namespace ProjectService.Validator;
 
 public class AddUserToItemValidator : AbstractValidator<UsersInProjectModel>
 {
-    private readonly IUserProjectManager userProjectManager;
-    public AddUserToItemValidator(IUserProjectManager userProjectManager)
+
+    public AddUserToItemValidator(IUserProjectManager userProjectManager, IItemManager itemManager)
     {
-        this.userProjectManager = userProjectManager;
-        
         RuleFor(x => x)
             .MustAsync((model, cancellation) =>
                 UserInProjectService.IsUserInProjectAsync(
@@ -23,11 +21,10 @@ public class AddUserToItemValidator : AbstractValidator<UsersInProjectModel>
                 UserInProjectService.IsUserInProjectAsync(
                     userProjectManager, model.NewUserId, model.ProjectId, cancellation))
             .WithMessage("Новый пользователь не находится в нужном проекте");
-    }
-
-    private async Task<bool> IsNewUserInProject(int newUserId, int? projectId)
-    {
-        if (projectId == null || projectId == -1) return false;
-        return await userProjectManager.IsUserInProjectAsync(newUserId, (int)projectId);
+        
+        RuleFor(x => x)
+            .MustAsync((model, cancellation) =>
+                UserInProjectService.IsUserInItem(itemManager, model.NewUserId, model.ItemId))
+            .WithMessage("Новый пользователь ужн находится в проекте");
     }
 }

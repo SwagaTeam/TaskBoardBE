@@ -12,7 +12,8 @@ public class ValidateItemManager(IBoardManager boardManager,
     IItemRepository itemRepository,
     IStatusManager statusManager,
     IItemTypeManager itemTypeManager,
-    IUserProjectManager userProjectManager) : IValidateItemManager
+    IUserProjectManager userProjectManager,
+    IItemManager itemManager) : IValidateItemManager
 {
     public async Task ValidateCreateAsync(CreateItemModel createItemModel)
     {
@@ -32,17 +33,19 @@ public class ValidateItemManager(IBoardManager boardManager,
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
     
-    public async Task ValidateAddUserToItemAsync(int? projectId, int newUserId)
+
+    public async Task ValidateAddUserToItemAsync(int? projectId, int? newUserId, int? itemId = null)
     {
         var userId = authManager.GetCurrentUserId();
         var validateModel = new UsersInProjectModel
         {
             CurrentUserId = userId,
             NewUserId = newUserId,
-            ProjectId = projectId
+            ProjectId = projectId,
+            ItemId = itemId
         };
 
-        var validator = new AddUserToItemValidator(userProjectManager);
+        var validator = new AddUserToItemValidator(userProjectManager, itemManager);
         var result = await validator.ValidateAsync(validateModel);
         if (!result.IsValid)
             throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
