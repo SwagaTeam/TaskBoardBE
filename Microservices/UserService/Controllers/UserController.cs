@@ -24,7 +24,7 @@ namespace UserService.Controllers
         [HttpGet("get-user-by/{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
-            return Ok(await userManager.GetById(userId));
+            return Ok(await userManager.GetByIdAsync(userId));
         }
 
         [ProducesResponseType<UserModel>(StatusCodes.Status200OK)]
@@ -35,7 +35,7 @@ namespace UserService.Controllers
             var userId = auth.GetCurrentUserId();
 
             if (userId == id)
-                return Ok(await userManager.GetById(id));
+                return Ok(await userManager.GetByIdAsync(id));
 
             return Unauthorized("������� �� ��������������� �������");
         }

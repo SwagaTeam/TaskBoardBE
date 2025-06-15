@@ -125,13 +125,13 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         return entity.Id;
     }
 
-    public async Task<IEnumerable<UserModel>> GetUsersInProjectAsync(int projectId)
+    public async Task<IEnumerable<UserDtoModel>> GetUsersInProjectAsync(int projectId)
     {
         var project = await GetByIdAsync(projectId);
-        var users = new List<UserModel>();
+        var users = new List<UserDtoModel>();
         foreach (var uP in project.UserProjects)
         {
-            users.Add(await httpClient.GetFromJsonAsync<UserModel>($"get-user-by/{uP.UserId}"));
+            users.Add(await httpClient.GetFromJsonAsync<UserDtoModel>($"get-user-by/{uP.UserId}"));
         }
         
         return users;

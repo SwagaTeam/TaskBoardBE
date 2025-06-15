@@ -66,9 +66,17 @@ namespace UserService.BusinessLayer.Manager
             return _userRepository.GetAll();
         }
 
-        public Task<UserModel?> GetById(int id)
+        public async Task<UserDtoModel> GetByIdAsync(int id)
         {
-            return _userRepository.GetById(id);
+            var users = await _userRepository.GetById(id);
+            var usersDto = new UserDtoModel
+            {
+                Id = users.Id,
+                Email = users.Email,
+                Username = users.Username,
+                ImagePath = users.ImagePath,
+            };
+            return usersDto;
         }
 
         public Task<UserModel?> GetByEmail(string email)
