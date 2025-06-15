@@ -131,7 +131,9 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         var users = new List<UserDtoModel>();
         foreach (var uP in project.UserProjects)
         {
-            users.Add(await httpClient.GetFromJsonAsync<UserDtoModel>($"get-user-by/{uP.UserId}"));
+            var dto = await httpClient.GetFromJsonAsync<UserDtoModel>($"get-user-by/{uP.UserId}");
+            dto.Role = uP.Role.Role;
+            users.Add(dto);
         }
         
         return users;
