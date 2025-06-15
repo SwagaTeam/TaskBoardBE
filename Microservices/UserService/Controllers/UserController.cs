@@ -9,7 +9,7 @@ using UserService.DataLayer.Repositories.Abstractions;
 namespace UserService.Controllers
 {
     [ApiController]
-    [Route("users")]
+    [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly IAuth auth;
@@ -21,12 +21,6 @@ namespace UserService.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet("get-user-by/{userId}")]
-        public async Task<IActionResult> GetUserById(int userId)
-        {
-            return Ok(await userManager.GetByIdAsync(userId));
-        }
-
         [ProducesResponseType<UserModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("current/{id}")]
@@ -35,7 +29,7 @@ namespace UserService.Controllers
             var userId = auth.GetCurrentUserId();
 
             if (userId == id)
-                return Ok(await userManager.GetByIdAsync(id));
+                return Ok(await userManager.GetById(id));
 
             return Unauthorized("������� �� ��������������� �������");
         }

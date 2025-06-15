@@ -102,7 +102,7 @@ namespace UserService.Controllers
                 if (userId == -1)
                     return Unauthorized($"Вы не авторизованы");
 
-                var user = await userManager.GetByIdAsync((int)userId!);
+                var user = await userManager.GetById((int)userId!);
 
                 var validatedUser = await userManager.ValidateCredentials(user.Email, changePasswordModel.LastPassword);
                 if (validatedUser == null)
