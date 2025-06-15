@@ -97,6 +97,19 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
+    /// Получение всех пользователей в проекте по projectId
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
+    [HttpGet("get-users-in-project/{projectId}")]
+    public async Task<IActionResult> GetUsersInProject(int projectId)
+    {
+        var users = await _projectManager.GetUsersInProjectAsync(projectId);
+        if (users is null) return NotFound("не найден проект или список участников пуст");
+        return Ok(users);
+    }
+
+    /// <summary>
     /// Получение информации о проекте по ссылке-приглашению.
     /// </summary>
     /// <param name="link">Уникальная ссылка-приглашение.</param>

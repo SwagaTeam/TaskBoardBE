@@ -2,6 +2,7 @@
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
+using SharedLibrary.UserModels;
 
 namespace ProjectService.BusinessLayer.Abstractions
 {
@@ -11,6 +12,7 @@ namespace ProjectService.BusinessLayer.Abstractions
         Task<ProjectModel?> GetByIdAsync(int id);
         Task<ProjectModel?> GetByBoardIdAsync(int id);
         Task<bool> IsUserInProjectAsync(int userId, int projectId);
+        public Task<IEnumerable<UserModel>> GetUsersInProjectAsync(int projectId);
         Task<bool> IsUserCanViewAsync(int userId, int projectId);
         Task<int> AddUserInProjectAsync(int userId, int projectId);
         Task<bool> IsUserAdminAsync(int userId, int projectId);

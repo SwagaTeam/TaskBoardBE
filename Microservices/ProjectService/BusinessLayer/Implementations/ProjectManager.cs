@@ -10,10 +10,12 @@ using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 using System.Data;
+using SharedLibrary.UserModels;
 
 namespace ProjectService.BusinessLayer.Implementations;
 
-public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, IUserRepository userRepository, IItemRepository itemRepository)
+public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, 
+    IUserRepository userRepository, IItemRepository itemRepository, HttpClient httpClient)
     : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
@@ -121,6 +123,18 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         };
         await userProjectManager.CreateAsync(entity);
         return entity.Id;
+    }
+
+    public async Task<IEnumerable<UserModel>> GetUsersInProjectAsync(int projectId)
+    {
+        var project = await GetByIdAsync(projectId);
+        var users = new List<UserModel>();
+        foreach (var uP in project.UserProjects)
+        {
+            users.Add(await httpClient.GetFromJsonAsync<UserModel>($"get-user-by/{uP.UserId}"));
+        }
+        
+        return users;
     }
 
     public async Task<ProjectModel> UpdateAsync(ProjectModel project)

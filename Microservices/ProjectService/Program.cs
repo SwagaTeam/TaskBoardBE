@@ -89,13 +89,15 @@ internal class Program
         services.AddHttpClient<IItemManager, ItemManager>
             (client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("ANALYTICS_SERVICE") + "/analytics/"))
             .AddHttpMessageHandler<ForwardAccessTokenHandler>();
+        services
+            .AddHttpClient<IProjectManager, ProjectManager>(client => client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("USER_SERVICE_URL") + "/users/"))
+            .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();
         services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
         services.AddScoped<IValidateSprintManager, ValidateSprintManager>();
         services.AddScoped<IValidateStatusManager, ValidateStatusManager>();
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
-        services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IContributorsRepository, ContributorsRepository>();
         services.AddScoped<IContributorsManager, ContributorsManager>();

@@ -9,7 +9,7 @@ using UserService.DataLayer.Repositories.Abstractions;
 namespace UserService.Controllers
 {
     [ApiController]
-    [Route("user")]
+    [Route("users")]
     public class UserController : ControllerBase
     {
         private readonly IAuth auth;
@@ -19,6 +19,12 @@ namespace UserService.Controllers
         {
             this.auth = auth;
             this.userManager = userManager;
+        }
+
+        [HttpGet("get-user-by/{userId}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            return Ok(await userManager.GetById(userId));
         }
 
         [ProducesResponseType<UserModel>(StatusCodes.Status200OK)]
@@ -31,24 +37,24 @@ namespace UserService.Controllers
             if (userId == id)
                 return Ok(await userManager.GetById(id));
 
-            return Unauthorized("Попытка не авторизованного доступа");
+            return Unauthorized("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         }
 
         [HttpPost("set-avatar")]
         public async Task<IActionResult> SetUserAvatar(IFormFile avatar)
         {
             if (avatar == null || avatar.Length == 0)
-                return BadRequest("Файл не загружен.");
+                return BadRequest("пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.");
 
             var userId = auth.GetCurrentUserId();
 
             if (userId is null || userId == -1)
-                return Unauthorized("Попытка не авторизованного доступа");
+                return Unauthorized("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 
             try
             {
                 await userManager.SetUserAvatar((int)userId, avatar);
-                return Ok("Аватар обновлён");
+                return Ok("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
             }
             catch (Exception ex)
             {
