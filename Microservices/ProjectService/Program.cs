@@ -91,6 +91,7 @@ internal class Program
             .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();
+        services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
         services.AddScoped<IValidateSprintManager, ValidateSprintManager>();
         services.AddScoped<IValidateStatusManager, ValidateStatusManager>();
