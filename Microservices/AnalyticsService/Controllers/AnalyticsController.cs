@@ -31,6 +31,42 @@ namespace AnalyticsService.Controllers
         }
 
         /// <summary>
+        /// Возвращает кол-во задач в каждом статусе на каждый день
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        [HttpGet("get-cumulative-flow-data/{projectId}")]
+        public async Task<IActionResult> GetCumulativeFlow(int projectId, [FromQuery] DateTime startDate, 
+            [FromQuery] DateTime endDate)
+        {
+            try
+            {
+                var data = await projectManager.GetCumulativeFlow(projectId, startDate, endDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-funnel-data")]
+        public async Task<IActionResult> GetFunnelChart(int projectId)
+        {
+            try
+            {
+                var data = await projectManager.GetFunnelChartAsync(projectId);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Получение истории проекта
         /// </summary> 
         /// <param name="projectId"></param>

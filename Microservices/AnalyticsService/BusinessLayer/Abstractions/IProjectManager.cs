@@ -11,5 +11,8 @@ namespace AnalyticsService.BusinessLayer.Abstractions
         public Task<List<HeatmapCell>> GetHeatmapData(HeatmapQueryModel query);
         public Task<ICollection<TaskHistoryModel>> GetProjectHistory(int projectId);
         public Task<ICollection<RoadmapItemModel>> GetRoadmapDataAsync(int projectId);
+        public Task<IEnumerable<StatusCountModel>> GetCumulativeFlow(int projectId, DateTime startDate, DateTime endDate);
+        public Task<IEnumerable<StatusCountModel>> GetFunnelChartAsync(int projectId);
+
     }
 }

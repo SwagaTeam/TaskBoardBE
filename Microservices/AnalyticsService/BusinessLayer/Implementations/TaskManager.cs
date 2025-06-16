@@ -22,7 +22,9 @@ public class TaskManager(HttpClient httpClient, ITaskHistoryRepository taskHisto
         await taskHistoryRepository.CreateAsync(entity);
         return entity.Id;
     }
+
     
+
     public async Task<IEnumerable<ItemModel>> GetCompletedTaskBetween(int projectId, DateTime startDate, DateTime endDate)
     {
         var items = 
