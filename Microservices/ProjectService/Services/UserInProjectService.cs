@@ -1,5 +1,5 @@
 ﻿using ProjectService.BusinessLayer.Abstractions;
-using SharedLibrary.Auth;
+using ProjectService.DataLayer.Repositories.Abstractions;
 
 namespace ProjectService.Services.MailService;
 
@@ -30,11 +30,11 @@ public static class UserInProjectService
         return await userProjectManager.IsUserAdminAsync((int)userId, (int)projectId);
     }
 
-    public static async Task<bool> IsUserInItem(IItemManager itemManager, int? userId, int? itemId)
+    public static async Task<bool> IsUserInItem(IItemRepository itemRepository, int? userId, int? itemId)
     {
         if (userId is null or -1) return false;
         if (itemId is null or -1) return true;
-        var item = await itemManager.GetByIdAsync(itemId.Value);
+        var item = await itemRepository.GetByIdAsync(itemId.Value);
         return item.UserItems.All(x=>x.UserId != (int)userId);
     }
 }

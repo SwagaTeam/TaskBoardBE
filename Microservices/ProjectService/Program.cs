@@ -91,11 +91,11 @@ internal class Program
             .AddHttpMessageHandler<ForwardAccessTokenHandler>();
         services.AddScoped<IValidateBoardManager, ValidateBoardManager>();
         services.AddScoped<IValidateItemManager, ValidateItemManager>();
-        services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IValidateDocumentManager, ValidateDocumentManager>();
         services.AddScoped<IValidateSprintManager, ValidateSprintManager>();
         services.AddScoped<IValidateStatusManager, ValidateStatusManager>();
         services.AddScoped<IProjectLinkRepository, ProjectLinkRepository>();
+        services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IContributorsRepository, ContributorsRepository>();
         services.AddScoped<IContributorsManager, ContributorsManager>();
@@ -140,11 +140,12 @@ internal class Program
         {
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "������� 'Bearer' [������] ��� �����������",
+                Description = "Введите 'Bearer' и ваш JWT токен в поле ниже.",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey
             });
+
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {

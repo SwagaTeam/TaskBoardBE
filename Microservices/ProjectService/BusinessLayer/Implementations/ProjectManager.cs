@@ -15,7 +15,7 @@ using SharedLibrary.UserModels;
 namespace ProjectService.BusinessLayer.Implementations;
 
 public class ProjectManager(IProjectRepository projectRepository, IUserProjectManager userProjectManager, IAuth auth, 
-    IUserRepository userRepository, IItemRepository itemRepository, HttpClient httpClient)
+    IUserRepository userRepository, IItemRepository itemRepository)
     : IProjectManager
 {
     public async Task<int> CreateAsync(ProjectModel project)
@@ -125,14 +125,14 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         return entity.Id;
     }
 
-    public async Task<IEnumerable<UserDtoModel>> GetUsersInProjectAsync(int projectId)
+    public async Task<IEnumerable<UserDto>> GetUsersInProjectAsync(int projectId)
     {
         var project = await GetByIdAsync(projectId);
-        var users = new List<UserDtoModel>();
+        var users = new List<UserDto>();
         foreach (var uP in project.UserProjects)
         {
             var model = await userRepository.GetUserAsync(uP.UserId);
-            var dto = new UserDtoModel()
+            var dto = new UserDto()
             {
                 Email = model.Email,
                 Id = model.Id,

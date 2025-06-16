@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using ProjectService.BusinessLayer.Abstractions;
+using ProjectService.DataLayer.Repositories.Abstractions;
 using ProjectService.Models;
 using ProjectService.Services.MailService;
 
@@ -8,7 +9,7 @@ namespace ProjectService.Validator;
 public class AddUserToItemValidator : AbstractValidator<UsersInProjectModel>
 {
 
-    public AddUserToItemValidator(IUserProjectManager userProjectManager, IItemManager itemManager)
+    public AddUserToItemValidator(IUserProjectManager userProjectManager, IItemRepository itemRepository)
     {
         RuleFor(x => x)
             .MustAsync((model, cancellation) =>
@@ -24,7 +25,7 @@ public class AddUserToItemValidator : AbstractValidator<UsersInProjectModel>
         
         RuleFor(x => x)
             .MustAsync((model, cancellation) =>
-                UserInProjectService.IsUserInItem(itemManager, model.NewUserId, model.ItemId))
+                UserInProjectService.IsUserInItem(itemRepository, model.NewUserId, model.ItemId))
             .WithMessage("Новый пользователь ужн находится в проекте");
     }
 }
