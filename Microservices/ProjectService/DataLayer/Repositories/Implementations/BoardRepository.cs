@@ -45,12 +45,11 @@ public class BoardRepository(ProjectDbContext context) : IBoardRepository
 
     public async Task<IQueryable<BoardEntity>> GetByProjectIdAsync(int projectId)
     {
-        var boards = context.Boards
-            .Include(x => x.ItemsBoards)
-            .Include(x => x.Statuses)
-            .Where(x => x.ProjectId == projectId);
-
-        return boards;
+        return context.Boards
+        .Include(x => x.ItemsBoards)
+        .Include(x => x.Statuses)
+        .Include(x => x.Project)
+        .Where(x => x.ProjectId == projectId);
     }
 
     public async Task<IQueryable<BoardEntity>> GetByUserIdAsync(int userId)

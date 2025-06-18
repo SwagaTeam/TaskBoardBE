@@ -80,7 +80,7 @@ public class ProjectController : ControllerBase
             var user = await userRepository.GetUserByEmailAsync(request.Email);
 
             if (user is null || project is null)
-                return BadRequest("������������ ��� ������� �� ����������");
+                return BadRequest("Такого пользователя или проекта не существует");
 
             await _emailSender.SendEmailAsync(
                 user.Email,

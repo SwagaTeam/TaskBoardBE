@@ -56,7 +56,8 @@ namespace ProjectService.DataLayer.Repositories.Implementations
                 .ThenInclude(x=>x.Role)
                 .Include(x=>x.Boards)
                 .FirstOrDefaultAsync(x => x.Id == id);
-
+            projectDbContext.Projects.Update(project);
+            await projectDbContext.SaveChangesAsync();
             return project;
         }
 

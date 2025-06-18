@@ -60,9 +60,8 @@ public class BoardManager(IBoardRepository boardRepository, IAuth auth, IProject
     public async Task<ICollection<BoardModel>> GetByProjectIdAsync(int projectId)
     {
         await validatorManager.ValidateUserCanViewAsync(projectId);
-
+        await projectManager.GetByIdAsync(projectId); //КОСТЫЛЬ, НЕ УБИРАТЬ!!!!
         var boardsEntities = await boardRepository.GetByProjectIdAsync(projectId);
-
         var boardModels = await Task.WhenAll(
             boardsEntities.Select(b => BoardMapper.ToModel(b, userRepository))
         );

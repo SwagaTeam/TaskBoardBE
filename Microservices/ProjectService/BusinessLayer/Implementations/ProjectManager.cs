@@ -10,6 +10,7 @@ using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 using System.Data;
+using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.UserModels;
 
 namespace ProjectService.BusinessLayer.Implementations;
@@ -120,9 +121,10 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
             ProjectId = projectId,
             UserId = userId,
             Privilege = Privilege.MEMBER,
-            RoleId = DefaultRoles.NEWUSER
+            RoleId = DefaultRoles.NEWUSER,
         };
         await userProjectManager.CreateAsync(entity);
+        
         return entity.Id;
     }
 

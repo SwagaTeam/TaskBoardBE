@@ -17,6 +17,10 @@ public static class ProjectLinkMapper
     
     public static async Task<ProjectLinkModel> ToModel(ProjectLinkEntity model, IUserRepository userRepository)
     {
+        var id = model.Id;
+        var pId = model.ProjectId;
+        var project = await ProjectMapper.ToModel(model.Project, userRepository);
+        var url = model.Url;
         return new ProjectLinkModel
         {
             Id = model.Id,

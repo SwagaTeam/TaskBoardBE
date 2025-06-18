@@ -9,7 +9,15 @@ public class UserProjectRepository(ProjectDbContext context) : IUserProjectRepos
 {
     public async Task CreateAsync(UserProjectEntity userProject)
     {
-        await context.UserProjects.AddAsync(userProject);
+        var project = await context.Projects
+            .Include(p => p.UserProjects)
+            .FirstOrDefaultAsync(p => p.Id == userProject.ProjectId);
+
+        if (project == null)
+            throw new InvalidOperationException("Project not found");
+
+        project.UserProjects.Add(userProject);
+
         await context.SaveChangesAsync();
     }
     
