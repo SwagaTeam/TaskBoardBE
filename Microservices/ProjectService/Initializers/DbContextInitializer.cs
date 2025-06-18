@@ -24,19 +24,35 @@ namespace ProjectService.Initializers
 
         private static async Task InitRole(ProjectDbContext context)
         {
-            var role = await context.Roles.FindAsync(1);
-            if (role is null)
+            var firstRole = await context.Roles.FindAsync(1);
+            var secondRole = await context.Roles.FindAsync(2);
+            if (firstRole is null)
             {
                 context.Roles.Add(
                     new RoleEntity {
                         Id = 1,
                         Role = "Создатель"
-                    }    
+                    }   
                 );
+                
             }
-            else if (role.Role != "Создатель")
+            else if (firstRole.Role != "Создатель")
             {
-                role.Role = "Создатель";
+                firstRole.Role = "Создатель";
+            }
+
+            if (secondRole is null)
+            {
+                context.Roles.Add(
+                    new RoleEntity()
+                    {
+                        Id = 2,
+                        Role = "Новый пользователь"
+                    });
+            }
+            else if (secondRole.Role != "Новый пользователь")
+            {
+                firstRole.Role = "Новый пользователь";
             }
         }
 

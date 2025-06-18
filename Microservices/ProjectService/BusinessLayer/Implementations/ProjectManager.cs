@@ -120,6 +120,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
             ProjectId = projectId,
             UserId = userId,
             Privilege = Privilege.MEMBER,
+            RoleId = DefaultRoles.NEWUSER
         };
         await userProjectManager.CreateAsync(entity);
         return entity.Id;
