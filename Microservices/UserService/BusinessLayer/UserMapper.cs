@@ -12,6 +12,7 @@ namespace UserService.BusinessLayer
                 Id = userEntity.Id,
                 Username = userEntity.Username,
                 Email = userEntity.Email,
+                ImagePath = userEntity.ImagePath,
                 Password = userEntity.Password,
                 Salt = userEntity.Salt
             };
