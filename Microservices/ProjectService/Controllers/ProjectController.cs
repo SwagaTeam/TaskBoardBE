@@ -83,10 +83,9 @@ public class ProjectController : ControllerBase
                 return BadRequest("Такого пользователя или проекта не существует");
 
             await _emailSender.SendEmailAsync(
-                user.Email,
-                "����������� � ������",
-                $"������������, {user.Username}, ��� ���������� � ������ {project.Name}.\n" +
-                $"������-�����������: {link}");
+                "Приглашение в проект",
+                $"Здравствуйте, {user.Username}, Вас приглашают в проект {project.Name}.\n" +
+                $"Вы можете принять приглашение по ссылке: {link}", to:user.Email);
 
             return Ok(link);
         }
