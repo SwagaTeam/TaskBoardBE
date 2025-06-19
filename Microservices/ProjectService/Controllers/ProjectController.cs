@@ -73,7 +73,7 @@ public class ProjectController : ControllerBase
         {
             var link = await _projectLinkManager.CreateAsync(request.ProjectId);
 
-            link = $"{Request.Scheme}://boardly.ru/project/invite/{link}";
+            link = $"https://boardly.ru/project/invite/{link}";
 
             var project = await _projectManager.GetByIdAsync(request.ProjectId);
 
