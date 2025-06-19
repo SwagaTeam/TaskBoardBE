@@ -135,12 +135,12 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         foreach (var uP in project.UserProjects)
         {
             var model = await userRepository.GetUserAsync(uP.UserId);
-            var dto = new UserDto()
+            var dto = new UserDto
             {
                 Email = model.Email,
                 Id = model.Id,
                 ImagePath = model.ImagePath,
-                Role = uP.Role.Role,
+                Role = uP.Role is null ? "" : uP.Role.Role,
                 Username = model.Username,
             };
             users.Add(dto);
