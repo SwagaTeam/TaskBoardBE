@@ -39,3 +39,4 @@ services:
 volumes:
   user-data:
     external: false
+  user-images:
