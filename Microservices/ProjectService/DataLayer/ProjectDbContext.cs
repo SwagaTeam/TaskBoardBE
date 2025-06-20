@@ -99,7 +99,8 @@ namespace ProjectService.DataLayer
             modelBuilder.Entity<ItemEntity>()
                 .HasOne(i => i.Project)
                 .WithMany(p => p.Items)
-                .HasForeignKey(i => i.ProjectId);
+                .HasForeignKey(i => i.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // items -> item_type (item_type_id)
             modelBuilder.Entity<ItemEntity>()
