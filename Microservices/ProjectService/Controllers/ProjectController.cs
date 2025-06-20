@@ -72,12 +72,14 @@ public class ProjectController : ControllerBase
         try
         {
             var project = await _projectManager.GetByIdAsync(request.ProjectId);
-
             var user = await userRepository.GetUserByEmailAsync(request.Email);
 
             if (user is null || project is null)
                 return BadRequest("Такого пользователя или проекта не существует");
-            
+            if (!await _projectManager.IsUserAdminAsync(user.Id, project.Id))
+            {
+                return BadRequest("Вы не можете добавлять пользователей в преокт");
+            }
             var link = await _projectLinkManager.CreateAsync(request.ProjectId, user.Id);
 
             link = $"https://boardly.ru/project/invite/{link}";
@@ -220,7 +222,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType<ProjectModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpGet("delete/{id}")]
+    [HttpGet("get-by/{id}")]
     public async Task<IActionResult> Get(int id)
     {
         try

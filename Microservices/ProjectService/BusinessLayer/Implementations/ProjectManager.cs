@@ -10,6 +10,7 @@ using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Models;
 using SharedLibrary.ProjectModels;
 using System.Data;
+using ProjectService.Services.MailService;
 using SharedLibrary.Entities.ProjectService;
 using SharedLibrary.UserModels;
 
@@ -161,6 +162,7 @@ public class ProjectManager(IProjectRepository projectRepository, IUserProjectMa
         await projectRepository.Update(entity);
         return project;
     }
+    
 
     public async Task<ProjectModel?> GetByBoardIdAsync(int id)
     {

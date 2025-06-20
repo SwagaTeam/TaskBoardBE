@@ -12,7 +12,7 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
         public int Privilege { get; set; }
         [DefaultValue(null)]
         public int? RoleId { get; set; }
