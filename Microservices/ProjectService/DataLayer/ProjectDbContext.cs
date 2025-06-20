@@ -35,13 +35,12 @@ namespace ProjectService.DataLayer
             // Устанавливаем первичный ключ для UserProjectEntity
             modelBuilder.Entity<UserProjectEntity>()
                 .HasKey(up => new { up.Id });
-
-            // Связь между UserProjectEntity и ProjectEntity
+            
             modelBuilder.Entity<UserProjectEntity>()
-                .HasOne(up => up.Project) // Проект для UserProject
-                .WithMany(p => p.UserProjects) // Проект может иметь много UserProject
-                .HasForeignKey(up => up.ProjectId) // Внешний ключ
-                .OnDelete(DeleteBehavior.SetNull); // Устанавливаем поведение при удалении, можно настроить по желанию
+                .HasOne(up => up.Project)
+                .WithMany(p => p.UserProjects)
+                .HasForeignKey(up => up.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserProjectEntity>()
                 .HasOne(up => up.Role)
