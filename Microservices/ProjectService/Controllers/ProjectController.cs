@@ -73,12 +73,14 @@ public class ProjectController : ControllerBase
         {
             var project = await _projectManager.GetByIdAsync(request.ProjectId);
             var user = await userRepository.GetUserByEmailAsync(request.Email);
+            var currentUser = _auth.GetCurrentUserId();
+            if (currentUser is null || currentUser == -1) return BadRequest("Сперва авторизуйтесь");
 
             if (user is null || project is null)
                 return BadRequest("Такого пользователя или проекта не существует");
-            if (!await _projectManager.IsUserAdminAsync(user.Id, project.Id))
+            if (!await _projectManager.IsUserAdminAsync((int)currentUser, project.Id))
             {
-                return BadRequest("Вы не можете добавлять пользователей в преокт");
+                return BadRequest("Вы не можете добавлять пользователей в проект");
             }
             var link = await _projectLinkManager.CreateAsync(request.ProjectId, user.Id);
 
