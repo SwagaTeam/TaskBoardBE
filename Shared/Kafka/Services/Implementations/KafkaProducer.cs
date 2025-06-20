@@ -12,9 +12,12 @@ namespace Kafka.Messaging.Services.Implementations
 
         public KafkaProducer(IOptions<KafkaSettings> kafkaSettings)
         {
-            var config = new ProducerConfig
+            var config = new ConsumerConfig()
             {
-                BootstrapServers = kafkaSettings.Value.BootstrapServers
+                BootstrapServers = kafkaSettings.Value?.BootstrapServers,
+                GroupId = kafkaSettings.Value?.GroupId,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                EnableAutoCommit = true
             };
 
             producer = new ProducerBuilder<string, TMessage>(config)
@@ -33,6 +36,7 @@ namespace Kafka.Messaging.Services.Implementations
                     Value = message
                 },
                 cancellationToken);
+            Console.WriteLine("✅ Message sent to Kafka.");
         }
         public void Dispose()
         {

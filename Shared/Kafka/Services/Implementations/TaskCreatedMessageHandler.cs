@@ -16,7 +16,7 @@ namespace Kafka.Messaging.Services.Implementations
         public async Task HandleAsync(TaskEventMessage message, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Received task event: {message.EventType} — {message.UserItems}");
-
+            Console.WriteLine("handle");
             var item = message.UserItems;
             if (item == null || !item.Any())
             {

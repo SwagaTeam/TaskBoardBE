@@ -145,11 +145,11 @@ public class ProjectController : ControllerBase
         var alreadyIn = await _projectManager.IsUserInProjectAsync((int)userId, projectLink.ProjectId);
 
         if (alreadyIn)
-            return BadRequest("������������ ��� ������� � �������");
+            return BadRequest("Вы уже находитесь в проекте");
 
         await _projectManager.AddUserInProjectAsync((int)userId, projectLink.ProjectId);
 
-        return Ok("������������ �������� � ������");
+        return Ok($"Вы успешно присоединились к проекту");
     }
 
     /// <summary>
