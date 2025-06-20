@@ -25,10 +25,10 @@ public class ItemModel
     public bool IsArchived { get; set; }
 
     [JsonInclude]
-    public List<string> Contributors { get; private set; } = new List<string>();
+    public List<ContributorModel> Contributors { get; private set; } = new List<ContributorModel>();
     public string Author { get; private set; } = "";
 
-    public void AddContributor(string contributor)
+    public void AddContributor(ContributorModel contributor)
     {
         Contributors.Add(contributor);
     }

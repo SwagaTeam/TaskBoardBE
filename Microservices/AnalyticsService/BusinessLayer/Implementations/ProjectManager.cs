@@ -84,7 +84,7 @@ namespace AnalyticsService.BusinessLayer.Implementations
 
                 case "user":
                     var allContributors = items
-                        .SelectMany(i => i.Contributors)
+                        .SelectMany(i => i.Contributors.Select(c => c.UserName))
                         .Distinct()
                         .ToList();
 
@@ -100,7 +100,7 @@ namespace AnalyticsService.BusinessLayer.Implementations
                             Y = CalculateYAxis(
                                 items.Where(i =>
                                     (contributor == "Без исполнителя" && i.Contributors.Count == 0) ||
-                                    (contributor != "Без исполнителя" && i.Contributors.Contains(contributor))
+                                    (contributor != "Без исполнителя" && i.Contributors.Any(c => c.UserName == contributor))
                                 ),
                                 yAxis)
                         })
@@ -138,12 +138,12 @@ namespace AnalyticsService.BusinessLayer.Implementations
                 _ => throw new ArgumentException($"Unsupported YAxis: {yAxis}")
             };
         }
-        
+
         public async Task<IEnumerable<StatusCountModel>> GetFunnelChartAsync(int projectId)
         {
             var items = await httpClient.GetFromJsonAsync<IEnumerable<ItemModel>>($"item/get-items-by/{projectId}");
 
-            var statuses = (await httpClient.GetFromJsonAsync<List<StatusModel>>("statuses/get-all")).Select(x=>x.Name);
+            var statuses = (await httpClient.GetFromJsonAsync<List<StatusModel>>("statuses/get-all")).Select(x => x.Name);
 
             var grouped = items
                 .Where(i => i.Status != null)
@@ -162,9 +162,7 @@ namespace AnalyticsService.BusinessLayer.Implementations
             return result;
         }
 
-
-        public async Task<IEnumerable<StatusCountModel>> GetCumulativeFlow(int projectId, DateTime startDate,
-            DateTime endDate)
+        public async Task<IEnumerable<StatusCountModel>> GetCumulativeFlow(int projectId, DateTime startDate, DateTime endDate)
         {
             var items = await httpClient.GetFromJsonAsync<IEnumerable<ItemModel>>($"item/get-items-by/{projectId}");
             var itemIds = items.Select(i => i.Id).ToHashSet();
@@ -192,14 +190,12 @@ namespace AnalyticsService.BusinessLayer.Implementations
                 {
                     statusTimeline.AddRange(history.Select(h => (h.ChangedAt.Date, h.NewValue)));
 
-                    if (!string.IsNullOrWhiteSpace(item.Status?.Name) &&
-                        statusTimeline.Last().Date < endDate)
+                    if (!string.IsNullOrWhiteSpace(item.Status?.Name) && statusTimeline.Last().Date < endDate)
                     {
                         statusTimeline.Add((endDate, item.Status.Name));
                     }
 
-                    if (statusTimeline.First().Date > startDate &&
-                        !string.IsNullOrWhiteSpace(history.First().OldValue))
+                    if (statusTimeline.First().Date > startDate && !string.IsNullOrWhiteSpace(history.First().OldValue))
                     {
                         statusTimeline.Insert(0, (startDate, history.First().OldValue));
                     }
@@ -236,20 +232,17 @@ namespace AnalyticsService.BusinessLayer.Implementations
 
             return result;
         }
-        
+
         private static string? GetStatusOnDate(List<(DateTime Date, string Status)> timeline, DateTime targetDate)
         {
             var filtered = timeline.Where(t => t.Date <= targetDate).ToList();
             return filtered.LastOrDefault().Status;
         }
 
-
         public async Task<ICollection<TaskHistoryModel>> GetProjectHistory(int projectId)
         {
             var items = await httpClient.GetFromJsonAsync<IEnumerable<ItemModel>>($"item/get-items-by/{projectId}");
-
             var itemIds = items.Select(x => x.Id).ToHashSet();
-
             var itemHistory = await taskHistoryRepository.GetHistoryByManyTaskIds(itemIds);
 
             var historyModels = await Task.WhenAll(
@@ -299,25 +292,6 @@ namespace AnalyticsService.BusinessLayer.Implementations
             return roadmapItems;
         }
 
-        /// <summary>
-        /// Получение данных для построения тепловой карты (heatmap)
-        /// </summary>
-        /// <remarks>
-        /// <b>Описание метрик:</b>
-        /// <ul>
-        ///     <li><b>inflow</b> – количество задач, созданных в указанный день (по дате начала)</li>
-        ///     <li><b>outflow</b> – количество завершённых задач в указанный день (по дате обновления и статусу "Завершено")</li>
-        ///     <li><b>avg-duration</b> – средняя длительность задач (в днях) от начала до ожидаемого завершения в конкретный день</li>
-        /// </ul>
-        /// <b>Оси:</b>
-        /// <ul>
-        ///     <li><b>X</b> – дата (в формате YYYY-MM-DD)</li>
-        ///     <li><b>Y</b> – исполнитель задачи (если не назначен – "Без исполнителя")</li>
-        ///     <li><b>Value</b> – значение метрики (количество задач или средняя длительность)</li>
-        /// </ul>
-        /// </remarks>
-        /// <param name="query">Параметры фильтрации: идентификатор проекта, диапазон дат, тип метрики</param>
-        /// <returns>Список ячеек тепловой карты с координатами и значением</returns>
         public async Task<List<HeatmapCell>> GetHeatmapData(HeatmapQueryModel query)
         {
             var items = await httpClient.GetFromJsonAsync<IEnumerable<ItemModel>>(
@@ -330,7 +304,10 @@ namespace AnalyticsService.BusinessLayer.Implementations
             return query.Metric.ToLower() switch
             {
                 "inflow" => filteredItems
-                    .SelectMany(i => i.Contributors.DefaultIfEmpty("Без исполнителя"),
+                    .SelectMany(i =>
+                        (i.Contributors.Any()
+                            ? i.Contributors.Select(c => c.UserName)
+                            : new List<string> { "Без исполнителя" }),
                         (item, contributor) => new { contributor, date = item.StartDate.Date })
                     .GroupBy(g => new { g.date, g.contributor })
                     .Select(g => new HeatmapCell
@@ -341,8 +318,11 @@ namespace AnalyticsService.BusinessLayer.Implementations
                     }).ToList(),
 
                 "outflow" => filteredItems
-                    .Where(i => i.Status?.Name == "Завершено") // При необходимости заменить на актуальный статус
-                    .SelectMany(i => i.Contributors.DefaultIfEmpty("Без исполнителя"),
+                    .Where(i => i.Status?.Name == "Завершено")
+                    .SelectMany(i =>
+                        (i.Contributors.Any()
+                            ? i.Contributors.Select(c => c.UserName)
+                            : new List<string> { "Без исполнителя" }),
                         (item, contributor) => new { contributor, date = item.UpdatedAt.Date })
                     .GroupBy(g => new { g.date, g.contributor })
                     .Select(g => new HeatmapCell
@@ -353,7 +333,10 @@ namespace AnalyticsService.BusinessLayer.Implementations
                     }).ToList(),
 
                 "avg-duration" => filteredItems
-                    .SelectMany(i => i.Contributors.DefaultIfEmpty("Без исполнителя"),
+                    .SelectMany(i =>
+                        (i.Contributors.Any()
+                            ? i.Contributors.Select(c => c.UserName)
+                            : new List<string> { "Без исполнителя" }),
                         (item, contributor) => new
                         {
                             contributor,

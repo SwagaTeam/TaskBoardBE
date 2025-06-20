@@ -1,4 +1,6 @@
-﻿namespace AnalyticsService.Models
+﻿using SharedLibrary.Models;
+
+namespace AnalyticsService.Models
 {
     public class RoadmapItemModel
     {
@@ -7,7 +9,7 @@
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string? Status { get; set; }
-        public List<string> Assignees { get; set; } = new();
+        public List<ContributorModel> Assignees { get; set; } = new();
     }
 
 }

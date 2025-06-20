@@ -1,4 +1,5 @@
-﻿using SharedLibrary.Constants;
+﻿using ProjectService.Models;
+using SharedLibrary.Constants;
 using SharedLibrary.Dapper.DapperRepositories;
 using SharedLibrary.Dapper.DapperRepositories.Abstractions;
 using SharedLibrary.Entities.ProjectService;
@@ -74,7 +75,8 @@ public static class ItemMapper
             foreach (var userItem in item.UserItems)
             {
                 var user = await userRepository.GetUserAsync(userItem.UserId);
-                model.AddContributor(user.Username);
+                var contributorModel = new ContributorModel(user.Username, user.ImagePath);
+                model.AddContributor(contributorModel);
             }
         }
 
