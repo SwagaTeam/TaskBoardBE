@@ -12,21 +12,19 @@ public static class ProjectLinkMapper
         {
             ProjectId = model.ProjectId,
             Url = model.Url,
+            UserId = model.UserId,
         };
     }
     
     public static async Task<ProjectLinkModel> ToModel(ProjectLinkEntity model, IUserRepository userRepository)
     {
-        var id = model.Id;
-        var pId = model.ProjectId;
-        var project = await ProjectMapper.ToModel(model.Project, userRepository);
-        var url = model.Url;
         return new ProjectLinkModel
         {
             Id = model.Id,
             ProjectId = model.ProjectId,
             Project = await ProjectMapper.ToModel(model.Project, userRepository),
             Url = model.Url,
+            UserId = model.UserId,
         };
     }
 }
