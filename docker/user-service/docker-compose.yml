@@ -3,6 +3,8 @@ services:
     image: ghcr.io/swagateam/user-service:1.0.3
     container_name: taskboard-user-serv
     env_file: ./.env
+    volumes:
+      - user-images:/app/images
     build:
       context: ../..
       dockerfile: docker/user-service/Dockerfile
