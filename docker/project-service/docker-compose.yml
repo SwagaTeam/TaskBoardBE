@@ -41,3 +41,5 @@ services:
 volumes:
   project-data:
     external: false
+  project-docs-data:
+  project-attchs-data:
