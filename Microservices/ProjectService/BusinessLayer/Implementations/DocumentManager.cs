@@ -60,7 +60,7 @@ public class DocumentManager : IDocumentManager
             await file.CopyToAsync(stream);
         }
 
-        docPath = $"/documents/{uniqueFileName}";
+        docPath = $"/{uniqueFileName}";
 
         var documentEntity = new DocumentEntity
         {

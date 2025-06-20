@@ -71,17 +71,16 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            var link = await _projectLinkManager.CreateAsync(request.ProjectId);
-
-            link = $"https://boardly.ru/project/invite/{link}";
-
             var project = await _projectManager.GetByIdAsync(request.ProjectId);
 
             var user = await userRepository.GetUserByEmailAsync(request.Email);
 
             if (user is null || project is null)
                 return BadRequest("Такого пользователя или проекта не существует");
+            
+            var link = await _projectLinkManager.CreateAsync(request.ProjectId, user.Id);
 
+            link = $"https://boardly.ru/project/invite/{link}";
             await _emailSender.SendEmailAsync(
                 "Приглашение в проект",
                 $"Здравствуйте, {user.Username}, Вас приглашают в проект {project.Name}.\n" +
@@ -146,6 +145,8 @@ public class ProjectController : ControllerBase
 
         if (alreadyIn)
             return BadRequest("Вы уже находитесь в проекте");
+        
+        if (projectLink.UserId != userId) return BadRequest("Эта ссылка-приглашение для другого пользователя");
 
         await _projectManager.AddUserInProjectAsync((int)userId, projectLink.ProjectId);
 

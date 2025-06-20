@@ -11,7 +11,7 @@ namespace ProjectService.BusinessLayer.Implementations;
 public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IProjectRepository projectRepository, IUserRepository userRepository)
     : IProjectLinkManager
 {
-    public async Task<string> CreateAsync(int projectId)
+    public async Task<string> CreateAsync(int projectId, int userId)
     {
         var project = await projectRepository.GetByIdAsync(projectId);
 
@@ -22,7 +22,8 @@ public class ProjectLinkManager(IProjectLinkRepository projectLinkRepository, IP
         var entity = new ProjectLinkEntity
         {
             ProjectId = projectId,
-            Url = url
+            Url = url,
+            UserId = userId
         };
         await projectLinkRepository.CreateAsync(entity);
         return url;

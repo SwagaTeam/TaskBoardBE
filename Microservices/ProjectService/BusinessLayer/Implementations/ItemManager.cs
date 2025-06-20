@@ -251,7 +251,7 @@ public class ItemManager(
                 await attachment.CopyToAsync(stream);
             }
 
-            docPath = $"/attachments/{uniqueFileName}";
+            docPath = $"/{uniqueFileName}";
 
             var attachmentEntity = new AttachmentEntity 
             { 

@@ -51,7 +51,7 @@ namespace UserService.BusinessLayer.Manager
                 await avatar.CopyToAsync(stream);
             }
 
-            var imagePath = $"/avatars/{uniqueFileName}";
+            var imagePath = $"/{uniqueFileName}";
 
             await _userRepository.SetUserAvatar(userId, imagePath);
         }
