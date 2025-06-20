@@ -11,6 +11,7 @@ namespace SharedLibrary.Entities.ProjectService
         public int Id { get; set; }
         public int ProjectId { get; set; }
         public string Url { get; set; } = string.Empty;
+        public int UserId { get; set; }
 
         public ProjectEntity Project { get; set; }
     }

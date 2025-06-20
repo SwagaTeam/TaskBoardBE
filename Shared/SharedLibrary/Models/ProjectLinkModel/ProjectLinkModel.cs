@@ -7,4 +7,5 @@ public class ProjectLinkModel
     public int ProjectId { get; set; }
     public string Url { get; set; } = "";
     public ProjectModel? Project;
+    public int UserId { get; set; }
 }
