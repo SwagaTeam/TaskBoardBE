@@ -4,6 +4,9 @@ services:
     container_name: taskboard-project-serv
     env_file:
       - ./.env
+    volumes:
+      - project-docs-data:/app/docs
+      - project-attchs-data:/app/attchs
     build:
       context: ../..
       dockerfile: docker/project-service/Dockerfile
@@ -38,3 +41,5 @@ services:
 volumes:
   project-data:
     external: false
+  project-docs-data:
+  project-attchs-data:
