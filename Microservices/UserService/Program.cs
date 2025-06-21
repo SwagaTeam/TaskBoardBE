@@ -54,6 +54,11 @@ internal class Program
             FileProvider = new PhysicalFileProvider(avatarPath),
             RequestPath = "/avatars"
         });
+        if (!Directory.Exists(avatarPath))
+        {
+            Directory.CreateDirectory(avatarPath); 
+        }
+
 
         app.MapControllers();
 
