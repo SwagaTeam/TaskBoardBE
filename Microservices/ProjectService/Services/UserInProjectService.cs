@@ -35,6 +35,6 @@ public static class UserInProjectService
         if (userId is null or -1) return false;
         if (itemId is null or -1) return true;
         var item = await itemRepository.GetByIdAsync(itemId.Value);
-        return item.UserItems.All(x=>x.UserId != (int)userId);
+        return item.UserItems.Any(x => x.UserId == (int)userId);
     }
 }
