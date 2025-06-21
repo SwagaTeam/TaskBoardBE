@@ -13,7 +13,6 @@ namespace ProjectService.Mapper
 
             return new StatusModel
             {
-                Id = statusEntity.Id,
                 Order = statusEntity.Order,
                 //Boards = statusEntity.Boards is null ? null : statusEntity.Boards.Select(BoardMapper.ToModel).ToList(),
                 IsDone = statusEntity.IsDone,
@@ -30,7 +29,6 @@ namespace ProjectService.Mapper
 
             return new StatusEntity
             {
-                Id = (int)statusEntity.Id!,
                 Order = statusEntity.Order,
                 BoardId = statusEntity.BoardId,
                 //Boards = statusEntity.Boards.Select(BoardMapper.ToEntity).ToList(),
