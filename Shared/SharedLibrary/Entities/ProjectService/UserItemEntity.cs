@@ -11,7 +11,7 @@ namespace SharedLibrary.Entities.ProjectService
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public int ItemId { get; set; }
+        public int? ItemId { get; set; }
 
         public ItemEntity Item { get; set; }
     }
