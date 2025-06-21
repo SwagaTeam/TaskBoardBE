@@ -13,7 +13,8 @@ public interface IItemManager
     public Task<ICollection<ItemModel>> GetByBoardIdAsync(int boardId);
     public Task<ICollection<ItemModel>> GetItemsByUserId(int userId, int projectId);
     public Task<ICollection<ItemModel>> GetCurrentUserItems();
-
+    public Task<int> SetItemArchieved(int itemId, CancellationToken token);
+    public Task<int> SetItemNotArchived(int itemId, CancellationToken token);
     public Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, string oldValue, string newValue,
         string fieldName,
         TaskEventType eventType = TaskEventType.Updated);

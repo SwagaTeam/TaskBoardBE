@@ -351,6 +351,32 @@ public class ItemController(IItemManager itemManager) : ControllerBase
         return Ok(item);
     }
 
+    [HttpPost("set-archived/{itemId}")]
+    public async Task<IActionResult> SetArchived(int itemId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await itemManager.SetItemArchieved(itemId, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
+    [HttpPost("set-not-archived/{itemId}")]
+    public async Task<IActionResult> SetNotArchived(int itemId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await itemManager.SetItemNotArchived(itemId, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     /// <summary>
     ///     Получение задач по ID доски.
     /// </summary>

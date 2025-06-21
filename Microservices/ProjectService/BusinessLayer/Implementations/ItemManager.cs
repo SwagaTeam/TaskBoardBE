@@ -99,6 +99,26 @@ public class ItemManager(
         return models;
     }
 
+    public async Task<int> SetItemArchieved(int itemId, CancellationToken token)
+    {
+        var item = await itemRepository.GetByIdAsync(itemId);
+        item.IsArchived = true;
+        await itemRepository.UpdateAsync(item);
+        return await UpdateAsync(await ItemMapper.ToModel(item, userRepository), token,
+            $"Задача {item.Title} перенесена в архив", 
+            "false", "true", "Archived");
+    }
+
+    public async Task<int> SetItemNotArchived(int itemId, CancellationToken token)
+    {
+        var item = await itemRepository.GetByIdAsync(itemId);
+        item.IsArchived = false;
+
+        return await UpdateAsync(await ItemMapper.ToModel(item, userRepository), token,
+            $"Задача {item.Title} перенесена из архива в активное пользование", 
+            "true", "false", "Archived");
+    }
+
     public async Task<int> UpdateAsync(ItemModel item, CancellationToken token, string message, string oldValue, string newValue, string fieldName,
         TaskEventType eventType = TaskEventType.Updated)
     {
