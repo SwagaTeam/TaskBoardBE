@@ -24,8 +24,8 @@ public class AddUserToItemValidator : AbstractValidator<UsersInProjectModel>
             .WithMessage("Новый пользователь не находится в нужном проекте");
         
         RuleFor(x => x)
-            .MustAsync((model, cancellation) =>
-                UserInProjectService.IsUserInItem(itemRepository, model.NewUserId, model.ItemId))
-            .WithMessage("Новый пользователь уже находится в проекте");
+            .MustAsync(async (model, cancellation) =>
+                !await UserInProjectService.IsUserInItem(itemRepository, model.NewUserId, model.ItemId))
+            .WithMessage("Новый пользователь уже находится в item");
     }
 }

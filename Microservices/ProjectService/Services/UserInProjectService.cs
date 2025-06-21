@@ -33,7 +33,8 @@ public static class UserInProjectService
     public static async Task<bool> IsUserInItem(IItemRepository itemRepository, int? userId, int? itemId)
     {
         if (userId is null or -1) return false;
-        if (itemId is null or -1) return true;
+        if (itemId is null or -1) return false;
+
         var item = await itemRepository.GetByIdAsync(itemId.Value);
         return item.UserItems.Any(x => x.UserId == (int)userId);
     }
